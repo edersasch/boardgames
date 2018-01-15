@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>10</zoom_level>
+  <element>
+    <type>com.baselet.element.old.allinone.ActivityDiagramText</type>
+    <coordinates>
+      <x>20</x>
+      <y>0</y>
+      <w>925</w>
+      <h>1721</h>
+    </coordinates>
+    <panel_attributes>title:Muehle
+&gt;new game
+set current player to White
+set opponent to Black
+put all pieces in drawer
+all pieces enter normal state
+all board fields enter normal state
+While[game not finished]
+	If
+		[current player has\piece in drawer]
+		phase 1
+		first piece in drawer\enters move state
+		free board fields enter\destination state
+
+		[current player has more\than three pieces left]
+		phase 2:\move piece to\free adjacent field
+
+		[else]
+		phase 3:\move piece to\free field
+	EndIf
+	wait for\destination selection&gt;
+	&gt;destination selected
+	board fields enter\normal state
+	pieces enter\normal state
+	perform move
+	If
+		[current player\closed Muehle]
+		take opponent piece\not in Muehle\to prison
+		If
+			[opponent only\has two pieces left]
+			current player wins
+			End
+
+			[else]
+		EndIf
+
+		[else]
+	EndIf
+	swap current player\and opponent
+End
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

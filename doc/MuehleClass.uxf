@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>8</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>16</x>
+      <y>16</y>
+      <w>1600</w>
+      <h>176</h>
+    </coordinates>
+    <panel_attributes>Muehle
+--
+{innerclass
+- Player
+--
+- mPieces: MuehlePieceModel
+- mDrawer: MuehleFieldModel
+- mPrison: MuehleFieldModel
+innerclass}
+- mWhite: Player
+- mBlack: Player
+--
++ newGame()
++ movePiece(p: MuehlePieceId, f: MuehleFieldId)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>816</x>
+      <y>184</y>
+      <w>24</w>
+      <h>160</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;180.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>664</x>
+      <y>328</y>
+      <w>328</w>
+      <h>152</h>
+    </coordinates>
+    <panel_attributes>MuehleFieldModel
+--
+--
++ setPiece(p: MuehlePieceId, pos: uint)
++ piece(pos: uint): MuehlePieceId
++ back(): MuehlePieceId
++ size(): uint
++ setView(f: MuehleFieldView)
++ normalState(fieldNumber: int)
++ destinationState(pos: uint, color: string)
++ registerDestinationSelected(callback: function)
++ destinationSelected(pos: uint)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>168</x>
+      <y>184</y>
+      <w>24</w>
+      <h>160</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;180.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>256</x>
+      <y>608</y>
+      <w>328</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>/MuehlePieceView/
+--
+--
++ setModel(p: MuehlePieceModel)
++ color(): string
+/+ setField(f: MuehleFieldId, pos: uint)/
+/+ normalState(pos: uint)/
+/+ canMoveState(pos: uint)/
+/+ movingState(pos: uint)/
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>16</x>
+      <y>328</y>
+      <w>328</w>
+      <h>152</h>
+    </coordinates>
+    <panel_attributes>MuehlePieceModel
+--
+--
++ setField(f: MuehleFieldId, pos: uint)
++ field(pos: uint): MuehleFieldId
++ back(): MuehleFieldId
++ size(): uint
++ setView(f: MuehlePieceView)
++ normalState(pos: uint)
++ canMoveState(pos: uint)
++ movingState(pos: uint)
++ color(): string
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1320</x>
+      <y>352</y>
+      <w>128</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>/MuehleControl/
+--
+--
+/+ draw()/
+/+ win(playerId: string)/
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>256</x>
+      <y>992</y>
+      <w>328</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>MuehlePieceViewQml
+--
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1376</x>
+      <y>184</y>
+      <w>72</w>
+      <h>184</h>
+    </coordinates>
+    <panel_attributes>lt=-
+draw() v
+win()</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;210.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1312</x>
+      <y>816</y>
+      <w>296</w>
+      <h>248</h>
+    </coordinates>
+    <panel_attributes>MuehleQml
+--
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1376</x>
+      <y>424</y>
+      <w>24</w>
+      <h>408</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;490.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>832</x>
+      <y>608</y>
+      <w>328</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>/MuehleFieldView/
+--
+--
++ setModel(f: MuehleFieldModel)
++ destinationSelected(fieldNumber: int)
+/+ normalState(pos: uint)/
+/+ destinationState(pos: uint, color: string)/
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>832</x>
+      <y>816</y>
+      <w>328</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>MuehleFieldViewQml
+--
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>984</x>
+      <y>720</y>
+      <w>24</w>
+      <h>112</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;120.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>408</x>
+      <y>720</y>
+      <w>24</w>
+      <h>288</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;340.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>320</x>
+      <y>472</y>
+      <w>112</w>
+      <h>152</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=1
+m2=1
+setView() ^
+color() v
+normalState() 
+canMoveState()
+movingState()</panel_attributes>
+    <additional_attributes>10.0;170.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>576</x>
+      <y>1032</y>
+      <w>752</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>920.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1152</x>
+      <y>856</y>
+      <w>176</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>200.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>528</x>
+      <y>192</y>
+      <w>96</w>
+      <h>432</h>
+    </coordinates>
+    <panel_attributes>lt=-
+setModel() v
+</panel_attributes>
+    <additional_attributes>10.0;520.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1112</x>
+      <y>184</y>
+      <w>96</w>
+      <h>440</h>
+    </coordinates>
+    <panel_attributes>lt=-
+setModel() v
+</panel_attributes>
+    <additional_attributes>10.0;530.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>912</x>
+      <y>472</y>
+      <w>120</w>
+      <h>152</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=1
+m2=1
+setView() ^
+normalState() v
+destinationState()
+</panel_attributes>
+    <additional_attributes>10.0;170.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1568</x>
+      <y>184</y>
+      <w>96</w>
+      <h>648</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+newGame() ^
+</panel_attributes>
+    <additional_attributes>10.0;790.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>16</x>
+      <y>984</y>
+      <w>168</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Qml&gt;&gt;
+Piece
+--
+--
++ &lt;&lt;property&gt;&gt; state: string[]
++ &lt;&lt;signal&gt;&gt; selected()
++ &lt;&lt;signal&gt;&gt; deselected()
++ &lt;&lt;signal&gt;&gt; removed()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>568</x>
+      <y>808</y>
+      <w>168</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Qml&gt;&gt;
+Destination
+--
++ Piece
+--
++ &lt;&lt;property&gt;&gt; enabled: bool
++ &lt;&lt;property&gt;&gt; color: string
++ &lt;&lt;signal&gt;&gt; selected()
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>728</x>
+      <y>848</y>
+      <w>120</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>130.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>176</x>
+      <y>1032</y>
+      <w>96</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>100.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+</diagram>
