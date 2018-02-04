@@ -1,46 +1,59 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <diagram program="umlet" version="14.2">
-  <zoom_level>10</zoom_level>
+  <zoom_level>8</zoom_level>
   <element>
     <type>com.baselet.element.old.allinone.ActivityDiagramText</type>
     <coordinates>
-      <x>20</x>
-      <y>0</y>
-      <w>925</w>
-      <h>1721</h>
+      <x>8</x>
+      <y>8</y>
+      <w>961</w>
+      <h>1680</h>
     </coordinates>
     <panel_attributes>title:Muehle
 &gt;new game
 set current player to White
 set opponent to Black
 put all pieces in drawer
-all pieces enter normal state
-all board fields enter normal state
+pin all pieces
+lock all board fields
 While[game not finished]
 	If
 		[current player has\piece in drawer]
-		phase 1
-		first piece in drawer\enters move state
-		free board fields enter\destination state
+		phase 1:\current player's\first piece in drawer\is selectable
+		empty board fields become\occupiable
 
 		[current player has more\than three pieces left]
-		phase 2:\move piece to\free adjacent field
+		phase 2:\current player's\pieces that can move\become selectable
+		wait for selected piece &gt;
+		&gt; piece selected
+		lock all board fields
+		reachable empty board\fields become occupiable
 
 		[else]
-		phase 3:\move piece to\free field
+		phase 3:\current player's\pieces on board\become selectable
+		empty board fields become\occupiable
 	EndIf
 	wait for\destination selection&gt;
 	&gt;destination selected
-	board fields enter\normal state
-	pieces enter\normal state
 	perform move
+	pin all pieces
+	lock all board fields
 	If
 		[current player\closed Muehle]
-		take opponent piece\not in Muehle\to prison
+		opponent pieces\not in Muehle\are removable
 		If
-			[opponent only\has two pieces left]
-			current player wins
-			End
+			[removablePiecesAvailable]
+			wait for removable selection &gt;
+			&gt; piece to be removed selected
+			pin all pieces
+			put selected piece in prison
+			If
+				[opponent only\has two pieces left]
+				current player wins
+				End
+
+				[else]
+			EndIf
 
 			[else]
 		EndIf

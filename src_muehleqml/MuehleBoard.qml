@@ -177,6 +177,10 @@ RowLayout {
                     Item {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
+                        onZChanged: {
+                            bg.z = z;
+                            columnLayout.z = z;
+                        }
                     }
                 }
             }

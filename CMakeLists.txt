@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.5.1)
 project(boardgames)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 enable_testing()
 include(CTest)
 add_compile_options(

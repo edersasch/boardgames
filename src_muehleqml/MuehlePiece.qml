@@ -1,21 +1,34 @@
 import QtQuick 2.7
 
 Rectangle {
-    signal removed
-    signal selected
-    signal deselected
     id: piece
-    onParentChanged: {
-        if (parent) {
-            anchors.horizontalCenter = Qt.binding(function() {return parent.horizontalCenter});
-            anchors.verticalCenter = Qt.binding(function() {return parent.verticalCenter});
-            width = Qt.binding(function() {return Math.min(parent.width, parent.height) / 1.3});
+    signal selected
+    signal removed
+    property var nextParent
+    onNextParentChanged: {
+        if (parent && nextParent) {
+            var oldscale = scale
+            scale = 1
+            xypos(mapFromItem(nextParent,
+                              nextParent.width / 2 - width / 2 + x,
+                              nextParent.height / 2 - height / 2 + y))
+            scale = oldscale
         } else {
-            anchors.horizontalCenter = undefined;
-            anchors.verticalCenter = undefined;
-            width = 0
+            parent = nextParent;
         }
     }
+
+    function xypos(nextPoint) {
+        anchors.horizontalCenter = undefined;
+        anchors.verticalCenter = undefined;
+        x = nextPoint.x
+        y = nextPoint.y
+        z = 1
+    }
+
+    anchors.horizontalCenter: parent ? parent.horizontalCenter : undefined
+    anchors.verticalCenter: parent ? parent.verticalCenter : undefined;
+    width: parent ? Math.min(parent.width, parent.height) / 1.3 : 0
     height: width
     radius: width / 2
     border.color: "black"
@@ -32,24 +45,22 @@ Rectangle {
     Drag.hotSpot.x: width / 2
     Drag.hotSpot.y: height / 2
     Drag.active: mouseArea.drag.active
-    Drag.onActiveChanged: {
-        if (Drag.active === true && piece.state === "playerMoveable") {
-            piece.selected();
-        }
-    }
 
     states: [
         State {
-            name: "playerVisible"
+            name: "pin"
             PropertyChanges {
                 target: piece
                 opacity: 1
                 scale: 1
-                z: 0
+            }
+            PropertyChanges {
+                target: mouseArea
+                cursorShape: Qt.ArrowCursor
             }
         },
         State {
-            name: "playerMoveable"
+            name: "selectable"
             PropertyChanges {
                 target: piece
                 opacity: 1
@@ -63,22 +74,7 @@ Rectangle {
             }
         },
         State {
-            name: "playerSelected"
-            PropertyChanges {
-                target: piece
-                opacity: 1
-                scale: 1.3
-                z: 1
-            }
-            PropertyChanges {
-                target: mouseArea
-                drag.target: piece
-                cursorShape: Qt.OpenHandCursor
-                onClicked: { piece.deselected() }
-            }
-        },
-        State {
-            name: "removeable"
+            name: "removable"
             PropertyChanges {
                 target: piece
                 opacity: 0.9
@@ -95,30 +91,62 @@ Rectangle {
             NumberAnimation { properties: "opacity, scale" }
         }
     ]
-    MouseArea {
+
+    Behavior on x {
+        NumberAnimation {
+            easing.type: Easing.OutElastic
+            easing.period: 0.9
+            onRunningChanged: {
+                if (!running && parent) {
+                    z = 0
+                    if (nextParent && parent !== nextParent) {
+                        parent = nextParent;
+                    }
+                    anchors.horizontalCenter = parent.horizontalCenter;
+                    anchors.verticalCenter = parent.verticalCenter;
+                }
+            }
+        }
+    }
+    Behavior on y {
+        NumberAnimation {
+            easing.type: Easing.OutElastic
+            easing.period: 0.9
+        }
+    }
+    Behavior on width {
+        NumberAnimation {}
+    }
+
+     MouseArea {
         id: mouseArea
         enabled: true
         anchors.fill: parent
         drag.axis: Drag.XAndYAxis
-        onPressed: {
-            if (piece.state === "playerSelected" || piece.state === "playerMoveable") {
-                piece.anchors.horizontalCenter = undefined;
-                piece.anchors.verticalCenter = undefined;
-            }
-            mouse.accepted = true;
-        }
-        onReleased: {
-            if (drag.active === true) {
-                if (piece.Drag.target !== null) {
-                    piece.x = piece.Drag.target.drag.x;
-                    piece.y = piece.Drag.target.drag.y;
-                    piece.Drag.target.selected();
-                } else {
-                    if (piece.parent) {
-                        piece.anchors.horizontalCenter = piece.parent.horizontalCenter;
-                        piece.anchors.verticalCenter = piece.parent.verticalCenter;
+        states: [
+            State {
+                when: mouseArea.pressed && mouseArea.drag.target === piece
+                PropertyChanges {
+                    target: mouseArea
+                    cursorShape: Qt.ClosedHandCursor
+                }
+                StateChangeScript {
+                    script: {
+                        piece.z = 1
+                        piece.anchors.horizontalCenter = undefined
+                        piece.anchors.verticalCenter = undefined
+                        piece.selected();
                     }
-                    piece.deselected();
+                }
+            }
+        ]
+        onReleased: {
+            if (piece.Drag.target) {
+                piece.Drag.target.occupy();
+            } else {
+                if (drag.active && piece.parent) {
+                    piece.xypos(Qt.point(piece.parent.width / 2 - piece.width / 2,
+                                         piece.parent.height / 2 - piece.height / 2))
                 }
             }
         }

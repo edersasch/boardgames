@@ -4,124 +4,108 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>16</x>
-      <y>16</y>
+      <x>8</x>
+      <y>0</y>
       <w>1600</w>
-      <h>176</h>
+      <h>80</h>
     </coordinates>
     <panel_attributes>Muehle
 --
-{innerclass
-- Player
---
-- mPieces: MuehlePieceModel
-- mDrawer: MuehleFieldModel
-- mPrison: MuehleFieldModel
-innerclass}
-- mWhite: Player
-- mBlack: Player
 --
 + newGame()
-+ movePiece(p: MuehlePieceId, f: MuehleFieldId)</panel_attributes>
++ muehleElements(): MuehleElements</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>816</x>
-      <y>184</y>
+      <x>808</x>
+      <y>304</y>
       <w>24</w>
-      <h>160</h>
+      <h>144</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;180.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;160.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>664</x>
-      <y>328</y>
+      <x>656</x>
+      <y>432</y>
       <w>328</w>
       <h>152</h>
     </coordinates>
-    <panel_attributes>MuehleFieldModel
+    <panel_attributes>MuehleFieldGroup
 --
 --
-+ setPiece(p: MuehlePieceId, pos: uint)
-+ piece(pos: uint): MuehlePieceId
-+ back(): MuehlePieceId
++ at(pos: uint): MuehleField
 + size(): uint
-+ setView(f: MuehleFieldView)
-+ normalState(fieldNumber: int)
-+ destinationState(pos: uint, color: string)
-+ registerDestinationSelected(callback: function)
-+ destinationSelected(pos: uint)
++ occupy(field: MuehleField)
++ registerOccupy(occupyCallback: callable)
+
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>168</x>
-      <y>184</y>
+      <x>440</x>
+      <y>304</y>
       <w>24</w>
-      <h>160</h>
+      <h>144</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;180.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;160.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>256</x>
-      <y>608</y>
+      <x>288</x>
+      <y>992</y>
       <w>328</w>
-      <h>120</h>
+      <h>160</h>
     </coordinates>
-    <panel_attributes>/MuehlePieceView/
+    <panel_attributes>/MuehlePieceUi/
 --
 --
-+ setModel(p: MuehlePieceModel)
-+ color(): string
-/+ setField(f: MuehleFieldId, pos: uint)/
-/+ normalState(pos: uint)/
-/+ canMoveState(pos: uint)/
-/+ movingState(pos: uint)/
+/+ fieldChanged(field: MuehleFieldUi)/
+/+ pin()/
+/+ selectable()/
+/+ removable()/
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>16</x>
-      <y>328</y>
+      <x>288</x>
+      <y>432</y>
       <w>328</w>
       <h>152</h>
     </coordinates>
-    <panel_attributes>MuehlePieceModel
+    <panel_attributes>MuehlePieceGroup
 --
 --
-+ setField(f: MuehleFieldId, pos: uint)
-+ field(pos: uint): MuehleFieldId
-+ back(): MuehleFieldId
++ at(pos: uint): MuehlePiece
 + size(): uint
-+ setView(f: MuehlePieceView)
-+ normalState(pos: uint)
-+ canMoveState(pos: uint)
-+ movingState(pos: uint)
 + color(): string
++ setColor(newColor: string)
++ removed(piece: MuehlePiece)
++ registerRemoved(removedCallback: callable)
++ selected(piece: MuehlePiece)
++ registerSelected(selectedCallback: callable)
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1320</x>
-      <y>352</y>
-      <w>128</w>
-      <h>80</h>
+      <x>1304</x>
+      <y>736</y>
+      <w>144</w>
+      <h>72</h>
     </coordinates>
-    <panel_attributes>/MuehleControl/
+    <panel_attributes>/MuehleUi/
 --
 --
 /+ draw()/
@@ -132,12 +116,12 @@ innerclass}
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>256</x>
-      <y>992</y>
+      <x>288</x>
+      <y>1376</y>
       <w>328</w>
       <h>80</h>
     </coordinates>
-    <panel_attributes>MuehlePieceViewQml
+    <panel_attributes>MuehlePieceQml
 --
 --
 </panel_attributes>
@@ -146,21 +130,21 @@ innerclass}
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1376</x>
-      <y>184</y>
+      <x>1368</x>
+      <y>72</y>
       <w>72</w>
-      <h>184</h>
+      <h>680</h>
     </coordinates>
     <panel_attributes>lt=-
 draw() v
 win()</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;210.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;830.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1312</x>
-      <y>816</y>
+      <x>1304</x>
+      <y>1200</y>
       <w>296</w>
       <h>248</h>
     </coordinates>
@@ -173,42 +157,39 @@ win()</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1376</x>
-      <y>424</y>
+      <x>1368</x>
+      <y>800</y>
       <w>24</w>
-      <h>408</h>
+      <h>416</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;490.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;500.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>832</x>
-      <y>608</y>
+      <x>656</x>
+      <y>992</y>
       <w>328</w>
-      <h>120</h>
+      <h>160</h>
     </coordinates>
-    <panel_attributes>/MuehleFieldView/
+    <panel_attributes>/MuehleFieldUi/
 --
 --
-+ setModel(f: MuehleFieldModel)
-+ destinationSelected(fieldNumber: int)
-/+ normalState(pos: uint)/
-/+ destinationState(pos: uint, color: string)/
-
+/+ lock()/
+/+ occupiable(color: string)/
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>832</x>
-      <y>816</y>
+      <x>656</x>
+      <y>1200</y>
       <w>328</w>
       <h>80</h>
     </coordinates>
-    <panel_attributes>MuehleFieldViewQml
+    <panel_attributes>MuehleFieldQml
 --
 --
 </panel_attributes>
@@ -217,126 +198,103 @@ win()</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>984</x>
-      <y>720</y>
+      <x>808</x>
+      <y>1144</y>
       <w>24</w>
-      <h>112</h>
+      <h>72</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;120.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>408</x>
-      <y>720</y>
+      <x>328</x>
+      <y>1144</y>
       <w>24</w>
-      <h>288</h>
+      <h>248</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;340.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;290.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>320</x>
-      <y>472</y>
-      <w>112</w>
-      <h>152</h>
+      <x>440</x>
+      <y>816</y>
+      <w>104</w>
+      <h>192</h>
     </coordinates>
     <panel_attributes>lt=-
 m1=1
 m2=1
-setView() ^
-color() v
-normalState() 
-canMoveState()
-movingState()</panel_attributes>
-    <additional_attributes>10.0;170.0;10.0;10.0</additional_attributes>
+setPieceUi()
+selected()
+removed() ^
+fieldChanged()
+pin() v
+selectable()
+removable()</panel_attributes>
+    <additional_attributes>10.0;220.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>576</x>
-      <y>1032</y>
-      <w>752</w>
+      <x>608</x>
+      <y>1408</y>
+      <w>712</w>
       <h>24</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>920.0;10.0;10.0;10.0</additional_attributes>
+    <additional_attributes>870.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1152</x>
-      <y>856</y>
-      <w>176</w>
+      <x>976</x>
+      <y>1232</y>
+      <w>344</w>
       <h>24</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>200.0;10.0;10.0;10.0</additional_attributes>
+    <additional_attributes>410.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>528</x>
-      <y>192</y>
-      <w>96</w>
-      <h>432</h>
-    </coordinates>
-    <panel_attributes>lt=-
-setModel() v
-</panel_attributes>
-    <additional_attributes>10.0;520.0;10.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>1112</x>
-      <y>184</y>
-      <w>96</w>
-      <h>440</h>
-    </coordinates>
-    <panel_attributes>lt=-
-setModel() v
-</panel_attributes>
-    <additional_attributes>10.0;530.0;10.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>912</x>
-      <y>472</y>
-      <w>120</w>
-      <h>152</h>
+      <x>808</x>
+      <y>816</y>
+      <w>88</w>
+      <h>192</h>
     </coordinates>
     <panel_attributes>lt=-
 m1=1
 m2=1
-setView() ^
-normalState() v
-destinationState()
+setFieldUi()
+occupy() ^
+lock() v
+occupiable()
 </panel_attributes>
-    <additional_attributes>10.0;170.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;220.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1568</x>
-      <y>184</y>
+      <x>1560</x>
+      <y>72</y>
       <w>96</w>
-      <h>648</h>
+      <h>1144</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-
 newGame() ^
 </panel_attributes>
-    <additional_attributes>10.0;790.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;1410.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>16</x>
-      <y>984</y>
+      <x>8</x>
+      <y>1368</y>
       <w>168</w>
       <h>96</h>
     </coordinates>
@@ -346,15 +304,14 @@ Piece
 --
 + &lt;&lt;property&gt;&gt; state: string[]
 + &lt;&lt;signal&gt;&gt; selected()
-+ &lt;&lt;signal&gt;&gt; deselected()
 + &lt;&lt;signal&gt;&gt; removed()</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>568</x>
-      <y>808</y>
+      <x>392</x>
+      <y>1192</y>
       <w>168</w>
       <h>96</h>
     </coordinates>
@@ -365,15 +322,15 @@ Destination
 --
 + &lt;&lt;property&gt;&gt; enabled: bool
 + &lt;&lt;property&gt;&gt; color: string
-+ &lt;&lt;signal&gt;&gt; selected()
++ &lt;&lt;signal&gt;&gt; occupy()
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>728</x>
-      <y>848</y>
+      <x>552</x>
+      <y>1232</y>
       <w>120</w>
       <h>24</h>
     </coordinates>
@@ -383,12 +340,109 @@ Destination
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>176</x>
-      <y>1032</y>
-      <w>96</w>
+      <x>168</x>
+      <y>1408</y>
+      <w>136</w>
       <h>24</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>100.0;10.0;10.0;10.0</additional_attributes>
+    <additional_attributes>150.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>288</x>
+      <y>656</y>
+      <w>328</w>
+      <h>168</h>
+    </coordinates>
+    <panel_attributes>MuehlePiece
+--
+--
++ field(): MuehleField
++ setField(field: MuehleField)
++ pieceGroup(): MuehlePieceGroup
++ pieceUi(): MuehlePieceUi
++ setPieceUi(pieceUi: MuehlePieceUi)
++ pin()
++ selectable()
++ selected()
++ removable()
++ removed()
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>656</x>
+      <y>656</y>
+      <w>328</w>
+      <h>168</h>
+    </coordinates>
+    <panel_attributes>MuehleField
+--
+--
++ piece(): MuehlePiece
++ setPiece(piece: MuehlePiece)
++ fieldGroup(): MuehleFieldGroup
++ fieldNumber(): uint
++ setFieldUi(fieldUi: MuehleFieldUi)
++ lock()
++ occupiable()
++ occupy()
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>280</x>
+      <y>200</y>
+      <w>704</w>
+      <h>112</h>
+    </coordinates>
+    <panel_attributes>MuehleElements
+--
+--
++ pieceGroup(pieceGroupName: string): MuehlePieceGroup
++ fieldGroup(fieldGroupName: string): MuehleFieldGroup
++ piecesInFieldGroup(fieldGroupName: string): MuehlePiece[]
++ piecesOfGroupInFieldGroup(pieceGroupName: string, fieldGroupName: string): MuehlePiece[]
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>624</x>
+      <y>72</y>
+      <w>24</w>
+      <h>144</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;160.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>440</x>
+      <y>576</y>
+      <w>24</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>808</x>
+      <y>576</y>
+      <w>24</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0</additional_attributes>
   </element>
 </diagram>
