@@ -21,6 +21,7 @@ public:
     void lock();
     void occupiable(std::string color);
     void occupy();
+    void highlight();
 private:
     enum class AllowedFieldActions
     {

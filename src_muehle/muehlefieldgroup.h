@@ -16,9 +16,12 @@ public:
     std::size_t size() const;
     void occupy(MuehleField* field);
     void registerOccupy(std::function<void(MuehleField*)> occupyCallback);
+    void canHide(bool hide);
+    void registerCanHide(std::function<void(bool)> canHideCallback);
 private:
     std::vector<MuehleField> mFields {};
     std::function<void(MuehleField*)> mOccupyCallback {};
+    std::function<void(bool)> mCanHideCallback {};
 };
 
 #endif // SRC_MUEHLE_MUEHLEFIELDGROUP

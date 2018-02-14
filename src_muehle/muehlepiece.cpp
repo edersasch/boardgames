@@ -16,19 +16,19 @@ MuehleField* MuehlePiece::field() const
 
 void MuehlePiece::setField(MuehleField* field)
 {
-    if (mField) {
-        mField->setPiece(nullptr);
-    }
     if (mField != field) {
-        MuehleFieldUi* fUi = nullptr;
-        mField = field;
         if (mField) {
-            mField->setPiece(this);
-            fUi = mField->fieldUi();
+            mField->setPiece(nullptr);
+        }
+        MuehleFieldUi* fUi = nullptr;
+        if (field) {
+            field->setPiece(this);
+            fUi = field->fieldUi();
         }
         if (mPieceUi) {
             mPieceUi->fieldChanged(fUi);
         }
+        mField = field;
     }
 }
 

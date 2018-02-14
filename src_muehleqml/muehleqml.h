@@ -27,6 +27,12 @@ public:
     virtual ~MuehleQml() = default;
     void draw() override;
     void win(const std::string& playerId) override;
+    void newGame();
+    void enterSetupMode();
+    void leaveSetupMode();
+signals:
+    void horizontal();
+    void vertical();
 private:
     Muehle mMuehle;
     QQmlComponent mBoard;

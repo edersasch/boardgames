@@ -2,21 +2,33 @@ import QtQuick 2.7
 
 DropArea {
     signal occupy
-    property alias color: field.color
+    property alias fieldcolor: field.color
+    property alias fieldopacity: field.opacity
+    property alias color: hint.color
     id: destination
     anchors.fill: parent
     enabled: false
-    MuehlePiece {
+
+    Rectangle {
         id: field
-        scale: 1
+        anchors.fill: parent
+        opacity: 0
+        radius: 10
+        Behavior on opacity {
+            NumberAnimation {}
+        }
+    }
+
+    MuehlePiece {
+        id: hint
         states: [
             State {
                 when: destination.enabled === true && destination.containsDrag === false
-                PropertyChanges { target: field; opacity: 0.2 }
+                PropertyChanges { target: hint; opacity: 0.2 }
             },
             State {
                 when: destination.containsDrag === true
-                PropertyChanges { target: field; opacity: 1 }
+                PropertyChanges { target: hint; opacity: 1 }
             }
         ]
         transitions: [

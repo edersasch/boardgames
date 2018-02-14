@@ -21,10 +21,11 @@ class MuehleFieldQml
 {
     Q_OBJECT
 public:
-    MuehleFieldQml(QQmlComponent& destinationComponent, QQmlEngine* engine, MuehleField* field, QQuickItem* parentItem, QQuickItem* alternativeParentItem = nullptr);
+    MuehleFieldQml(QQmlComponent& destinationComponent, MuehleField* field, QQuickItem* parentItem, QQuickItem* alternativeParentItem = nullptr);
     virtual ~MuehleFieldQml() = default;
     virtual void lock() override;
     virtual void occupiable(const std::string& color) override;
+    virtual void highlight() override;
     QQuickItem* fieldItem();
 public slots:
     void useMainField();

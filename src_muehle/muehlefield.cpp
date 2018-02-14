@@ -61,3 +61,10 @@ void MuehleField::occupy()
         mFieldGroup->occupy(this);
     }
 }
+
+void MuehleField::highlight()
+{
+    if (mFieldUi) {
+        mFieldUi->highlight();
+    }
+}

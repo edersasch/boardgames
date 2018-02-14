@@ -4,8 +4,6 @@
 Muehle::Muehle(MuehleUi* gameUi)
     : mUi(gameUi)
 {
-    mCurrent->mPieces->setColor("orange");
-    mOpponent->mPieces->setColor("darkgrey");
     mElements.pieceGroup(white())->registerRemoved([this](MuehlePiece* piece) {
         pieceRemoved(piece);
     });
@@ -21,29 +19,79 @@ Muehle::Muehle(MuehleUi* gameUi)
     mElements.fieldGroup(board())->registerOccupy([this](MuehleField* field) {
         occupy(field);
     });
+    mElements.fieldGroup(whitedrawer())->registerOccupy([this](MuehleField* field) {
+        occupy(field);
+    });
+    mElements.fieldGroup(blackdrawer())->registerOccupy([this](MuehleField* field) {
+        occupy(field);
+    });
+    mElements.fieldGroup(whiteprison())->registerOccupy([this](MuehleField* field) {
+        occupy(field);
+    });
+    mElements.fieldGroup(blackprison())->registerOccupy([this](MuehleField* field) {
+        occupy(field);
+    });
 }
 
 void Muehle::newGame()
 {
     mCurrent = &mWhite;
     mOpponent = &mBlack;
-    mWhite.mAlreadyCaptured = 0;
-    mBlack.mAlreadyCaptured = 0;
     for (std::size_t i = 0; i < numberOfPieces(); i += 1) {
         mWhite.mPieces->at(i)->setField(mWhite.mDrawer->at(i));
-        mElements.pieceGroup(white())->at(i)->pin();
         mBlack.mPieces->at(i)->setField(mBlack.mDrawer->at(i));
-        mElements.pieceGroup(black())->at(i)->pin();
     }
-    for (std::size_t i = 0; i < numberOfFields(); i+= 1) {
-        mElements.fieldGroup(board())->at(i)->lock();
-    }
-    startMove();
+    leaveSetupMode();
 }
 
 MuehleElements* Muehle::muehleElements()
 {
     return &mElements;
+}
+
+void Muehle::enterSetupMode()
+{
+    mSetupMode = true;
+    occupiableEmptyFields();
+    for (std::size_t i = 0; i < numberOfPieces(); i += 1) {
+        mCurrent->mPieces->at(i)->selectable();
+        mOpponent->mPieces->at(i)->selectable();
+    }
+    mCurrent->mDrawer->canHide(false);
+    mCurrent->mPrison->canHide(false);
+    mOpponent->mDrawer->canHide(false);
+    mOpponent->mPrison->canHide(false);
+}
+
+void Muehle::leaveSetupMode()
+{
+    mSetupMode = false;
+    bool wdrawerCanHide = true;
+    bool bdrawerCanHide = true;
+    bool wprisonCanHide = true;
+    bool bprisonCanHide = true;
+    for (std::size_t i = 0; i < numberOfPieces(); i += 1) {
+        mElements.pieceGroup(white())->at(i)->pin();
+        mElements.pieceGroup(black())->at(i)->pin();
+    }
+    lockBoardFields();
+    for (std::size_t i = 0; i < numberOfPieces(); i+= 1) {
+        mElements.fieldGroup(whitedrawer())->at(i)->lock();
+        wdrawerCanHide &= mElements.fieldGroup(whitedrawer())->at(i)->piece() == nullptr;
+        mElements.fieldGroup(blackdrawer())->at(i)->lock();
+        bdrawerCanHide &= mElements.fieldGroup(blackdrawer())->at(i)->piece() == nullptr;
+    }
+    mElements.fieldGroup(whitedrawer())->canHide(wdrawerCanHide);
+    mElements.fieldGroup(blackdrawer())->canHide(bdrawerCanHide);
+    for (std::size_t i = 0; i < numberOfPieces() - 2; i+= 1) {
+        mElements.fieldGroup(whiteprison())->at(i)->lock();
+        wprisonCanHide &= mElements.fieldGroup(whiteprison())->at(i)->piece() == nullptr;
+        mElements.fieldGroup(blackprison())->at(i)->lock();
+        bprisonCanHide &= mElements.fieldGroup(blackprison())->at(i)->piece() == nullptr;
+    }
+    mElements.fieldGroup(whiteprison())->canHide(wprisonCanHide);
+    mElements.fieldGroup(blackprison())->canHide(bprisonCanHide);
+    startMove();
 }
 
 // private
@@ -53,17 +101,22 @@ void Muehle::occupy(MuehleField* field)
     if (!mSelectedPiece) {
         return;
     }
-    mSelectedPiece->setField(field);
-    for (std::size_t i = 0; i < numberOfFields(); i+= 1) {
-        mElements.fieldGroup(board())->at(i)->lock();
+    if (mSelectedPiece->field()) {
+        mSelectedPiece->field()->lock(); // ui can stop to highlight start position
     }
+    mSelectedPiece->setField(field);
+    if (mSetupMode) {
+        occupiableEmptyFields();
+        return;
+    }
+    lockBoardFields();
     for (auto& p : mElements.piecesInFieldGroup(board())) {
         p->pin();
     }
-    if(closedMuehle(field->fieldNumber())) {
+    mCurrent->mDrawer->canHide(mElements.piecesInFieldGroup(mCurrent == &mWhite ? whitedrawer() : blackdrawer()).size() == 0);
+    if (closedMuehle(field->fieldNumber())) {
         bool removablePiecesAvailable = false;
-        for (auto& p : mElements.piecesOfGroupInFieldGroup(mOpponent == &mWhite ? white() : black(), board()))
-        {
+        for (auto& p : mElements.piecesOfGroupInFieldGroup(mOpponent == &mWhite ? white() : black(), board())) {
             if (!closedMuehle(p->field()->fieldNumber())) {
                 p->removable();
                 removablePiecesAvailable = true;
@@ -79,16 +132,17 @@ void Muehle::occupy(MuehleField* field)
 
 void Muehle::pieceRemoved(MuehlePiece* removedPiece)
 {
-    for (std::size_t i = 0; i < numberOfFields(); i+= 1) {
-        mElements.fieldGroup(board())->at(i)->lock();
-    }
-    for (auto& p : mElements.piecesOfGroupInFieldGroup(mOpponent == &mWhite ? white() : black(), board()))
-    {
+    for (auto& p : mElements.piecesOfGroupInFieldGroup(mOpponent == &mWhite ? white() : black(), board())) {
         p->pin();
     }
-    removedPiece->setField(mOpponent->mPrison->at(mOpponent->mAlreadyCaptured));
-    mOpponent->mAlreadyCaptured += 1;
-    if (mOpponent->mAlreadyCaptured == 7) {
+    for (std::size_t i = 0; i < mOpponent->mPrison->size(); i += 1) {
+        if (!mOpponent->mPrison->at(i)->piece()) {
+            mOpponent->mPrison->canHide(false);
+            removedPiece->setField(mOpponent->mPrison->at(i));
+            break;
+        }
+    }
+    if (mElements.piecesInFieldGroup(mOpponent == &mWhite ? whiteprison() : blackprison()).size() == 7) {
         mUi->win(mCurrent == &mWhite ? white() : black());
     } else {
         swapPlayers();
@@ -98,13 +152,28 @@ void Muehle::pieceRemoved(MuehlePiece* removedPiece)
 void Muehle::pieceSelected(MuehlePiece* selectedPiece)
 {
     if (selectedPiece != mSelectedPiece) { // always false in phase 1
+        if (mSelectedPiece && mSelectedPiece->field()) {
+            mSelectedPiece->field()->lock(); // ui can stop to highlight start position
+        }
         mSelectedPiece = selectedPiece;
-        if (mCurrent->mAlreadyCaptured < 6) { // phase 2
-            for (std::size_t i = 0; i < numberOfFields(); i+= 1) {
-                mElements.fieldGroup(board())->at(i)->lock();
+        if (mSelectedPiece) {
+            if (mSetupMode == true) {
+                if (mSelectedPiece->pieceGroup() != mCurrent->mPieces) {
+                    Player* tmp = mCurrent;
+                    mCurrent = mOpponent;
+                    mOpponent = tmp;
+                    occupiableEmptyFields();
+                }
+            } else {
+                if (mElements.piecesInFieldGroup(mCurrent == &mWhite ? whiteprison() : blackprison()).size() < 6) { // phase 2
+                    lockBoardFields();
+                    for (auto f : freeAdjacentFields(mSelectedPiece)) {
+                        f->occupiable(mCurrent->mPieces->color());
+                    }
+                }
             }
-            for (auto f : freeAdjacentFields(mSelectedPiece)) {
-                f->occupiable(mCurrent->mPieces->color());
+            if (mSelectedPiece->field()) {
+                mSelectedPiece->field()->highlight();
             }
         } // nothing to do for phase 3
     }
@@ -113,32 +182,40 @@ void Muehle::pieceSelected(MuehlePiece* selectedPiece)
 void Muehle::startMove()
 {
     mSelectedPiece = nullptr;
-    if (mCurrent->mDrawer->at(mCurrent->mDrawer->size() - 1)->piece()) { // phase 1: placement of new pieces
-        for (std::size_t i = 0; i < mCurrent->mDrawer->size(); i += 1) {
-            if (mCurrent->mDrawer->at(i)->piece()) {
-                mSelectedPiece = mCurrent->mDrawer->at(i)->piece();
-                mSelectedPiece->selectable();
-                break;
+    for (std::size_t i = 0; i < mCurrent->mDrawer->size(); i += 1) {
+        if (mCurrent->mDrawer->at(i)->piece()) {
+            mSelectedPiece = mCurrent->mDrawer->at(i)->piece();
+            mSelectedPiece->selectable(); // phase 1: placement of new pieces
+            if (mSelectedPiece->field()) {
+                mSelectedPiece->field()->highlight(); // only one piece selectable, ui can highlight start position
             }
+            occupiableEmptyBoardFields();
+            return;
         }
-    } else if (mCurrent->mAlreadyCaptured < 6) { // phase 2: more than three pieces available
+    }
+    if (mElements.piecesInFieldGroup(mCurrent == &mWhite ? whiteprison() : blackprison()).size() < 6) { // phase 2: more than three pieces available
+        std::vector<MuehlePiece*> selectables;
         for (auto& p : mElements.piecesOfGroupInFieldGroup(mCurrent == &mWhite ? white() : black(), board())) {
             if (freeAdjacentFields(p).size() > 0) {
                 p->selectable();
+                selectables.push_back(p);
             }
         }
-        return;
+        if (selectables.size() <= 1) {
+            if (selectables.size() == 0) {
+                swapPlayers();
+            } else {
+                mSelectedPiece = selectables.back();
+                if (mSelectedPiece->field()) {
+                    mSelectedPiece->field()->highlight(); // only one piece selectable, ui can highlight start position
+                }
+            }
+        }
     } else { // phase 3: last three pieces may jump
         for (auto& p : mElements.piecesOfGroupInFieldGroup(mCurrent == &mWhite ? white() : black(), board())) {
             p->selectable();
-            mSelectedPiece = p;
         }
-    }
-    // all free fields are selecatble in phase 1 and 3
-    for (std::size_t i = 0; i < numberOfFields(); i+= 1) {
-        if (!mElements.fieldGroup(board())->at(i)->piece()) {
-            mElements.fieldGroup(board())->at(i)->occupiable(mCurrent->mPieces->color());
-        }
+        occupiableEmptyBoardFields();
     }
 }
 
@@ -288,4 +365,37 @@ std::vector<MuehleField*> Muehle::freeAdjacentFields(MuehlePiece* p)
         break;
     }
     return freeFields;
+}
+
+void Muehle::lockBoardFields()
+{
+    for (std::size_t i = 0; i < numberOfFields(); i+= 1) {
+        mElements.fieldGroup(board())->at(i)->lock();
+    }
+}
+
+void Muehle::occupiableEmptyBoardFields()
+{
+    for (std::size_t i = 0; i < numberOfFields(); i+= 1) {
+        if (!mElements.fieldGroup(board())->at(i)->piece()) {
+            mElements.fieldGroup(board())->at(i)->occupiable(mCurrent->mPieces->color());
+        }
+    }
+}
+
+void Muehle::occupiableEmptyFields()
+{
+    occupiableEmptyBoardFields();
+    for (std::size_t i = 0; i < numberOfPieces(); i+= 1) {
+        if (!mCurrent->mDrawer->at(i)->piece()) {
+            mCurrent->mDrawer->at(i)->occupiable(mCurrent->mPieces->color());
+        }
+        mOpponent->mDrawer->at(i)->lock();
+    }
+    for (std::size_t i = 0; i < numberOfPieces() - 2; i+= 1) {
+        if (!mCurrent->mPrison->at(i)->piece()) {
+            mCurrent->mPrison->at(i)->occupiable(mCurrent->mPieces->color());
+        }
+        mOpponent->mPrison->at(i)->lock();
+    }
 }

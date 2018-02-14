@@ -27,6 +27,7 @@ public:
     MuehleFieldUiMock(MuehleField* field);
     MOCK_METHOD0(lock, void());
     MOCK_METHOD1(occupiable, void(const std::string&));
+    MOCK_METHOD0(highlight, void());
 };
 
 class MuehlePieceUiMock
@@ -47,8 +48,8 @@ protected:
     TestMuehle();
     virtual ~TestMuehle() = default;
     void checkNewGame();
-    void checkAllFieldsBecomeNormal();
-    void checkAllFreeBecomeDestination(std::string color, std::size_t except = UINT_MAX);
+    void checkAllFieldsBecomeLocked();
+    void checkAllFreeBecomeOccupiable(std::string color, std::size_t except = UINT_MAX);
     void phase1PlacePiece(std::string color, std::size_t to, bool closesMuehle = false);
     static constexpr const char* whiteTest() { return "whitetest"; }
     static constexpr const char* blackTest() { return "blacktest"; }
@@ -58,6 +59,8 @@ protected:
     std::vector<std::unique_ptr<::testing::StrictMock<MuehlePieceUiMock>>> mBlackPieceUiMocks;
     std::vector<std::unique_ptr<::testing::StrictMock<MuehleFieldUiMock>>> mWhiteDrawerFieldUiMocks;
     std::vector<std::unique_ptr<::testing::StrictMock<MuehleFieldUiMock>>> mBlackDrawerFieldUiMocks;
+    std::vector<std::unique_ptr<::testing::StrictMock<MuehleFieldUiMock>>> mWhitePrisonFieldUiMocks;
+    std::vector<std::unique_ptr<::testing::StrictMock<MuehleFieldUiMock>>> mBlackPrisonFieldUiMocks;
     std::vector<std::unique_ptr<::testing::StrictMock<MuehleFieldUiMock>>> mBoardFieldUiMocks;
     std::size_t mNextInWhiteDrawer {0};
     std::size_t mNextInBlackDrawer {0};

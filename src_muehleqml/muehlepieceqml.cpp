@@ -1,6 +1,7 @@
 #include "muehlepieceqml.h"
 #include "muehlepiece.h"
 #include "muehlepiecegroup.h"
+#include "muehlefield.h"
 #include "muehlefieldui.h"
 #include "muehlefieldqml.h"
 
@@ -8,10 +9,10 @@
 #include <QQmlProperty>
 #include <QQmlEngine>
 
-MuehlePieceQml::MuehlePieceQml(QQmlComponent& pieceComponent, QQmlEngine* engine, MuehlePiece* piece)
+MuehlePieceQml::MuehlePieceQml(QQmlComponent& pieceComponent, MuehlePiece* piece)
     : QObject()
     , MuehlePieceUi(piece)
-    , mPieceItem(qobject_cast<QQuickItem*>(pieceComponent.create(qmlContext(engine))))
+    , mPieceItem(qobject_cast<QQuickItem*>(pieceComponent.create()))
 {
     QQmlProperty(mPieceItem.get(), "color").write(mPiece->pieceGroup()->color().c_str());
     connect(mPieceItem.get(), SIGNAL(removed()), this, SLOT(pieceRemoved()));
@@ -20,9 +21,10 @@ MuehlePieceQml::MuehlePieceQml(QQmlComponent& pieceComponent, QQmlEngine* engine
 
 void MuehlePieceQml::fieldChanged(MuehleFieldUi* fieldUi)
 {
-    if (fieldUi) {
-        QQmlProperty(mPieceItem.get(), "nextParent").write(QVariant::fromValue((dynamic_cast<MuehleFieldQml*>(fieldUi))->fieldItem()));
-    } else { // no fieldUi hides the piece
+    MuehleFieldQml* newF = dynamic_cast<MuehleFieldQml*>(fieldUi);
+    if (newF) {
+        QQmlProperty(mPieceItem.get(), "nextParent").write(QVariant::fromValue(newF->fieldItem()));
+    } else { // no fieldUi, so hide the piece
         QQmlProperty(mPieceItem.get(), "state").write("");
     }
 }

@@ -5,35 +5,60 @@ RowLayout {
     id: rowLayout
     width: 640
     height: 480
-    onParentChanged: {
-        if (parent) {
-            anchors.fill = parent;
-        }
-    }
+    spacing: 1
+    anchors.fill: parent ? parent : undefined
     property alias boardFields: boardFields
     property alias whiteHFields: whiteHFields
     property alias whiteVFields: whiteVFields
+    property alias whiteHPFields: whiteHPFields
+    property alias whiteVPFields: whiteVPFields
     property alias blackHFields: blackHFields
     property alias blackVFields: blackVFields
-    signal horizontal;
-    signal vertical;
+    property alias blackHPFields: blackHPFields
+    property alias blackVPFields: blackVPFields
+    property color whiteColor: "white"
+    property color blackColor: "black"
+    property bool whiteDrawerCanHide: true
+    property bool blackDrawerCanHide: true
+    property bool whitePrisonCanHide: true
+    property bool blackPrisonCanHide: true
+    property bool horOrientation: true
+
+    Rectangle {
+        id: whiteHPrison
+        radius: 10
+        border.width: 1
+        color: blackColor // pieces for white prison are captured by black, so the prison has black's color
+        implicitWidth: (horOrientation && !whitePrisonCanHide) ? height / whiteHFields.model : 0 // divide by number of pieces, not by number of prison places
+        Layout.fillHeight: true
+        Behavior on implicitWidth { NumberAnimation { duration: 100 } }
+
+        ColumnLayout {
+            id: whiteHPLayout
+            anchors.fill: parent
+
+            Repeater {
+                id: whiteHPFields
+                model: 7
+
+                Item {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    onZChanged: {
+                        whiteHPrison.z = z;
+                    }
+                }
+            }
+        }
+    }
 
     Rectangle {
         id: whiteHDrawer
-        width: rowLayout.width / 24
-        height: 200
         radius: 10
         border.width: 1
-        visible: (rowLayout.width > rowLayout.height)
+        implicitWidth: (horOrientation && !whiteDrawerCanHide) ? height / whiteHFields.model : 0
         Layout.fillHeight: true
-        Layout.fillWidth: true
-        onVisibleChanged: {
-            if (visible === true) {
-                rowLayout.horizontal();
-            } else {
-                rowLayout.vertical();
-            }
-        }
+        Behavior on implicitWidth { NumberAnimation { duration: 100 } }
 
         ColumnLayout {
             id: whiteHLayout
@@ -58,16 +83,43 @@ RowLayout {
         id: columnLayout
         width: 100
         height: 100
+        spacing: 1
+
+        Rectangle {
+            id: whiteVPrison
+            radius: 10
+            border.width: 1
+            color: blackColor
+            implicitHeight: (!horOrientation && !whitePrisonCanHide) ? width / whiteVFields.model : 0
+            Layout.fillWidth: true
+            Behavior on implicitHeight { NumberAnimation { duration: 100 } }
+
+            RowLayout {
+                id: whiteVPLayout
+                anchors.fill: parent
+
+                Repeater {
+                    id: whiteVPFields
+                    model: 7
+
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        onZChanged: {
+                            whiteVPrison.z = z;
+                        }
+                    }
+                }
+            }
+        }
 
         Rectangle {
             id: whiteVDrawer
-            width: 200
-            height: rowLayout.height / 24
             radius: 10
             border.width: 1
-            visible: !whiteHDrawer.visible
-            Layout.fillHeight: true
+            implicitHeight: (!horOrientation && !whiteDrawerCanHide) ? width / whiteVFields.model : 0
             Layout.fillWidth: true
+            Behavior on implicitHeight { NumberAnimation { duration: 100 } }
 
             RowLayout {
                 id: whiteVLayout
@@ -188,13 +240,11 @@ RowLayout {
 
         Rectangle {
             id: blackVDrawer
-            width: 200
-            height: rowLayout.height / 24
             radius: 10
             border.width: 1
-            visible: !whiteHDrawer.visible
-            Layout.fillHeight: true
+            implicitHeight: (!horOrientation && !blackDrawerCanHide) ? width / blackVFields.model : 0
             Layout.fillWidth: true
+            Behavior on implicitHeight { NumberAnimation { duration: 100 } }
 
             RowLayout {
                 id: blackVLayout
@@ -214,17 +264,43 @@ RowLayout {
                 }
             }
         }
+
+        Rectangle {
+            id: blackVPrison
+            radius: 10
+            border.width: 1
+            color: whiteColor
+            implicitHeight: (!horOrientation && !blackPrisonCanHide) ? width / blackVFields.model : 0
+            Layout.fillWidth: true
+            Behavior on implicitHeight { NumberAnimation { duration: 100 } }
+
+            RowLayout {
+                id: blackVPLayout
+                anchors.fill: parent
+
+                Repeater {
+                    id: blackVPFields
+                    model: 7
+
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        onZChanged: {
+                            blackVPrison.z = z;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     Rectangle {
         id: blackHDrawer
-        width: rowLayout.width / 24
-        height: 200
         radius: 10
         border.width: 1
-        visible: whiteHDrawer.visible
+        implicitWidth: (horOrientation && !blackDrawerCanHide) ? height / blackHFields.model : 0
         Layout.fillHeight: true
-        Layout.fillWidth: true
+        Behavior on implicitWidth { NumberAnimation { duration: 100 } }
 
         ColumnLayout {
             id: blackHLayout
@@ -239,6 +315,34 @@ RowLayout {
                     Layout.fillHeight: true
                     onZChanged: {
                         blackHDrawer.z = z;
+                    }
+                }
+            }
+        }
+    }
+
+    Rectangle {
+        id: blackHPrison
+        radius: 10
+        border.width: 1
+        color: whiteColor
+        implicitWidth: (horOrientation && !blackPrisonCanHide) ? height / blackHFields.model : 0
+        Layout.fillHeight: true
+        Behavior on implicitWidth { NumberAnimation { duration: 100 } }
+
+        ColumnLayout {
+            id: blackHPLayout
+            anchors.fill: parent
+
+            Repeater {
+                id: blackHPFields
+                model: 7
+
+                Item {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    onZChanged: {
+                        blackHPrison.z = z;
                     }
                 }
             }

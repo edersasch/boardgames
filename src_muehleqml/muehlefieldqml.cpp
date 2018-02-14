@@ -5,10 +5,10 @@
 #include <QQmlProperty>
 #include <QQmlEngine>
 
-MuehleFieldQml::MuehleFieldQml(QQmlComponent& destinationComponent, QQmlEngine* engine, MuehleField* field, QQuickItem* parentItem, QQuickItem* alternativeParentItem)
+MuehleFieldQml::MuehleFieldQml(QQmlComponent& destinationComponent, MuehleField* field, QQuickItem* parentItem, QQuickItem* alternativeParentItem)
     : QObject()
     , MuehleFieldUi(field)
-    , mDestinationItem(qobject_cast<QQuickItem*>(destinationComponent.create(qmlContext(engine))))
+    , mDestinationItem(qobject_cast<QQuickItem*>(destinationComponent.create()))
     , mParentItem(parentItem)
     , mAlternativeParentItem(alternativeParentItem)
 {
@@ -19,12 +19,20 @@ MuehleFieldQml::MuehleFieldQml(QQmlComponent& destinationComponent, QQmlEngine* 
 void MuehleFieldQml::lock()
 {
     QQmlProperty(mDestinationItem.get(), "enabled").write("false");
+    QQmlProperty(mDestinationItem.get(), "fieldopacity").write(0);
 }
 
 void MuehleFieldQml::occupiable(const std::string& color)
 {
     QQmlProperty(mDestinationItem.get(), "color").write(color.c_str());
     QQmlProperty(mDestinationItem.get(), "enabled").write("true");
+    QQmlProperty(mDestinationItem.get(), "fieldopacity").write(0);
+}
+
+void MuehleFieldQml::highlight()
+{
+    QQmlProperty(mDestinationItem.get(), "fieldcolor").write("green");
+    QQmlProperty(mDestinationItem.get(), "fieldopacity").write(0.5);
 }
 
 QQuickItem* MuehleFieldQml::fieldItem()

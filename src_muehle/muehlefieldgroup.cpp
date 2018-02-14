@@ -28,3 +28,15 @@ void MuehleFieldGroup::registerOccupy(std::function<void(MuehleField*)> occupyCa
 {
     mOccupyCallback = occupyCallback;
 }
+
+void MuehleFieldGroup::canHide(bool hide)
+{
+    if (mCanHideCallback) {
+        mCanHideCallback(hide);
+    }
+}
+
+void MuehleFieldGroup::registerCanHide(std::function<void(bool)> canHideCallback)
+{
+    mCanHideCallback = canHideCallback;
+}

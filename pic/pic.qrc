@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>newgame.svg</file>
+        <file>setup.svg</file>
+    </qresource>
+</RCC>

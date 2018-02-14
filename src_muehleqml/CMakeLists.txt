@@ -2,7 +2,7 @@ project(boardgames_muehleqml)
 set(CMAKE_AUTOMOC ON)
 find_package(Qt5Gui)
 find_package(Qt5Quick)
-qt5_add_resources(SRC_LIST resources.qrc)
+qt5_add_resources(SRC_LIST muehle.qrc)
 include(prjlib)
 target_link_libraries(${PROJECT_NAME}
     boardgames_muehle

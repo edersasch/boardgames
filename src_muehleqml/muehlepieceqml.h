@@ -20,7 +20,7 @@ class MuehlePieceQml
 {
     Q_OBJECT
 public:
-    MuehlePieceQml(QQmlComponent& pieceComponent, QQmlEngine* engine, MuehlePiece* piece);
+    MuehlePieceQml(QQmlComponent& pieceComponent, MuehlePiece* piece);
     virtual ~MuehlePieceQml() = default;
     virtual void fieldChanged(MuehleFieldUi* fieldUi) override;
     virtual void pin() override;

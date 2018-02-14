@@ -6,33 +6,35 @@
     <coordinates>
       <x>8</x>
       <y>0</y>
-      <w>1600</w>
+      <w>1440</w>
       <h>80</h>
     </coordinates>
     <panel_attributes>Muehle
 --
 --
 + newGame()
-+ muehleElements(): MuehleElements</panel_attributes>
++ muehleElements(): MuehleElements
++ enterSetupMode()
++ leaveSetupMoe()</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
       <x>808</x>
-      <y>304</y>
+      <y>240</y>
       <w>24</w>
-      <h>144</h>
+      <h>88</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;160.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>656</x>
-      <y>432</y>
-      <w>328</w>
+      <x>760</x>
+      <y>312</y>
+      <w>320</w>
       <h>152</h>
     </coordinates>
     <panel_attributes>MuehleFieldGroup
@@ -42,6 +44,8 @@
 + size(): uint
 + occupy(field: MuehleField)
 + registerOccupy(occupyCallback: callable)
++ canHide(hide: bool)
++ registerEmpty(canHideCallback: callable)
 
 </panel_attributes>
     <additional_attributes/>
@@ -50,18 +54,18 @@
     <id>Relation</id>
     <coordinates>
       <x>440</x>
-      <y>304</y>
+      <y>240</y>
       <w>24</w>
-      <h>144</h>
+      <h>88</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;160.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
       <x>288</x>
-      <y>992</y>
+      <y>872</y>
       <w>328</w>
       <h>160</h>
     </coordinates>
@@ -79,7 +83,7 @@
     <id>UMLClass</id>
     <coordinates>
       <x>288</x>
-      <y>432</y>
+      <y>312</y>
       <w>328</w>
       <h>152</h>
     </coordinates>
@@ -100,8 +104,8 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1304</x>
-      <y>736</y>
+      <x>1240</x>
+      <y>624</y>
       <w>144</w>
       <h>72</h>
     </coordinates>
@@ -116,8 +120,8 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>288</x>
-      <y>1376</y>
+      <x>360</x>
+      <y>1256</y>
       <w>328</w>
       <h>80</h>
     </coordinates>
@@ -130,46 +134,50 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1368</x>
+      <x>1304</x>
       <y>72</y>
       <w>72</w>
-      <h>680</h>
+      <h>568</h>
     </coordinates>
     <panel_attributes>lt=-
 draw() v
 win()</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;830.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;690.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1304</x>
-      <y>1200</y>
-      <w>296</w>
+      <x>1056</x>
+      <y>1080</y>
+      <w>392</w>
       <h>248</h>
     </coordinates>
     <panel_attributes>MuehleQml
 --
 --
-</panel_attributes>
++ newGame()
++ enterSetupMode()
++ leaveSetupMoe()
++ &lt;&lt;signal&gt;&gt; horizontal()
++ &lt;&lt;signal&gt;&gt; vertical()</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1368</x>
-      <y>800</y>
+      <x>1304</x>
+      <y>688</y>
       <w>24</w>
-      <h>416</h>
+      <h>408</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;500.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;490.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
       <x>656</x>
-      <y>992</y>
+      <y>872</y>
       <w>328</w>
       <h>160</h>
     </coordinates>
@@ -178,6 +186,7 @@ win()</panel_attributes>
 --
 /+ lock()/
 /+ occupiable(color: string)/
+/+ highlight()/
 </panel_attributes>
     <additional_attributes/>
   </element>
@@ -185,21 +194,21 @@ win()</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>656</x>
-      <y>1200</y>
+      <y>1080</y>
       <w>328</w>
       <h>80</h>
     </coordinates>
     <panel_attributes>MuehleFieldQml
 --
 --
-</panel_attributes>
++ fieldItem(): QQuickItem</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
       <x>808</x>
-      <y>1144</y>
+      <y>1024</y>
       <w>24</w>
       <h>72</h>
     </coordinates>
@@ -209,8 +218,8 @@ win()</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>328</x>
-      <y>1144</y>
+      <x>400</x>
+      <y>1024</y>
       <w>24</w>
       <h>248</h>
     </coordinates>
@@ -221,8 +230,8 @@ win()</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>440</x>
-      <y>816</y>
-      <w>104</w>
+      <y>696</y>
+      <w>120</w>
       <h>192</h>
     </coordinates>
     <panel_attributes>lt=-
@@ -231,8 +240,8 @@ m2=1
 setPieceUi()
 selected()
 removed() ^
-fieldChanged()
-pin() v
+fieldChanged() v
+pin()
 selectable()
 removable()</panel_attributes>
     <additional_attributes>10.0;220.0;10.0;10.0</additional_attributes>
@@ -240,30 +249,30 @@ removable()</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>608</x>
-      <y>1408</y>
-      <w>712</w>
+      <x>680</x>
+      <y>1288</y>
+      <w>392</w>
       <h>24</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>870.0;10.0;10.0;10.0</additional_attributes>
+    <additional_attributes>470.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
       <x>976</x>
-      <y>1232</y>
-      <w>344</w>
+      <y>1112</y>
+      <w>96</w>
       <h>24</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>410.0;10.0;10.0;10.0</additional_attributes>
+    <additional_attributes>100.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
       <x>808</x>
-      <y>816</y>
+      <y>696</y>
       <w>88</w>
       <h>192</h>
     </coordinates>
@@ -274,27 +283,30 @@ setFieldUi()
 occupy() ^
 lock() v
 occupiable()
+highlight()
 </panel_attributes>
     <additional_attributes>10.0;220.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1560</x>
+      <x>1408</x>
       <y>72</y>
-      <w>96</w>
-      <h>1144</h>
+      <w>120</w>
+      <h>1024</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-
 newGame() ^
+enterSetupMode()
+leaveSetupMode()
 </panel_attributes>
-    <additional_attributes>10.0;1410.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;1260.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>8</x>
-      <y>1368</y>
+      <x>80</x>
+      <y>1248</y>
       <w>168</w>
       <h>96</h>
     </coordinates>
@@ -310,8 +322,8 @@ Piece
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>392</x>
-      <y>1192</y>
+      <x>432</x>
+      <y>1072</y>
       <w>168</w>
       <h>96</h>
     </coordinates>
@@ -329,19 +341,19 @@ Destination
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>552</x>
-      <y>1232</y>
-      <w>120</w>
+      <x>592</x>
+      <y>1112</y>
+      <w>80</w>
       <h>24</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>130.0;10.0;10.0;10.0</additional_attributes>
+    <additional_attributes>80.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>168</x>
-      <y>1408</y>
+      <x>240</x>
+      <y>1288</y>
       <w>136</w>
       <h>24</h>
     </coordinates>
@@ -352,7 +364,7 @@ Destination
     <id>UMLClass</id>
     <coordinates>
       <x>288</x>
-      <y>656</y>
+      <y>536</y>
       <w>328</w>
       <h>168</h>
     </coordinates>
@@ -376,7 +388,7 @@ Destination
     <id>UMLClass</id>
     <coordinates>
       <x>656</x>
-      <y>656</y>
+      <y>536</y>
       <w>328</w>
       <h>168</h>
     </coordinates>
@@ -391,15 +403,16 @@ Destination
 + lock()
 + occupiable()
 + occupy()
++ highlight()
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>280</x>
-      <y>200</y>
-      <w>704</w>
+      <x>416</x>
+      <y>136</y>
+      <w>536</w>
       <h>112</h>
     </coordinates>
     <panel_attributes>MuehleElements
@@ -415,19 +428,19 @@ Destination
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>624</x>
+      <x>664</x>
       <y>72</y>
       <w>24</w>
-      <h>144</h>
+      <h>80</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;160.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;80.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
       <x>440</x>
-      <y>576</y>
+      <y>456</y>
       <w>24</w>
       <h>96</h>
     </coordinates>
@@ -438,11 +451,64 @@ Destination
     <id>Relation</id>
     <coordinates>
       <x>808</x>
-      <y>576</y>
+      <y>456</y>
       <w>24</w>
       <h>96</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>664</x>
+      <y>1152</y>
+      <w>96</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>lt=-
+fieldItem() ^
+</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;130.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>968</x>
+      <y>72</y>
+      <w>128</w>
+      <h>256</h>
+    </coordinates>
+    <panel_attributes>lt=-
+registerOccupy() v
+</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;300.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>288</x>
+      <y>72</y>
+      <w>136</w>
+      <h>256</h>
+    </coordinates>
+    <panel_attributes>lt=-
+registerRemoved() v
+registerSelected()
+</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;300.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1056</x>
+      <y>456</y>
+      <w>136</w>
+      <h>640</h>
+    </coordinates>
+    <panel_attributes>lt=-
+registerCanHide() ^
+</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;780.0</additional_attributes>
   </element>
 </diagram>

@@ -13,6 +13,7 @@ public:
     virtual ~MuehleFieldUi() = default;
     virtual void lock() = 0;
     virtual void occupiable(const std::string& color) = 0;
+    virtual void highlight() = 0;
 protected:
     MuehleField* mField {nullptr};
 };

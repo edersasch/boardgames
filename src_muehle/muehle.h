@@ -40,13 +40,14 @@ public:
     static constexpr const char* blackprison() { return "blackprison"; }
     void newGame();
     MuehleElements* muehleElements();
+    void enterSetupMode();
+    void leaveSetupMode();
 private:
     struct Player
     {
         MuehlePieceGroup* mPieces;
         MuehleFieldGroup* mDrawer;
         MuehleFieldGroup* mPrison;
-        int mAlreadyCaptured {0};
     };
     void occupy(MuehleField* field);
     void pieceRemoved(MuehlePiece* removedPiece);
@@ -55,6 +56,9 @@ private:
     void swapPlayers();
     bool closedMuehle(int fieldNumber);
     std::vector<MuehleField*> freeAdjacentFields(MuehlePiece* p);
+    void lockBoardFields();
+    void occupiableEmptyBoardFields();
+    void occupiableEmptyFields();
     MuehleUi* mUi;
     MuehleElements mElements {
         {
@@ -74,6 +78,7 @@ private:
     Player* mCurrent {&mWhite};
     Player* mOpponent {&mBlack};
     MuehlePiece* mSelectedPiece {nullptr};
+    bool mSetupMode {false};
 };
 
 #endif // SRC_MUEHLE_MUEHLE
