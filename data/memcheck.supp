@@ -1,0 +1,36 @@
+{
+   QGlobal qRegisterResourceData
+   Memcheck:Leak
+   ...
+   fun:_Z21qRegisterResourceDataiPKhS0_S0_
+   fun:_ZN12_GLOBAL__N_18RegistryC1Ev
+   fun:_ZZN12_GLOBAL__N_112_GLOBAL__N_118Q_QGS_unitRegistry13innerFunctionEvEN6HolderC1Ev
+   fun:_ZN12_GLOBAL__N_112_GLOBAL__N_118Q_QGS_unitRegistry13innerFunctionEv
+   fun:_ZN13QGlobalStaticIN12_GLOBAL__N_18RegistryEL_ZNS0_12_GLOBAL__N_118Q_QGS_unitRegistry13innerFunctionEvEL_ZNS3_5guardEEEclEv
+}
+
+{
+   QGtk3Theme
+   Memcheck:Leak
+   ...
+   fun:gtk_css_provider_load_from_file
+   fun:gtk_css_provider_load_from_path
+   ...
+   fun:_Z10gtkSettingIiET_PKc
+   fun:_ZNK10QGtk3Theme9themeHintEN14QPlatformTheme9ThemeHintE
+   fun:_ZN22QGuiApplicationPrivate4initEv
+   fun:_ZN15QGuiApplicationC1ERiPPci
+}
+
+{
+   QPlatformThemeFactory
+   Memcheck:Leak
+   fun:_ZN15QLibraryPrivate8load_sysEv
+   ...
+   fun:_ZN15QLibraryPrivate10loadPluginEv
+   fun:_ZNK14QFactoryLoader8instanceEi
+   fun:qLoadPlugin<QPlatformTheme, QPlatformThemePlugin, QStringList&>
+   fun:_ZN21QPlatformThemeFactory6createERK7QStringS2_
+   ...
+   fun:_ZN22QGuiApplicationPrivate25createPlatformIntegrationEv
+}

@@ -6,8 +6,8 @@
     <coordinates>
       <x>8</x>
       <y>0</y>
-      <w>1256</w>
-      <h>2782</h>
+      <w>1385</w>
+      <h>3286</h>
     </coordinates>
     <panel_attributes>title:Muehle
 Fork
@@ -16,6 +16,8 @@ Fork
 	set opponent to Black
 	put all pieces in drawer-&gt;procRules
 	&gt; leave setup mode
+	no selectable pieces
+	no occupiable fields
 	deactivate setup mode~procRules
 	pin all pieces
 	lock all fields
@@ -31,7 +33,7 @@ Fork
 			wait for selected piece &gt;
 			&gt; piece selected
 			If
-				[selection differs]
+				[piece is selectable &amp;&amp;\selection differs]
 				If
 					[setupMode]
 					set current player\to owner of selected\piece
@@ -53,46 +55,64 @@ Fork
 		EndIf
 		wait for occupy&gt;
 		&gt; occupy request
-		perform move
 		If
-			[setupMode]
-			empty board fields become\occupiable
-			empty drawer fields\of current player become\occupiable
-			empty prison fields\of current player become\occupiable
-			End
-
-			[else]
-		EndIf
-		pin pieces on board
-		lock all board fields
-		current player's drawer\can hide if empty
-		If
-			[current player\closed Muehle]
-			opponent pieces\not in Muehle\are removable
+			[piece selected &amp;&amp;\field is occupiable]
+			no occupiable fields
+			perform move
+			lock all fields
 			If
-				[removablePiecesAvailable]
-				wait for removable selection &gt;
-				&gt; piece to be removed selected
-				pin pieces on board
-				opponent's prison\becomes visible
-				put selected piece in prison
+				[setupMode]
+				empty board fields become\occupiable
+				empty drawer fields\of current player become\occupiable
+				empty prison fields\of current player become\occupiable
+				highlgiht newly occupied field
+				End
+
+				[else]
+			EndIf
+			no selectable pieces
+			pin pieces on board
+			current player's drawer\can hide if empty
+			If
+				[current player\closed Muehle]
+				opponent pieces\not in Muehle\are removable
 				If
-					[opponent only\has two pieces left]
-					current player wins
-					End
+					[removablePiecesAvailable]
+					wait for removable selection &gt;
+					&gt; piece to be removed selected
+					If
+						[piece is selectable]
+						no selectable pieces
+						pin pieces on board
+						opponent's prison\becomes visible
+						put selected piece in prison
+						If
+							[opponent only\has two pieces left]
+							current player wins
+							End
+
+							[else]
+						EndIf
+
+						[else]
+						End
+					EndIf
 
 					[else]
 				EndIf
 
 				[else]
 			EndIf
+			swap current player\and opponent
 
 			[else]
+			End
 		EndIf
-		swap current player\and opponent
 	End
 
 	&gt; enter setup mode
+	no selectable pieces
+	no occupiable fields
 	empty board fields become\occupiable
 	empty drawer fields\of current player become\occupiable
 	empty prison fields\of current player become\occupiable

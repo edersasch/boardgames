@@ -1,0 +1,2 @@
+project(boardgames)
+include(prjobjlib)

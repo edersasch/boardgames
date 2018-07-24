@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>back.svg</file>
+        <file>delete.svg</file>
+        <file>export.svg</file>
+        <file>forward.svg</file>
+        <file>hide.svg</file>
+        <file>home.svg</file>
+        <file>import.svg</file>
+        <file>list.svg</file>
+        <file>refresh.svg</file>
+        <file>setup.svg</file>
+        <file>show.svg</file>
+    </qresource>
+</RCC>

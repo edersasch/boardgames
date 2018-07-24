@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Move_Button.qml</file>
+        <file>Move_List_Control.qml</file>
+        <file>Move_List_Entry.qml</file>
+        <file>Move_List_Root.qml</file>
+    </qresource>
+</RCC>
