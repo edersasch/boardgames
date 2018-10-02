@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0">
+  <zoom_level>8</zoom_level>
+  <element>
+    <type>com.baselet.element.old.allinone.ActivityDiagramText</type>
+    <coordinates>
+      <x>0</x>
+      <y>0</y>
+      <w>3004</w>
+      <h>3598</h>
+    </coordinates>
+    <panel_attributes>title:Muehle
+Fork
+	&gt; move list entry selected
+	If
+		[engine is stopped]
+		deactivate white engine
+		deactivate black engine
+		adjust pieces
+		-&gt;swap
+
+		[engine is running]
+		stop engine and invalidate move &gt;
+	EndIf
+
+	&gt; set engine active
+	store engine active
+	If
+		[current player == player to set]
+		If
+			[set to computer]
+			-&gt;proc_rules
+
+			[else]
+			stop engine&gt;
+		EndIf
+
+		[else]
+	End
+
+	&gt; new game
+	set current player to White
+	set opponent to Black
+	put all pieces in drawer-&gt;proc_rules
+	&gt; leave setup mode
+	no selectable pieces
+	no occupiable fields
+	deactivate setup mode~proc_rules
+	pin all pieces
+	lock all fields
+	update can_hide of\drawers and prisons
+	While[game not finished]
+		If
+			[current player engine active]
+			wait for engine move &gt;
+			&gt; engine move ready
+			If
+				[valid move]
+				adjust pieces
+				-&gt;swap
+
+				[else]
+				If
+					[!setup_mode]
+					-&gt;swap
+
+					[setup_mode]
+					start setup mode &gt;
+				EndIf
+
+			EndIf
+
+			[else]
+			If
+				[current player has\piece in drawer]
+				phase 1:\current player's\first piece in drawer\is selectable
+				empty board fields become\occupiable
+
+				[current player has more\than three pieces left]
+				phase 2:\current player's\pieces that can move\become selectable
+				wait for selected piece &gt;
+				&gt; piece selected
+				If
+					[piece is selectable &amp;&amp;\selection differs]
+					If
+						[setup_mode]
+						set current player\to owner of selected\piece
+						empty board fields become\occupiable
+						empty drawer fields\of current player become\occupiable
+						empty prison fields\of current player become\occupiable
+
+						[else]
+						lock all board fields
+						reachable empty board\fields become occupiable
+					EndIf
+
+					[else]
+				EndIf
+
+				[else]
+				phase 3:\current player's\pieces on board\become selectable
+				empty board fields become\occupiable
+			EndIf
+		EndIf
+		wait for occupy&gt;
+		&gt; occupy request
+		If
+			[piece selected &amp;&amp;\field is occupiable]
+			no occupiable fields
+			perform move
+			lock all fields
+			If
+				[setup_mode]
+				empty board fields become\occupiable
+				empty drawer fields\of current player become\occupiable
+				empty prison fields\of current player become\occupiable
+				highlgiht newly occupied field
+				End
+
+				[else]
+			EndIf
+			no selectable pieces
+			pin pieces on board
+			current player's drawer\can hide if empty
+			If
+				[current player\closed Muehle]
+				opponent pieces\not in Muehle\are removable
+				If
+					[removablePiecesAvailable]
+					wait for removable selection &gt;
+					&gt; piece to be removed selected
+					If
+						[piece is selectable]
+						no selectable pieces
+						pin pieces on board
+						opponent's prison\becomes visible
+						put selected piece in prison
+						If
+							[opponent only\has two pieces left]
+							current player wins
+							End
+
+							[else]
+						EndIf
+
+						[else]
+						End
+					EndIf
+
+					[else]
+				EndIf
+
+				[else]
+			EndIf
+			swap current player\and opponent~swap
+
+			[else]
+			End
+		EndIf
+	End
+
+	&gt; enter setup mode
+	set setup_mode active
+	If
+		[engine is running]
+		stop engine and invalidate move &gt;
+
+		[else]
+		deactivate white engine
+		deactivate black engine
+		no selectable pieces
+		no occupiable fields
+		empty board fields become\occupiable
+		empty drawer fields\of current player become\occupiable
+		empty prison fields\of current player become\occupiable
+		pieces become selectable
+		drawers and prisons\are visible
+	EndIf
+	End
+Sync</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

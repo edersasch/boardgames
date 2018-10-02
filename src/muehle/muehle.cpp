@@ -1,321 +1,304 @@
 #include "muehle.h"
 
-#include <iostream>
+#include <array>
+#include <initializer_list>
+#include <algorithm>
 
-void Muehle::new_game()
+namespace
 {
-    mCurrent = &mWhite;
-    mOpponent = &mBlack;
-    std::fill(mFields.begin(), mFields.end(), boardgame::noPiece);
-    std::fill(mConstellation.begin(), mConstellation.end(), boardgame::noField);
-    for (int i = 0; i < numberOfPiecesPerPlayer.v; i += 1) {
-        set_field_helper(boardgame::PieceNumber{firstWhitePiece.v + i}, boardgame::FieldNumber{firstWhiteDrawerField.v + i});
-        set_field_helper(boardgame::PieceNumber{firstBlackPiece.v + i}, boardgame::FieldNumber{firstBlackDrawerField.v + i});
-    }
-    mSetupMode = true;
-    leave_setup_mode();
+
+constexpr std::array<std::array<int, 2>, 24> vertical_muehle {{
+    {9, 21},
+    {4, 7},
+    {14, 23},
+    {10, 18},
+    {1, 7},
+    {13, 20},
+    {11, 15},
+    {1, 4},
+    {12, 17},
+    {0, 21},
+    {3, 18},
+    {6, 15},
+    {8, 17},
+    {5, 20},
+    {2, 23},
+    {6, 11},
+    {19, 22},
+    {8, 12},
+    {3, 10},
+    {16, 22},
+    {5,13},
+    {0, 9},
+    {16, 19},
+    {2, 14}
+}};
+
+constexpr std::array<std::initializer_list<int>, 24> adjacent_fields {{
+    {1, 9},
+    {0, 2, 4},
+    {1, 14},
+    {4, 10},
+    {1, 3, 5, 7},
+    {4, 13},
+    {7, 11},
+    {4, 6, 8},
+    {7, 12},
+    {0, 10, 21},
+    {3, 9, 11, 18},
+    {6, 10, 15},
+    {8, 13, 17},
+    {5, 12, 14, 20},
+    {2, 13, 23},
+    {11, 16},
+    {15, 17, 19},
+    {12, 16},
+    {10, 19},
+    {16, 18, 20, 22},
+    {13, 19},
+    {9, 22},
+    {19, 21, 23},
+    {14, 22}
+}};
+
+std::vector<int> fields_of_removable_pieces;
+std::vector<int> free_fields_store;
+std::vector<int> fields_of_selectable_pieces_store;
+std::vector<int> free_adjacent_fields_store;
+std::vector<muehle::Muehle_Key> successors;
+
+int prison_offset(const muehle::Muehle_Key& key)
+{
+    return key.test(54) ? 48 : 51;
 }
 
-void Muehle::enter_setup_mode()
+/// @param field < number_of_board_fields
+bool is_field_free(const muehle::Muehle_Key& key, const std::size_t field)
 {
-    mSetupMode = true;
-    mSelectablePieces.clear();
-    mOccupiableFields.clear();
-    occupiable_empty_fields();
-    for (int i = 0; i < numberOfPieces.v; i += 1) {
-        mSelectablePieces.push_back(boardgame::PieceNumber{i});
-        selectable(mUi, boardgame::PieceNumber{i});
-    }
-    white_drawer_can_hide(mUi, false);
-    white_prison_can_hide(mUi, false);
-    black_drawer_can_hide(mUi, false);
-    black_prison_can_hide(mUi, false);
+    return !(key[field] || key[field + muehle::number_of_board_fields.v]);
 }
 
-void Muehle::leave_setup_mode()
+/// @param field < number_of_board_fields
+int number_of_free_adjacent_fields(const muehle::Muehle_Key& key, const std::size_t field)
 {
-    if (mSetupMode) {
-        move_list = std::make_unique<boardgame::Move_List<MuehleConstellation, Move_List_Ui>>(mlUi);
-        move_list->commit(mConstellation, std::string(), {mCurrent == &mWhite ? firstBlackPiece.v : firstWhitePiece.v}); // initial position, hint is the potential piece that "moved"
-    }
-    mSelectablePieces.clear();
-    mOccupiableFields.clear();
-    mSetupMode = false;
-    lock_pieces(mUi);
-    lock_fields(make_fieldgroup(mFields, firstBoardField, numberOfFields));
-    white_drawer_can_hide(mUi, is_fieldgroup_empty(mWhiteDrawer));
-    black_drawer_can_hide(mUi, is_fieldgroup_empty(mBlackDrawer));
-    white_prison_can_hide(mUi, is_fieldgroup_empty(mWhitePrison));
-    black_prison_can_hide(mUi, is_fieldgroup_empty(mBlackPrison));
-    start_move();
+    auto check_free = [&key](const int f) {
+        return is_field_free(key, f);
+    };
+    return std::count_if(adjacent_fields.at(field).begin(), adjacent_fields.at(field).end(), check_free);
 }
 
-void Muehle::piece_removed(const boardgame::PieceNumber id)
+muehle::Muehle_Key increase_prisoner_count(const muehle::Muehle_Key& key)
 {
-    if (std::find(mSelectablePieces.begin(), mSelectablePieces.end(), id) != mSelectablePieces.end()) {
-        mSelectablePieces.clear();
-        lock_pieces(mUi);
-        if (mOpponent == &mWhite) {
-            white_prison_can_hide(mUi, false);
-        } else {
-            black_prison_can_hide(mUi, false);
-        }
-        set_field_helper(id, first_empty_field(mOpponent->mPrisonGroup));
-        if (first_empty_field(mOpponent->mPrisonGroup) == boardgame::noField) {
-            win(mUi, mCurrent == &mWhite ? std::string("white") : std::string("black"));
-        } else {
-            swap_players();
-        }
-    }
+    auto offset = prison_offset(key);
+    return (muehle::Muehle_Key(key).reset(offset).reset(offset + 1).reset(offset + 2)) | muehle::Muehle_Key((muehle::prisoner_count(key) + 1) << offset);
 }
 
-void Muehle::piece_selected(const boardgame::PieceNumber id)
+/// @param prisoner < number_of_board_fields
+muehle::Muehle_Key to_prison(muehle::Muehle_Key key, const int prisoner)
 {
-    if (std::find(mSelectablePieces.begin(), mSelectablePieces.end(), id) != mSelectablePieces.end() && id != mSelectedPiece) { // always false in phase 1
-        if (mSelectedPiece != boardgame::noPiece) {
-            lock_field(mUi, mConstellation.at(static_cast<std::size_t>(mSelectedPiece.v))); // ui can stop to highlight start position
-        }
-        mSelectedPiece = id;
-        if (mSetupMode) {
-            if (!is_in_group(mSelectedPiece, mCurrent->mPieceGroup)) {
-                const Player* tmp = mCurrent;
-                mCurrent = mOpponent;
-                mOpponent = tmp;
-                occupiable_empty_fields();
-            }
-        } else {
-            if (number_of_pieces_in_fieldgroup(mCurrent->mPrisonGroup) < 6) { // phase 2
-                lock_fields(mBoard);
-                for (auto f : free_adjacent_fields(mConstellation.at(static_cast<std::size_t>(mSelectedPiece.v)))) {
-                    mOccupiableFields.push_back(f);
-                    occupiable(mUi, f, mSelectedPiece);
-                }
-            }
-        }
-        highlight(mUi, mConstellation.at(static_cast<std::size_t>(mSelectedPiece.v)));
-    } // nothing to do for phase 3
+    key.reset(prisoner + muehle::board_offset(key));
+    return increase_prisoner_count(key);
 }
 
-void Muehle::occupy(const boardgame::FieldNumber id)
-{
-    if (mSelectedPiece == boardgame::noPiece || std::find(mOccupiableFields.begin(), mOccupiableFields.end(), id) == mOccupiableFields.end()) {
-        return;
-    }
-    mOccupiableFields.clear();
-    set_field_helper(mSelectedPiece, id);
-    lock_fields(make_fieldgroup(mFields, firstBoardField, numberOfFields));
-    if (mSetupMode) {
-        occupiable_empty_fields();
-        highlight(mUi, id);
-        return;
-    }
-    mSelectablePieces.clear();
-    lock_pieces(mUi);
-    if (mCurrent == &mWhite) {
-        white_drawer_can_hide(mUi, is_fieldgroup_empty(mWhiteDrawer));
-    } else {
-        black_drawer_can_hide(mUi, is_fieldgroup_empty(mBlackDrawer));
-    }
-    if (closed_muehle(mConstellation.at(static_cast<std::size_t>(mSelectedPiece.v)))) {
-        for (const auto& f : positions_of_pieces_in_fieldgroup(mOpponent->mPieceGroup, mBoard)) {
-            if (!closed_muehle(f)) {
-                mSelectablePieces.push_back(mFields.at(static_cast<std::size_t>(f.v)));
-                removable(mUi, mFields.at(static_cast<std::size_t>(f.v)));
-            }
-        }
-        if (mSelectablePieces.empty()) {
-            swap_players();
-        }
-    } else {
-        swap_players();
-    }
 }
 
-void Muehle::request_set_current_move_and_branch_start_id(const int move_id)
+namespace muehle
 {
-    if (move_list->set_current_move_and_branch_start_id(move_id)) {
-        update_game();
-    }
+
+int board_offset(const muehle::Muehle_Key& key)
+{
+    return key.test(54) ? muehle::first_board_field.v : muehle::number_of_board_fields.v;
 }
 
-void Muehle::request_cut_off(const int move_id)
+Muehle_Key constellation_to_key(const Muehle_Constellation& constellation, const bool whites_turn)
 {
-    if (move_list->cut_off(move_id)) {
-        update_game();
-    }
-}
-
-void Muehle::request_move_list_forward()
-{
-    if (move_list->move_list_forward()) {
-        update_game();
-    }
-}
-
-void Muehle::request_move_list_back()
-{
-    if (move_list->move_list_back()) {
-        update_game();
-    }
-}
-
-// private
-
-void Muehle::start_move()
-{
-    mSelectedPiece = first_piece(mCurrent->mDrawerGroup);
-    if (mSelectedPiece != boardgame::noPiece) { // phase 1: placement of new pieces;
-        selectable(mUi, mSelectedPiece);
-        highlight(mUi, mConstellation.at(static_cast<std::size_t>(mSelectedPiece.v))); // only one piece selectable, ui can highlight start position
-        occupiable_empty_board_fields();
-        return;
-    }
-    if (number_of_pieces_in_fieldgroup(mCurrent->mPrisonGroup) < 6) { // phase 2: more than three pieces available
-        for (const auto& f : positions_of_pieces_in_fieldgroup(mCurrent->mPieceGroup, mBoard)) {
-            if (!free_adjacent_fields(f).empty()) {
-                mSelectablePieces.push_back(mFields.at(static_cast<std::size_t>(f.v)));
-                selectable(mUi, mSelectablePieces.back());
-            }
-        }
-        if (mSelectablePieces.size() <= 1) {
-            if (mSelectablePieces.empty()) {
-                swap_players();
+    Muehle_Key key;
+    auto fill_key = [&constellation, &key](std::size_t start) {
+        for (auto i = start; i < start + number_of_pieces_per_player.v; i += 1) {
+            auto field = constellation.at(i).v;
+            if (field < first_board_field.v + number_of_board_fields.v) {
+                key.set(static_cast<std::size_t>(field) + board_offset(key));
             } else {
-                mSelectedPiece = mSelectablePieces.back();
-                mSelectablePieces.pop_back();
-                occupiable_empty_board_fields();
-            }
-        }
-    } else { // phase 3: last three pieces may jump
-        for (const auto& f : positions_of_pieces_in_fieldgroup(mCurrent->mPieceGroup, mBoard)) {
-            mSelectablePieces.push_back(mFields.at(static_cast<std::size_t>(f.v)));
-            selectable(mUi, mSelectablePieces.back());
-        }
-        occupiable_empty_board_fields();
-    }
-}
-
-void Muehle::swap_players()
-{
-    std::string commitmsg = "--"; // used in case the player was not able to move
-    boardgame::PieceNumber movedPiece = boardgame::noPiece;
-    if (auto diffed = diff(move_list->constellation(), mConstellation); !diffed.empty()) { // example "21-22 x18" means: moved from field 21 to field 22, removed piece from field 18
-        std::string from;
-        std::string to;
-        std::string removed;
-        for (const auto& d : diffed) {
-            if (is_in_group(d.second.at(1), mBoard)) {
-                movedPiece = d.first;
-                to = std::to_string(d.second.at(1).v);
-                if (is_in_group(d.second.at(0), mBoard)) {
-                    from = std::to_string(d.second.at(0).v) + "-";
-                }
-            } else {
-                if (is_in_group(d.second.at(1), mOpponent->mPrisonGroup)) {
-                    removed = " x" + std::to_string(d.second.at(0).v);
+                if (field >= first_white_prison_field.v) {
+                    key = increase_prisoner_count(key);
                 }
             }
         }
-        commitmsg = from + to + removed;
-    }
-    move_list->commit(mConstellation, commitmsg, {movedPiece.v});
-    const Player* tmp = mCurrent;
-    mCurrent = mOpponent;
-    mOpponent = tmp;
-    start_move();
+    };
+    key[54] = true; // pretend white
+    fill_key(first_white_piece.v);
+    key[54] = false; // pretend black
+    fill_key(first_black_piece.v);
+    key[54] = whites_turn; // real value
+    return key;
 }
 
-bool Muehle::closed_muehle(const boardgame::FieldNumber fieldNumber) const
+int game_phase(const Muehle_Key& key)
 {
-    auto muehleOnFields = [this] (int fieldOne, int fieldTwo, int fieldThree) {
-        boardgame::PieceNumber one = mFields.at(static_cast<std::size_t>(fieldOne));
-        boardgame::PieceNumber two = mFields.at(static_cast<std::size_t>(fieldTwo));
-        boardgame::PieceNumber three = mFields.at(static_cast<std::size_t>(fieldThree));
-        return (one != boardgame::noPiece && two != boardgame::noPiece && three != boardgame::noPiece &&
-                is_in_group(one, mWhitePieces) == is_in_group(two, mWhitePieces) &&
-                is_in_group(one, mWhitePieces) == is_in_group(three, mWhitePieces));
+    auto captured = prisoner_count(key);
+    if (captured == 6) {
+        return 3;
+    }
+    auto active = (key & (Muehle_Key(0xffffff) << board_offset(key))).count();
+    return captured + active == 9 ? 2 : 1;
+}
+
+/// @return < number_of_board_fields
+const std::vector<int>& free_fields(const Muehle_Key& key)
+{
+    free_fields_store.clear();
+    for (int f = 0U; f < number_of_board_fields.v; f += 1) {
+        if (is_field_free(key, f)) {
+            free_fields_store.push_back(f);
+        }
+    }
+    return free_fields_store;
+}
+
+/// @return < number_of_board_fields
+const std::vector<int>& fields_of_selectable_pieces(const Muehle_Key& key)
+{
+    fields_of_selectable_pieces_store.clear();
+    int phase = game_phase(key);
+    if (phase == 1) {
+        fields_of_selectable_pieces_store.push_back(drawer_field);
+    } else {
+        auto offset = board_offset(key);
+        for (auto i = 0U; i < number_of_board_fields.v; i += 1) {
+            if (key.test(i + offset) &&
+                         (phase == 3 || can_slide(key, i))) {
+                fields_of_selectable_pieces_store.push_back(i);
+            }
+        }
+    }
+    return fields_of_selectable_pieces_store;
+}
+
+/// @param startfield_of_piece < number_of_board_fields
+const std::vector<int>& occupiable_fields(const Muehle_Key& key, const int startfield_of_piece)
+{
+    return (game_phase(key) != 2) ?
+                free_fields(key) :
+                free_adjacent_fields(key, startfield_of_piece);
+}
+
+/// @param field < number_of_board_fields
+bool closed_muehle(const Muehle_Key& key, const int field)
+{
+    auto offset = board_offset(key);
+    auto muehle_on_fields = [key, offset] (int field_one, int field_two, int field_three) {
+        return key[field_one + offset] && key[field_two + offset] && key[field_three + offset];
     };
 
-    if (muehleOnFields(fieldNumber.v, mVerticalMuehle.at(static_cast<std::size_t>(fieldNumber.v)).at(0), mVerticalMuehle.at(static_cast<std::size_t>(fieldNumber.v)).at(1))) { // vertical
+    if (muehle_on_fields(field, vertical_muehle[static_cast<std::size_t>(field)][0], vertical_muehle[static_cast<std::size_t>(field)][1])) {
         return true;
     }
 
-    if (fieldNumber.v % 3 == 0) { // horizontal
-        return muehleOnFields(fieldNumber.v, fieldNumber.v + 1, fieldNumber.v + 2);
+    if (field % 3 == 0) { // horizontal
+        return muehle_on_fields(field, field + 1, field + 2);
     }
-    if (fieldNumber.v % 3 == 1) {
-        return muehleOnFields(fieldNumber.v, fieldNumber.v - 1, fieldNumber.v + 1);
+    if (field % 3 == 1) {
+        return muehle_on_fields(field, field - 1, field + 1);
     }
-    return muehleOnFields(fieldNumber.v, fieldNumber.v - 1, fieldNumber.v - 2);
+    return muehle_on_fields(field, field - 1, field - 2);
 }
 
-const std::vector<boardgame::FieldNumber> Muehle::free_adjacent_fields(const boardgame::FieldNumber fn) const
+unsigned long prisoner_count(const Muehle_Key& key)
 {
-    std::vector<boardgame::FieldNumber> freeFields;
-    for (const auto& num : mAdjacentFields.at(static_cast<std::size_t>(fn.v))) {
-        if (mFields.at(static_cast<std::size_t>(firstBoardField.v + num)) == boardgame::noPiece) {
-            freeFields.push_back(boardgame::FieldNumber{num});
+    return (key >> prison_offset(key)).to_ulong() & 7;
+}
+
+/// @return < number_of_board_fields
+std::pair<std::vector<int>, Muehle_Key> occupy(Muehle_Key key, const int from, const int to)
+{
+    auto offset = board_offset(key);
+    fields_of_removable_pieces.clear();
+    if ((from == drawer_field || key.test(from + offset)) && is_field_free(key, to)) {
+        if (from != drawer_field) {
+            key.reset(from + offset);
+        }
+        key.set(to + offset);
+        if (closed_muehle(key, to)) {
+            key.flip(54);
+            offset = board_offset(key);
+            for (int i = 0; i < number_of_board_fields.v; i += 1) {
+                if (key.test(i + offset) && !closed_muehle(key, i)) {
+                    fields_of_removable_pieces.push_back(i);
+                }
+            }
+            key.flip(54);
         }
     }
-    return freeFields;
+    return {fields_of_removable_pieces, key};
 }
 
-void Muehle::lock_fields(const boardgame::Fieldgroup<decltype(mFields.cbegin())>& fg) const
+/// @param field < number_of_board_fields
+bool can_slide(const Muehle_Key& key, const std::size_t field)
 {
-    for (auto b = fg.b; b != fg.e; b += 1) {
-        lock_field(mUi, boardgame::FieldNumber{static_cast<int>(b - fg.o)}); // narrowing is ok as long as you don't have more than 2 million elements
-    }
+    auto check_free = [&key](const int f) {
+        return is_field_free(key, f);
+    };
+    return std::find_if(adjacent_fields.at(field).begin(), adjacent_fields.at(field).end(), check_free) != adjacent_fields.at(field).end();
 }
 
-void Muehle::occupiable_empty_board_fields()
+/// @param field < number_of_board_fields
+/// @return < number_of_board_fields
+const std::vector<int>& free_adjacent_fields(const Muehle_Key& key, const std::size_t field)
 {
-    for (const auto& f : all_free_fields(mBoard)) {
-        mOccupiableFields.push_back(f);
-        occupiable(mUi, f, mSelectedPiece);
-    }
+    auto check_free = [&key](const int f) {
+        return is_field_free(key, f);
+    };
+    free_adjacent_fields_store.resize(adjacent_fields.at(field).size());
+    free_adjacent_fields_store.erase(std::copy_if(adjacent_fields.at(field).begin(), adjacent_fields.at(field).end(), free_adjacent_fields_store.begin(), check_free), free_adjacent_fields_store.end());
+    return free_adjacent_fields_store;
 }
 
-void Muehle::occupiable_empty_fields()
+const std::vector<Muehle_Key> Engine_Helper::successor_constellations(const Muehle_Key& key)
 {
-    occupiable_empty_board_fields();
-    for (const auto& f : all_free_fields(mCurrent->mDrawerGroup)) {
-        mOccupiableFields.push_back(f);
-        occupiable(mUi, f, mSelectedPiece);
-    }
-    for (const auto& f : all_free_fields(mCurrent->mPrisonGroup)) {
-        mOccupiableFields.push_back(f);
-        occupiable(mUi, f, mSelectedPiece);
-    }
-    lock_fields(mOpponent->mDrawerGroup);
-    lock_fields(mOpponent->mPrisonGroup);
-}
-
-void Muehle::set_field_helper(const boardgame::PieceNumber pn, const boardgame::FieldNumber fn)
-{
-    if (const boardgame::FieldNumber oldfield = mConstellation.at(static_cast<std::size_t>(pn.v)); oldfield != boardgame::noField) {
-        mFields.at(static_cast<std::size_t>(oldfield.v)) = boardgame::noPiece;
-    }
-    mConstellation.at(static_cast<std::size_t>(pn.v)) = fn;
-    mFields.at(static_cast<std::size_t>(fn.v)) = pn;
-    set_field(mUi, pn, fn);
-}
-
-void Muehle::update_game()
-{
-    auto& constellation = move_list->constellation();
-    std::fill(mFields.begin(), mFields.end(), boardgame::noPiece);
-    std::fill(mConstellation.begin(), mConstellation.end(), boardgame::noField);
-    for (int i = 0; i < static_cast<int>(constellation.size()); i += 1) {
-        set_field_helper(boardgame::PieceNumber{i}, constellation.at(static_cast<std::size_t>(i)));
-    }
-    mCurrent = &mWhite;
-    mOpponent = &mBlack;
-    auto& hint = move_list->hint();
-    if (!hint.empty()) {
-        if (hint.at(0) < firstBlackPiece.v) {
-            mCurrent = &mBlack;
-            mOpponent = &mWhite;
+    successors.clear();
+    for (const auto& selectable : fields_of_selectable_pieces(key)) {
+        for (const auto& occupiable : occupiable_fields(key, selectable)) {
+            const auto& [removable, successor] = occupy(key, selectable, occupiable);
+            if (removable.empty()) {
+                successors.push_back(successor);
+            } else {
+                for (const auto prisoner : removable) {
+                    successors.push_back(to_prison(switch_player(successor), prisoner).flip(54));
+                }
+            }
         }
     }
-    leave_setup_mode();
+    return successors;
+}
+
+int Engine_Helper::evaluate(const Muehle_Key& key, int engine_winning_score)
+{
+    auto evaluate_free_fields = [](Muehle_Key ffkey){
+        int free_fields_score = 0;
+        auto offset = board_offset(ffkey);
+        for (unsigned f = 0; f < number_of_board_fields.v; f += 1) {
+            if (ffkey.test(f + offset)) {
+                free_fields_score += number_of_free_adjacent_fields(ffkey, f);
+            }
+        }
+        return free_fields_score;
+    };
+    auto prisoners = prisoner_count(key);
+    auto other_prisoners = prisoner_count(switch_player(key));
+    if (prisoners == 7) {
+        return -engine_winning_score;
+    }
+    if (other_prisoners == 7) {
+        return engine_winning_score;
+    }
+    return evaluate_free_fields(key) * 5 -
+            evaluate_free_fields(switch_player(key)) * 5 +
+            ((other_prisoners - prisoners) * 100);
+}
+
+Muehle_Key Engine_Helper::switch_player(const Muehle_Key& key)
+{
+    return Muehle_Key(key).flip(54);
+}
+
 }

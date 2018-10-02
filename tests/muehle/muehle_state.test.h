@@ -1,8 +1,8 @@
-#ifndef TESTS_MUEHLE_MUEHLE_TEST
-#define TESTS_MUEHLE_MUEHLE_TEST
+#ifndef TESTS_MUEHLE_MUEHLE_STATE_TEST
+#define TESTS_MUEHLE_MUEHLE_STATE_TEST
 
 #include "boardgame/pieces_n_fields.h"
-#include "muehle/muehle.h"
+#include "muehle/muehle_state.h"
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
@@ -19,13 +19,16 @@ public:
     MOCK_METHOD1(black_drawer_can_hide, void(bool));
     MOCK_METHOD1(white_prison_can_hide, void(bool));
     MOCK_METHOD1(black_prison_can_hide, void(bool));
-    MOCK_METHOD0(lock_pieces, void());
+    MOCK_METHOD1(lock_piece, void(int));
     MOCK_METHOD1(selectable, void(int));
     MOCK_METHOD1(removable, void(int));
     MOCK_METHOD1(lock_field, void(int));
     MOCK_METHOD1(highlight, void(int));
     MOCK_METHOD2(occupiable, void(int, int));
     MOCK_METHOD2(set_field, void(int, int));
+    MOCK_METHOD1(setup_mode_active, void(bool));
+    MOCK_METHOD1(white_engine_active, void(bool));
+    MOCK_METHOD1(black_engine_active, void(bool));
 };
 
 class Move_List_Ui_Mock
@@ -38,19 +41,26 @@ public:
     MOCK_METHOD1(cut_off, void(const int));
 };
 
-class Muehle_Test
+class Main_Loop_Mock
+{
+public:
+    MOCK_METHOD1(engine_future, void(std::future<bool>&& efu));
+};
+
+class Muehle_State_Test
         : public ::testing::Test
 {
 protected:
-    Muehle_Test();
-    ~Muehle_Test() = default;
-    void checkNewGame();
-    void checkAllFieldsBecomeLocked();
-    void checkAllFreeBecomeOccupiable(boardgame::PieceNumber pn, boardgame::FieldNumber except = boardgame::FieldNumber{INT_MAX});
-    void phase1PlacePiece(boardgame::PieceNumber pn, boardgame::FieldNumber to, bool closesMuehle = false);
+    Muehle_State_Test();
+    ~Muehle_State_Test() = default;
+    void check_new_game();
+    void check_all_free_become_locked();
+    void check_all_free_become_occupiable(boardgame::Piece_Number pn, boardgame::Field_Number except = boardgame::Field_Number{INT_MAX});
+    void phase1_place_piece(boardgame::Piece_Number pn, boardgame::Field_Number to, bool closes_muehle = false);
     ::testing::StrictMock<Muehle_Ui_Mock> mUi {};
     ::testing::StrictMock<Move_List_Ui_Mock> mlUi {};
-    Muehle mM {Muehle_Ui_Type(&mUi), Move_List_Ui(&mlUi)};
+    ::testing::StrictMock<Main_Loop_Mock> ml {};
+    muehle::Muehle_State mM {boardgame::Boardgame_Ui(&mUi), boardgame::Move_List_Ui(&mlUi), boardgame::Main_Loop(&ml)};
     int mNextInWhiteDrawer {0};
     int mNextInBlackDrawer {0};
     std::vector<int> mOccupiedBoardFields {};
@@ -67,12 +77,17 @@ void white_drawer_can_hide(::testing::StrictMock<Muehle_Ui_Mock>* mui, bool can_
 void black_drawer_can_hide(::testing::StrictMock<Muehle_Ui_Mock>* mui, bool can_hide) { mui->black_drawer_can_hide(can_hide); }
 void white_prison_can_hide(::testing::StrictMock<Muehle_Ui_Mock>* mui, bool can_hide) { mui->white_prison_can_hide(can_hide); }
 void black_prison_can_hide(::testing::StrictMock<Muehle_Ui_Mock>* mui, bool can_hide) { mui->black_prison_can_hide(can_hide); }
-void lock_pieces(::testing::StrictMock<Muehle_Ui_Mock>* mui) { mui->lock_pieces(); }
-void selectable(::testing::StrictMock<Muehle_Ui_Mock>* mui, boardgame::PieceNumber piece_id) { mui->selectable(piece_id.v); }
-void removable(::testing::StrictMock<Muehle_Ui_Mock>* mui, boardgame::PieceNumber piece_id) { mui->removable(piece_id.v); }
-void lock_field(::testing::StrictMock<Muehle_Ui_Mock>* mui, boardgame::FieldNumber field_id) {  mui->lock_field(field_id.v); }
-void highlight(::testing::StrictMock<Muehle_Ui_Mock>* mui, boardgame::FieldNumber field_id) { mui->highlight(field_id.v); }
-void occupiable(::testing::StrictMock<Muehle_Ui_Mock>* mui, boardgame::FieldNumber field_id, boardgame::PieceNumber piece_id) { mui->occupiable(field_id.v, piece_id.v); }
-void set_field(::testing::StrictMock<Muehle_Ui_Mock>* mui, boardgame::PieceNumber piece_id, boardgame::FieldNumber field_id) { mui->set_field(piece_id.v, field_id.v); }
+void lock_piece(::testing::StrictMock<Muehle_Ui_Mock>* mui, boardgame::Piece_Number piece_id) { mui->lock_piece(piece_id.v); }
+void selectable(::testing::StrictMock<Muehle_Ui_Mock>* mui, boardgame::Piece_Number piece_id) { mui->selectable(piece_id.v); }
+void removable(::testing::StrictMock<Muehle_Ui_Mock>* mui, boardgame::Piece_Number piece_id) { mui->removable(piece_id.v); }
+void lock_field(::testing::StrictMock<Muehle_Ui_Mock>* mui, boardgame::Field_Number field_id) {  mui->lock_field(field_id.v); }
+void highlight(::testing::StrictMock<Muehle_Ui_Mock>* mui, boardgame::Field_Number field_id) { mui->highlight(field_id.v); }
+void occupiable(::testing::StrictMock<Muehle_Ui_Mock>* mui, boardgame::Field_Number field_id, boardgame::Piece_Number piece_id) { mui->occupiable(field_id.v, piece_id.v); }
+void set_field(::testing::StrictMock<Muehle_Ui_Mock>* mui, boardgame::Piece_Number piece_id, boardgame::Field_Number field_id) { mui->set_field(piece_id.v, field_id.v); }
+void setup_mode_active(::testing::StrictMock<Muehle_Ui_Mock>* mui, const bool is_active) { mui->setup_mode_active(is_active); }
+void white_engine_active(::testing::StrictMock<Muehle_Ui_Mock>* mui, const bool is_active) { mui->white_engine_active(is_active); }
+void black_engine_active(::testing::StrictMock<Muehle_Ui_Mock>* mui, const bool is_active) { mui->black_engine_active(is_active); }
+void active_player(::testing::StrictMock<Muehle_Ui_Mock>* mui, const std::string& player_id) { (void)mui; (void)player_id; }
+void engine_future(::testing::StrictMock<Main_Loop_Mock>* ml, std::future<bool>&& efu) { ml->engine_future(std::move(efu)); }
 
-# endif // TESTS_MUEHLE_MUEHLE_TEST
+# endif // TESTS_MUEHLE_MUEHLE_STATE_TEST

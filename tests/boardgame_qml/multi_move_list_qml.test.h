@@ -48,7 +48,7 @@ protected:
     QQuickItem* move_list_back_to_start_button;
     QQuickItem* move_list_back_button;
     QQuickItem* move_list_forward_button;
-    Multi_Move_List_Qml mlq;
+    boardgame_qml::Multi_Move_List_Qml mlq;
     ::testing::StrictMock<Multi_Move_List_Qml_Test_Slots> move_list_slots {};
 };
 

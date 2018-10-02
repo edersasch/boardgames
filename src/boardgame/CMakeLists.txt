@@ -1,2 +1,2 @@
-project(boardgames)
+project(boardgame)
 include(prjobjlib)

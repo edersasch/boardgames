@@ -2,23 +2,23 @@ import QtQuick 2.7
 import QtQuick.Layouts 1.3
 
 Rectangle {
-    property bool canHide: true
-    property real sizeFactor: 1
+    property bool can_hide: true
+    property real size_factor: 1
     property alias fields: fields
 
-    id: pieceRBox
+    id: box
     radius: 10
     border.width: 1
-    Layout.fillWidth: true
-    Layout.preferredHeight: (canHide) ? 0 : width / fields.model * sizeFactor
+    Layout.fillHeight: true
+    Layout.preferredWidth: (can_hide) ? 0 : height / fields.model * size_factor
 
-    Behavior on Layout.preferredHeight {
+    Behavior on Layout.preferredWidth {
         NumberAnimation {
             duration: 100
         }
     }
 
-    RowLayout {
+    ColumnLayout {
         anchors.fill: parent
 
         Repeater {
@@ -28,7 +28,7 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 onZChanged: {
-                    pieceRBox.z = z * 2; // higher than the board with z = 1
+                    box.z = z * 2; // higher than the board with z = 1
                 }
             }
         }

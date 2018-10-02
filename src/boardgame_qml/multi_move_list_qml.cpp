@@ -3,6 +3,9 @@
 #include <QQmlEngine>
 #include <QQuickItem>
 
+namespace boardgame_qml
+{
+
 void initial_constellation(Multi_Move_List_Qml* mui, const int constellation_id)
 {
     for (auto& ml : mui->move_lists) {
@@ -68,4 +71,6 @@ void Multi_Move_List_Qml::set_move_color(const int move_id, const std::string& c
     for (auto& ml : move_lists) {
         ml->set_move_color(move_id, c);
     }
+}
+
 }

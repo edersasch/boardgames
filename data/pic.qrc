@@ -2,6 +2,7 @@
     <qresource prefix="/">
         <file>back.svg</file>
         <file>delete.svg</file>
+        <file>engine.svg</file>
         <file>export.svg</file>
         <file>forward.svg</file>
         <file>hide.svg</file>

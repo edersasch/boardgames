@@ -29,14 +29,12 @@ if(COVERAGE_REPORT)
     )
 endif(COVERAGE_REPORT)
 
+include(FindDoxygen)
 find_package(Doxygen)
-if(DOXYGEN_FOUND)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
-    add_custom_target(apidoc
-        ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    )
-endif(DOXYGEN_FOUND)
+doxygen_add_docs(
+    apidoc
+    ${PROJECT_SOURCE_DIR}
+)
 
 include_directories(src)
 add_subdirectory(src)

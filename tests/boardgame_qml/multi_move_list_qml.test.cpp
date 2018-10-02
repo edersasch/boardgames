@@ -25,12 +25,12 @@ Multi_Move_List_Qml_Test::Multi_Move_List_Qml_Test()
     Q_INIT_RESOURCE(move_list_qml_test);
     move_list_item->setParentItem(v.contentItem());
 
-    connect(&mlq, &Multi_Move_List_Qml::request_set_current_move_and_branch_start_id, &move_list_slots, &Multi_Move_List_Qml_Test_Slots::request_set_current_move_and_branch_start_id);
+    connect(&mlq, &boardgame_qml::Multi_Move_List_Qml::request_set_current_move_and_branch_start_id, &move_list_slots, &Multi_Move_List_Qml_Test_Slots::request_set_current_move_and_branch_start_id);
     auto set_current_move = [this](const int move_id) { current_move(&mlq, move_id); };
     ON_CALL(move_list_slots, request_set_current_move_and_branch_start_id(_)).WillByDefault(Invoke(set_current_move));
-    connect(&mlq, &Multi_Move_List_Qml::request_move_list_forward, &move_list_slots, &Multi_Move_List_Qml_Test_Slots::request_move_list_forward);
-    connect(&mlq, &Multi_Move_List_Qml::request_move_list_back, &move_list_slots, &Multi_Move_List_Qml_Test_Slots::request_move_list_back);
-    connect(&mlq, &Multi_Move_List_Qml::added_move, &move_list_slots, &Multi_Move_List_Qml_Test_Slots::added_move);
+    connect(&mlq, &boardgame_qml::Multi_Move_List_Qml::request_move_list_forward, &move_list_slots, &Multi_Move_List_Qml_Test_Slots::request_move_list_forward);
+    connect(&mlq, &boardgame_qml::Multi_Move_List_Qml::request_move_list_back, &move_list_slots, &Multi_Move_List_Qml_Test_Slots::request_move_list_back);
+    connect(&mlq, &boardgame_qml::Multi_Move_List_Qml::added_move, &move_list_slots, &Multi_Move_List_Qml_Test_Slots::added_move);
     auto set_move_color = [this](const int move_id, const int piece_id) { mlq.set_move_color(move_id, piece_id % 2 ? "odd" : "even"); };
     ON_CALL(move_list_slots, added_move(_, _)).WillByDefault(Invoke(set_move_color));
     initial_constellation(&mlq, 0);
@@ -45,7 +45,6 @@ void Multi_Move_List_Qml_Test::add_sequence(int move_id, int branch_start_id, in
         add_move(&mlq, move_id, branch_start_id, std::to_string(move_id), {});
     }
 }
-
 
 TEST_F(Multi_Move_List_Qml_Test, controls)
 {

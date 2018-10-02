@@ -3,6 +3,9 @@
 #include <QQmlEngine>
 #include <QQmlProperty>
 
+namespace boardgame_qml
+{
+
 Move_List_Qml::Move_List_Qml(QQmlEngine* engine, QQuickItem* move_list_root_entries)
     : root_entries(move_list_root_entries)
     , move_button(engine, QUrl(QStringLiteral("qrc:/Move_Button.qml")))
@@ -137,4 +140,6 @@ void Move_List_Qml::add_move_button(const int move_id, const std::string& descri
     QQmlProperty(button, "move_id").write(move_id);
     QObject::connect(button, SIGNAL(request_set_move_id(int)), this, SIGNAL(request_set_current_move_and_branch_start_id(int)));
     move_buttons[move_id] = std::unique_ptr<QQuickItem>(button);
+}
+
 }

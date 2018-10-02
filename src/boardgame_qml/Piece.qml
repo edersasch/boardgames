@@ -2,29 +2,32 @@ import QtQuick 2.7
 
 Rectangle {
     id: piece
+
+    property var next_parent
+    readonly property real parent_width: parent ? parent.width : 0
+    readonly property real parent_height: parent ? parent.height : 0
     signal selected
     signal removed
-    property var nextParent
-    readonly property real pWidth: parent ? parent.width : 0
-    readonly property real pHeight: parent ? parent.height : 0
-    onNextParentChanged: {
-        var nextPoint;
-        if (nextParent && parent !== nextParent) {
+
+    onNext_parentChanged: {
+        var next_point;
+        if (next_parent && parent !== next_parent) {
             if (parent) {
-                nextPoint = piece.mapToItem(nextParent, 0, 0)
+                next_point = piece.mapToItem(next_parent, 0, 0)
                 anchors.horizontalCenter = undefined;
                 anchors.verticalCenter = undefined;
-                nextParent.z = parent.z
+                next_parent.z = parent.z
                 parent.z = 0;
-                x = nextPoint.x;
-                y = nextPoint.y;
+                x = next_point.x;
+                y = next_point.y;
             }
-            parent = nextParent;
+            parent = next_parent;
         }
     }
-    onParentChanged:  { xypos(); }
-    onPWidthChanged:  { adjxy(); }
-    onPHeightChanged: { adjxy(); }
+
+    onParentChanged:        { xypos(); }
+    onParent_widthChanged:  { adjxy(); }
+    onParent_heightChanged: { adjxy(); }
 
     function adjxy() {
         if (xbeh.enabled) {
@@ -33,14 +36,14 @@ Rectangle {
     }
 
     function xypos() {
-        var nextWidth = Math.min(pWidth, pHeight); // end value for computation needed now, same as future width
-        var nextX = (pWidth - nextWidth) / 2;
-        var nextY = (pHeight - nextWidth) / 2;
-        if (x !== nextX || y !== nextY) {
+        var next_width = Math.min(parent_width, parent_height); // end value for computation needed now, same as future width
+        var next_x = (parent_width - next_width) / 2;
+        var next_y = (parent_height - next_width) / 2;
+        if (x !== next_x || y !== next_y) {
             xbeh.enabled = true;
             ybeh.enabled = true;
-            x = nextX;
-            y = nextY;
+            x = next_x;
+            y = next_y;
             parent.z = 1;
         }
     }
@@ -57,7 +60,7 @@ Rectangle {
 
     anchors.horizontalCenter: parent ? parent.horizontalCenter : undefined
     anchors.verticalCenter: parent ? parent.verticalCenter : undefined;
-    width: Math.min(pWidth, pHeight)
+    width: Math.min(parent_width, parent_height)
     height: width
     radius: width / 2
     border.color: "black"
@@ -68,17 +71,17 @@ Rectangle {
 
     Drag.hotSpot.x: width / 2
     Drag.hotSpot.y: height / 2
-    Drag.active: mouseArea.drag.active
+    Drag.active: mouse_area.drag.active
 
     states: [
         State {
-            name: "pin"
+            name: "lock"
             PropertyChanges {
                 target: piece
                 opacity: 1
             }
             PropertyChanges {
-                target: mouseArea
+                target: mouse_area
                 cursorShape: Qt.ArrowCursor
             }
         },
@@ -90,9 +93,9 @@ Rectangle {
                 scale: 1
             }
             PropertyChanges {
-                target: mouseArea
+                target: mouse_area
                 drag.target: piece
-                cursorShape: Qt.OpenHandCursor
+                cursorShape: Qt.OpenHandCursor // looks the same as ClosedHandCursor, changing to CrossCursor shows effect
                 onClicked: { piece.selected() }
             }
         },
@@ -103,11 +106,11 @@ Rectangle {
                 opacity: 1
             }
             PropertyChanges {
-                target: removehint
+                target: remove_hint
                 opacity: 1
             }
             PropertyChanges {
-                target: mouseArea
+                target: mouse_area
                 onClicked: { piece.removed() }
             }
         }
@@ -125,6 +128,7 @@ Rectangle {
             id: xanim
             easing.type: Easing.OutElastic
             easing.period: 0.9
+            duration: 500
             onRunningChanged: {
                 anchorparent()
             }
@@ -137,6 +141,7 @@ Rectangle {
             id: yanim
             easing.type: Easing.OutElastic
             easing.period: 0.9
+            duration: 500
             onRunningChanged: {
                 anchorparent()
             }
@@ -150,15 +155,15 @@ Rectangle {
     }
 
     MouseArea {
-        id: mouseArea
+        id: mouse_area
         enabled: true
         anchors.fill: parent
         drag.axis: Drag.XAndYAxis
         states: [
             State {
-                when: mouseArea.pressed && mouseArea.drag.active
+                when: mouse_area.pressed && mouse_area.drag.active
                 PropertyChanges {
-                    target: mouseArea
+                    target: mouse_area
                     cursorShape: Qt.ClosedHandCursor
                 }
                 StateChangeScript {
@@ -183,7 +188,7 @@ Rectangle {
     }
 
     Item {
-        id: removehint
+        id: remove_hint
         anchors.fill: parent
         opacity: 0
         z: -1
@@ -193,11 +198,10 @@ Rectangle {
         }
 
         Rectangle {
-            id: rh1
             anchors.fill: parent
             color: "red"
             radius: 10
-            opacity: removehint.opacity
+            opacity: remove_hint.opacity
         }
     }
 }

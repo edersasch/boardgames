@@ -5,17 +5,20 @@
 #include <vector>
 #include <string>
 
+namespace boardgame
+{
+
 class Move_List_Ui
 {
 public:
     template <typename T>
-    explicit Move_List_Ui(T mui) : mC(std::make_shared<Move_List_Ui_Model<T>>(std::move(mui))) {}
-    friend void initial_constellation(const Move_List_Ui& mui, const int constellation_id) { mui.mC->ic(constellation_id); }
-    friend void current_move(const Move_List_Ui& mui, const int move_id) { mui.mC->cm(move_id); }
-    friend void add_move(const Move_List_Ui& mui, const int move_id, int branch_id, const std::string& description, const std::vector<int>& hint) { mui.mC->am(move_id, branch_id, description, hint); }
-    friend void delete_move(const Move_List_Ui& mui, const int move_id) { mui.mC->dm(move_id); }
-    friend void ui_cut_off(const Move_List_Ui& mui, const int move_id) { mui.mC->co(move_id); }
-    friend void cut_off(const Move_List_Ui& mui, const int move_id) { mui.mC->co(move_id); }
+    explicit Move_List_Ui(T move_list_ui) : move_list_ui_concept(std::make_shared<Move_List_Ui_Model<T>>(std::move(move_list_ui))) {}
+    friend void initial_constellation(const Move_List_Ui& mui, const int constellation_id) { mui.move_list_ui_concept->ic(constellation_id); }
+    friend void current_move(const Move_List_Ui& mui, const int move_id) { mui.move_list_ui_concept->cm(move_id); }
+    friend void add_move(const Move_List_Ui& mui, const int move_id, int branch_id, const std::string& description, const std::vector<int>& hint) { mui.move_list_ui_concept->am(move_id, branch_id, description, hint); }
+    friend void delete_move(const Move_List_Ui& mui, const int move_id) { mui.move_list_ui_concept->dm(move_id); }
+    friend void ui_cut_off(const Move_List_Ui& mui, const int move_id) { mui.move_list_ui_concept->co(move_id); }
+    friend void cut_off(const Move_List_Ui& mui, const int move_id) { mui.move_list_ui_concept->co(move_id); }
 private:
     struct Move_List_Ui_Concept
     {
@@ -29,15 +32,17 @@ private:
     template <typename T>
     struct Move_List_Ui_Model : Move_List_Ui_Concept
     {
-        Move_List_Ui_Model(T mui) : Move_List_Ui_Concept(), mM(std::move(mui)) {}
-        void ic(const int ci) const override { initial_constellation(mM, ci); }
-        void cm(const int mi) const override { current_move(mM, mi); }
-        void am(const int mi, const int bi, const std::string& d, const std::vector<int>& h) const override { add_move(mM, mi, bi, d, h); }
-        void dm(const int id) const { delete_move(mM, id); }
-        void co(const int id) const { cut_off(mM, id); }
-        T mM;
+        Move_List_Ui_Model(T move_list_ui) : Move_List_Ui_Concept(), ui(std::move(move_list_ui)) {}
+        void ic(const int ci) const override { initial_constellation(ui, ci); }
+        void cm(const int mi) const override { current_move(ui, mi); }
+        void am(const int mi, const int bi, const std::string& d, const std::vector<int>& h) const override { add_move(ui, mi, bi, d, h); }
+        void dm(const int id) const override { delete_move(ui, id); }
+        void co(const int id) const override { cut_off(ui, id); }
+        T ui;
     };
-    std::shared_ptr<const Move_List_Ui_Concept> mC;
+    std::shared_ptr<const Move_List_Ui_Concept> move_list_ui_concept;
 };
+
+}
 
 #endif // SRC_BOARDGAME_MOVE_LIST_UI

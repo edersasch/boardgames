@@ -1,11 +1,13 @@
 import QtQuick 2.7
 
 DropArea {
-    signal occupy
-    property alias fieldcolor: field.color
-    property alias fieldopacity: field.opacity
-    property alias color: hint.color
     id: destination
+
+    property alias field_color: field.color
+    property alias field_opacity: field.opacity
+    property alias hint_color: hint.color
+    signal occupy
+
     anchors.fill: parent
     enabled: false
 
@@ -19,7 +21,7 @@ DropArea {
         }
     }
 
-    MuehlePiece {
+    Piece {
         id: hint
         states: [
             State {

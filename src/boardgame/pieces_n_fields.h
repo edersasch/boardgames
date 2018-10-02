@@ -13,41 +13,47 @@ namespace boardgame {
 namespace detail {
 
 template <typename T>
-struct ElementNumber { int v {-1}; }; // default constructed means unset
+struct Element_Number { int v {-1}; }; // default constructed means unset
 template <typename T>
-constexpr bool operator==(const ElementNumber<T>& lhs, const ElementNumber<T>& rhs) { return lhs.v == rhs.v; }
+constexpr bool operator==(const Element_Number<T>& lhs, const Element_Number<T>& rhs) { return lhs.v == rhs.v; }
 template <typename T>
-constexpr bool operator!=(const ElementNumber<T>& lhs, const ElementNumber<T>& rhs) { return lhs.v != rhs.v; }
+constexpr bool operator!=(const Element_Number<T>& lhs, const Element_Number<T>& rhs) { return lhs.v != rhs.v; }
 
 template <typename T>
-struct ElementRange { int v; };
+struct Element_Range { int v; };
 template <typename T>
-constexpr bool operator==(const ElementRange<T>& lhs, const ElementRange<T>& rhs) { return lhs.v == rhs.v; }
+constexpr bool operator==(const Element_Range<T>& lhs, const Element_Range<T>& rhs) { return lhs.v == rhs.v; }
 
 template <typename T>
-constexpr ElementNumber<T> operator+(ElementNumber<T> lhs, const ElementRange<T> rhs)
+constexpr Element_Number<T> operator+(Element_Number<T> lhs, const Element_Range<T> rhs)
 {
     lhs.v += rhs.v;
     return lhs;
 }
 
 template <typename T>
-constexpr ElementRange<T> operator+(ElementRange<T> lhs, const ElementRange<T> rhs)
+constexpr Element_Range<T> operator+(Element_Range<T> lhs, const Element_Range<T> rhs)
 {
     lhs.v += rhs.v;
     return lhs;
 }
 
 template <typename T, typename U>
-struct Elementgroup { const T b, e, o; const U tag; };
+struct Elementgroup
+{
+    const T origin;
+    const T begin_of_group;
+    const T end_of_group;
+    const U tag;
+};
 
 template <typename T, typename U>
-constexpr auto make_elementgroup(const T& elements, const ElementNumber<U> start, const ElementRange<U> range)
+constexpr auto make_elementgroup(const T& elements, const Element_Number<U> start, const Element_Range<U> range)
 {
     auto o = std::cbegin(elements); // origin
     auto b = o + start.v;           // begin of group
     auto e = b + range.v;           // end of group
-    return Elementgroup<decltype(b), U>{b, e, o, {}};
+    return Elementgroup<decltype(b), U>{o, b, e, {}};
 }
 
 template <typename T>
@@ -65,38 +71,38 @@ constexpr bool is_unset(const T& elem)
 template <typename T>
 constexpr auto first_set_element(const T& elemgr)
 {
-    auto found = std::find_if_not(elemgr.b, elemgr.e, &is_unset<decltype(*elemgr.b)>);
-    return found == elemgr.e ? decltype(*elemgr.b){} : *found;
+    auto found = std::find_if_not(elemgr.begin_of_group, elemgr.end_of_group, &is_unset<decltype(*elemgr.begin_of_group)>);
+    return found == elemgr.end_of_group ? decltype(*elemgr.begin_of_group){} : *found;
 }
 
 template <typename T>
 constexpr auto first_unset_element(const T& elemgr)
 {
-    const auto found = std::find(elemgr.b, elemgr.e, decltype(*elemgr.b){});
-    return found == elemgr.e ? ElementNumber<decltype(elemgr.tag)>{} : ElementNumber<decltype(elemgr.tag)>{static_cast<int>(found - elemgr.o)}; // narrowing is ok as long as you don't have more than 2 million elements
+    const auto found = std::find(elemgr.begin_of_group, elemgr.end_of_group, decltype(*elemgr.begin_of_group){});
+    return found == elemgr.end_of_group ? Element_Number<decltype(elemgr.tag)>{} : Element_Number<decltype(elemgr.tag)>{static_cast<int>(found - elemgr.origin)}; // narrowing is ok as long as you don't have more than 2 million elements
 }
 
 template <typename T>
 constexpr auto number_of_set_elements(const T& elemgr)
 {
-    return std::count_if(elemgr.b, elemgr.e, &is_set<decltype(*elemgr.b)>);
+    return std::count_if(elemgr.begin_of_group, elemgr.end_of_group, &is_set<decltype(*elemgr.begin_of_group)>);
 }
 
 template <typename T, typename U>
 constexpr auto is_in_group(const T& elem, const U& elemgr)
 {
-    int first = elemgr.b - elemgr.o;
-    int last = elemgr.e - elemgr.o;
+    int first = elemgr.begin_of_group - elemgr.origin;
+    int last = elemgr.end_of_group - elemgr.origin;
     return elem.v >= first && elem.v < last;
 }
 
 template <typename T>
 auto all_unset_elements(const T& elemgr)
 {
-    std::vector<ElementNumber<decltype(elemgr.tag)>> found;
-    for (auto b = elemgr.b; b != elemgr.e; b += 1) {
+    std::vector<Element_Number<decltype(elemgr.tag)>> found;
+    for (auto b = elemgr.begin_of_group; b != elemgr.end_of_group; b += 1) {
         if (is_unset(*b)) {
-            found.push_back(ElementNumber<decltype(elemgr.tag)>{static_cast<int>(b - elemgr.o)}); // narrowing is ok as long as you don't have more than 2 million elements
+            found.push_back(Element_Number<decltype(elemgr.tag)>{static_cast<int>(b - elemgr.origin)}); // narrowing is ok as long as you don't have more than 2 million elements
         }
     }
     return found;
@@ -105,37 +111,37 @@ auto all_unset_elements(const T& elemgr)
 template <typename T, typename U>
 auto filter_elements_in_group(const T& elemgr1, const U& elemgr2)
 {
-    std::vector<std::decay_t<decltype(*elemgr1.b)>> found;
-    int first = elemgr2.b - elemgr2.o;
-    int last = elemgr2.e - elemgr2.o;
-    std::copy_if(elemgr1.b, elemgr1.e, std::back_inserter(found), [first, last](auto elem) { return elem.v >= first && elem.v < last; });
+    std::vector<std::decay_t<decltype(*elemgr1.begin_of_group)>> found;
+    int first = elemgr2.begin_of_group - elemgr2.origin;
+    int last = elemgr2.end_of_group - elemgr2.origin;
+    std::copy_if(elemgr1.begin_of_group, elemgr1.end_of_group, std::back_inserter(found), [first, last](auto elem) { return elem.v >= first && elem.v < last; });
     return found; // contains values of elemgr1 in the range of elemgr2
 }
 
 }
 
-struct PieceTag {};
-using PieceNumber = detail::ElementNumber<const PieceTag>;
-static constexpr PieceNumber noPiece; // default constructed means unset
-using PieceRange = detail::ElementRange<const PieceTag>;
+struct Piece_Tag {};
+using Piece_Number = detail::Element_Number<const Piece_Tag>;
+static constexpr Piece_Number no_piece; // default constructed means unset
+using Piece_Range = detail::Element_Range<const Piece_Tag>;
 template <typename T>
-using Piecegroup = detail::Elementgroup<T, const PieceTag>;
+using Piecegroup = detail::Elementgroup<T, const Piece_Tag>;
 
 template <typename T>
-constexpr auto make_piecegroup(const T& pieces, const PieceNumber start, const PieceRange range)
+constexpr auto make_piecegroup(const T& pieces, const Piece_Number start, const Piece_Range range)
 {
     return make_elementgroup(pieces, start, range);
 }
 
-struct FieldTag {};
-using FieldNumber = detail::ElementNumber<const FieldTag>;
-static constexpr FieldNumber noField; // default constructed means unset
-using FieldRange = detail::ElementRange<const FieldTag>;
+struct Field_Tag {};
+using Field_Number = detail::Element_Number<const Field_Tag>;
+static constexpr Field_Number no_field; // default constructed means unset
+using Field_Range = detail::Element_Range<const Field_Tag>;
 template <typename T>
-using Fieldgroup = detail::Elementgroup<T, const FieldTag>;
+using Fieldgroup = detail::Elementgroup<T, const Field_Tag>;
 
 template <typename T>
-constexpr auto make_fieldgroup(const T& fields, const FieldNumber start, const FieldRange range)
+constexpr auto make_fieldgroup(const T& fields, const Field_Number start, const Field_Range range)
 {
     return make_elementgroup(fields, start, range);
 }
@@ -149,11 +155,11 @@ constexpr auto first_piece(const T& fieldgroup)
 template <typename T>
 constexpr bool is_fieldgroup_empty(const T& fieldgroup)
 {
-    return first_piece(fieldgroup) == noPiece;
+    return first_piece(fieldgroup) == no_piece;
 }
 
 template <typename T>
-constexpr FieldNumber first_empty_field(const T& fieldgroup)
+constexpr Field_Number first_empty_field(const T& fieldgroup)
 {
     return first_unset_element(fieldgroup);
 }
@@ -176,7 +182,7 @@ auto positions_of_pieces_in_fieldgroup(const T& piecegroup, const U& fieldgroup)
     return filter_elements_in_group(piecegroup, fieldgroup);
 }
 
-using Diff = std::vector<std::pair<boardgame::PieceNumber, std::array<FieldNumber, 2>>>;
+using Diff = std::vector<std::array<Field_Number, 2>>;
 
 template <typename T>
 Diff diff(const T& first, const T& second)
@@ -184,7 +190,7 @@ Diff diff(const T& first, const T& second)
     Diff diffed;
     auto [f, s] = std::mismatch(first.begin(), first.end(), second.begin());
     while (s != second.end()) {
-        diffed.push_back({PieceNumber{static_cast<int>(s - second.begin())}, {{*f, *s}}}); // narrowing ok if less than 2 million pieces
+        diffed.push_back({*f, *s}); // narrowing ok if less than 2 million pieces
         f += 1;
         s += 1;
         std::tie(f, s) = std::mismatch(f, first.end(), s);

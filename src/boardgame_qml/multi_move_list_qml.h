@@ -12,6 +12,9 @@
 class QQmlEngine;
 class QQuickItem;
 
+namespace boardgame_qml
+{
+
 class Multi_Move_List_Qml
         : public QObject
 {
@@ -37,5 +40,7 @@ signals:
 private:
     std::vector<std::unique_ptr<Move_List_Qml>> move_lists;
 };
+
+}
 
 #endif // SRC_BOARDGAME_QML_MULTI_MOVE_LIST_QML

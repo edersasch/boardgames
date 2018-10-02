@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Muehle_Board.qml</file>
+        <file>Muehle_Control.qml</file>
+    </qresource>
+</RCC>

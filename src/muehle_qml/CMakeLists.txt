@@ -9,4 +9,5 @@ include(prjexe)
 target_link_libraries(${PROJECT_NAME}
     Qt5::Quick
     boardgames_qml
+    pthread
 )

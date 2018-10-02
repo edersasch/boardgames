@@ -12,6 +12,9 @@
 
 class QQmlEngine;
 
+namespace boardgame_qml
+{
+
 class Move_List_Qml
         : public QObject
 {
@@ -47,5 +50,7 @@ private:
     int current_move_id {-1};
     int start_id {current_move_id};
 };
+
+}
 
 #endif // SRC_BOARDGAME_QML_MOVE_LIST_QML
