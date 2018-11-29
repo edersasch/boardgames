@@ -42,7 +42,7 @@ Muehle_Qml::Muehle_Qml(QQmlEngine* engine, QQuickItem* parentItem)
     , board(qobject_cast<QQuickItem*>(board_component.create()))
     , piece_component(engine, QUrl(QStringLiteral("qrc:/Piece.qml")))
     , field_component(engine, QUrl(QStringLiteral("qrc:/Field.qml")))
-    , move_lists(engine, {board_item("v_move_list"), board_item("h_move_list")})
+    , move_lists(engine, {board_item("v_move_list"), board_item("h_move_list")}, "Boardgame Muehle", "bgmu")
 {
     auto fillPieces = [this](const std::string& color, int offset = 0) {
         for (int i = 0; i < muehle::number_of_pieces_per_player.v; i += 1) {
@@ -110,6 +110,12 @@ Muehle_Qml::Muehle_Qml(QQmlEngine* engine, QQuickItem* parentItem)
     });
     connect(&move_lists, &boardgame_qml::Multi_Move_List_Qml::request_move_list_back, this, [this]() {
         muehle_state.request_move_list_back();
+    });
+    connect(&move_lists, &boardgame_qml::Multi_Move_List_Qml::request_move_list_import, this, [this](std::string url) {
+        muehle_state.request_move_list_import(url);
+    });
+    connect(&move_lists, &boardgame_qml::Multi_Move_List_Qml::request_move_list_export, this, [this](std::string url) {
+        muehle_state.request_move_list_export(url);
     });
     connect(&move_lists, &boardgame_qml::Multi_Move_List_Qml::request_delete_branch, this, [this](const int move_id) {
         muehle_state.request_cut_off(move_id);

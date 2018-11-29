@@ -1,14 +1,47 @@
 #ifndef SRC_BOARDGAME_MOVE_LIST
 #define SRC_BOARDGAME_MOVE_LIST
 
+#include <nlohmann/json.hpp>
+
 #include <algorithm>
 #include <vector>
-#include <unordered_map>
+#include <map>
+#include <fstream>
 
 namespace boardgame {
 
 namespace detail
 {
+
+template <typename T>
+struct Move_List_Entry
+{
+    T constellation;
+    std::vector<int> hint;
+    std::vector<int> branch_start_ids;
+    int prev;
+    std::vector<int> next;
+};
+
+template <typename T>
+void to_json(nlohmann::json& j, const Move_List_Entry<T>& d)
+{
+    j = {{"co", d.constellation}};
+    j.push_back({"hi", d.hint});
+    j.push_back({"bs", d.branch_start_ids});
+    j.push_back({"pr", d.prev});
+    j.push_back({"ne", d.next});
+}
+
+template <typename T>
+void from_json(const nlohmann::json& j, Move_List_Entry<T>& d)
+{
+    j.at("co").get_to(d.constellation);
+    j.at("hi").get_to(d.hint);
+    j.at("bs").get_to(d.branch_start_ids);
+    j.at("pr").get_to(d.prev);
+    j.at("ne").get_to(d.next);
+}
 
 template <typename T>
 class Move_List
@@ -24,21 +57,15 @@ public:
     const std::vector<int>& branch_start_ids(const int move_id) const { return move_list_entries.at(move_id).branch_start_ids; }
     int prev(const int move_id) const { return move_list_entries.at(move_id).prev; }
     const std::vector<int>& next(const int move_id) const { return move_list_entries.at(move_id).next; }
+    nlohmann::json make_json();
 
     // modify move_list_entries
     std::pair<int, int> commit(const T& constellation, int predecessor = invalid_id, const std::vector<int>& hint = {});
     void delete_move(const int move_id);
+    bool process_json(nlohmann::json&& j);
 
 private:
-    struct Move_List_Entry
-    {
-        T constellation;
-        std::vector<int> hint;
-        std::vector<int> branch_start_ids;
-        int prev;
-        std::vector<int> next;
-    };
-    using Entries = std::unordered_map<int, Move_List_Entry>;
+    using Entries = std::map<int, Move_List_Entry<T>>;
     int next_id {0};
     Entries move_list_entries;
 };
@@ -98,33 +125,106 @@ void Move_List<T>::delete_move(const int move_id)
     }
 }
 
+template <typename T>
+bool Move_List<T>::process_json(nlohmann::json&& j)
+{
+    try {
+        move_list_entries = j.get<std::map<int, Move_List_Entry<T>>>();
+    } catch (const nlohmann::json::exception ex) {
+        return false;
+    }
+    next_id = 0;
+    if (!move_list_entries.empty()) {
+        if (move_list_entries.find(initial_id) == move_list_entries.end()) {
+            move_list_entries.clear();
+            return false;
+        }
+        next_id = move_list_entries.crbegin()->first + 1;
+    }
+    return true;
+}
+
+template <typename T>
+nlohmann::json Move_List<T>::make_json()
+{
+    return nlohmann::json(move_list_entries);
+}
+
+}
+
+template <typename T>
+std::vector<std::array<typename T::value_type, 2>> diff(const T& first, const T& second)
+{
+    std::vector<std::array<typename T::value_type, 2>> diffed;
+    auto [f, s] = std::mismatch(first.begin(), first.end(), second.begin());
+    while (s != second.end()) {
+        diffed.push_back({*f, *s});
+        f += 1;
+        s += 1;
+        std::tie(f, s) = std::mismatch(f, first.end(), s);
+    }
+    return diffed;
 }
 
 template <typename T, typename U>
 class Move_List
 {
 public:
-    Move_List(U move_list_ui)
-        : ui(move_list_ui) {}
+    Move_List(U move_list_ui, std::string (*commit_msg_provider)(std::vector<std::array<typename T::value_type, 2>>), const T& first_constellation, const std::vector<int>& hint);
+    Move_List(U move_list_ui, std::string (*commit_msg_provider)(std::vector<std::array<typename T::value_type, 2>>), const std::string& path);
     bool set_current_move_id(const int move_id);
     bool set_current_move_and_branch_start_id(const int move_id);
     int get_current_move_id() const { return current_move_id; }
     int get_current_branch_start_id() const { return current_branch_start_id; }
+    std::vector<int> get_next(const int move_id) const { return move_list->next(move_id); }
     bool move_list_forward();
     bool move_list_back() { return set_current_move_id(move_list.prev(current_move_id)); }
     const T& constellation() const { return move_list.constellation(current_move_id); }
     const std::vector<int>& hint() const { return move_list.hint(current_move_id); }
-    void commit(const T& constellation, const std::string& commitmsg, const std::vector<int>& hint = {});
+    bool commit(const T& new_constellation, const std::vector<int>& hint = {});
     bool cut_off(const int move_id);
+    bool export_move_list(const std::string& path);
 
 private:
+    Move_List(U move_list_ui, std::string (*commit_msg_provider)(std::vector<std::array<typename T::value_type, 2>>));
     void delete_moves(const int move_id);
+    void ui_replay(const int move_id);
 
-    detail::Move_List<T> move_list;
+    detail::Move_List<T> move_list {};
     U ui;
-    int current_move_id {detail::Move_List<T>::invalid_id};
+    int current_move_id {detail::Move_List<T>::initial_id};
     int current_branch_start_id{detail::Move_List<T>::invalid_id};
+    std::string (*msg)(std::vector<std::array<typename T::value_type, 2>>);
 };
+
+template <typename T, typename U>
+Move_List<T, U>::Move_List(U move_list_ui, std::string (*commit_msg_provider)(std::vector<std::array<typename T::value_type, 2>>), const T& first_constellation, const std::vector<int>& hint)
+    : Move_List(move_list_ui, commit_msg_provider)
+{
+    move_list.commit(first_constellation, current_move_id, hint);
+    set_current_move_and_branch_start_id(detail::Move_List<T>::initial_id);
+}
+
+template <typename T, typename U>
+Move_List<T, U>::Move_List(U move_list_ui, std::string (*commit_msg_provider)(std::vector<std::array<typename T::value_type, 2>>), const std::string& path)
+    : Move_List(move_list_ui, commit_msg_provider)
+{
+    std::ifstream in(path);
+    nlohmann::json j;
+    try {
+        in >> j;
+    } catch (const nlohmann::json::exception ex) {
+        j.clear();
+    }
+    if (!j.empty()) {
+        if (move_list.process_json(std::move(j))) {
+            ui_replay(detail::Move_List<T>::initial_id);
+            set_current_move_and_branch_start_id(detail::Move_List<T>::initial_id);
+            return;
+        }
+    }
+    current_move_id = detail::Move_List<T>::invalid_id;
+}
 
 template <typename T, typename U>
 bool Move_List<T, U>::set_current_move_id(const int move_id)
@@ -165,33 +265,46 @@ bool Move_List<T, U>::move_list_forward()
 }
 
 template <typename T, typename U>
-void Move_List<T, U>::commit(const T& constellation, const std::string& commitmsg, const std::vector<int>& hint)
+bool Move_List<T, U>::commit(const T& new_constellation, const std::vector<int>& hint)
 {
-     auto [move_id, branch_start_id] = move_list.commit(constellation, current_move_id, hint);
+     auto [move_id, branch_start_id] = move_list.commit(new_constellation, current_move_id, hint);
      if (branch_start_id != detail::Move_List<T>::invalid_id) {
-         if (current_move_id == detail::Move_List<T>::invalid_id) {
-             initial_constellation(ui, move_id);
-         } else {
-             add_move(ui, move_id, branch_start_id, commitmsg, hint);
-         }
+         add_move(ui, move_id, branch_start_id, msg(diff(constellation(), new_constellation)), hint);
      }
-     set_current_move_and_branch_start_id(move_id);
+     return set_current_move_and_branch_start_id(move_id);
 }
 
 template <typename T, typename U>
 bool Move_List<T, U>::cut_off(const int move_id)
 {
-    if (move_list.has_entry(move_id)) {
+    if (move_list.has_entry(move_id) && move_id > detail::Move_List<T>::initial_id) {
         delete_moves(move_id);
         ui_cut_off(ui, move_id);
         if (!move_list.has_entry(current_move_id)) {
             return set_current_move_and_branch_start_id(detail::Move_List<T>::initial_id);
         }
+        return true;
     }
     return false;
 }
 
+template <typename T, typename U>
+bool Move_List<T, U>::export_move_list(const std::string& path)
+{
+    std::ofstream out(path);
+    out << move_list.make_json();
+    return out.good();
+}
+
 // private
+
+template <typename T, typename U>
+Move_List<T, U>::Move_List(U move_list_ui, std::string (*commit_msg_provider)(std::vector<std::array<typename T::value_type, 2>>))
+    : ui(move_list_ui)
+    , msg(commit_msg_provider)
+{
+    initial_constellation(ui, detail::Move_List<T>::initial_id);
+}
 
 template <typename T, typename U>
 void Move_List<T, U>::delete_moves(const int move_id)
@@ -201,6 +314,16 @@ void Move_List<T, U>::delete_moves(const int move_id)
     }
     move_list.delete_move(move_id);
     delete_move(ui, move_id);
+}
+
+template <typename T, typename U>
+void Move_List<T, U>::ui_replay(const int move_id)
+{
+    for (auto successor : move_list.next(move_id)) {
+        set_current_move_and_branch_start_id(move_id);
+        add_move(ui, successor, move_list.branch_start_ids(successor).at(0), msg(diff(move_list.constellation(move_id), move_list.constellation(successor))), move_list.hint(successor));
+        ui_replay(successor);
+    }
 }
 
 }

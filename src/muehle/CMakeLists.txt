@@ -1,2 +1,3 @@
 project(boardgames_muehle)
-include(prjobjlib)
+include(prjlib)
+target_link_libraries(${PROJECT_NAME} PRIVATE boardgame)

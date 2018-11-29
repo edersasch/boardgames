@@ -20,7 +20,7 @@ class Multi_Move_List_Qml
 {
     Q_OBJECT
 public:
-    Multi_Move_List_Qml(QQmlEngine* engine, std::vector<QQuickItem*> move_list_root_entries);
+    Multi_Move_List_Qml(QQmlEngine* engine, std::vector<QQuickItem*> move_list_root_entries, const QString& description, const QString& suffix);
     void set_move_color(const int move_id, const std::string& c);
 
     // from move_list_ui
@@ -34,10 +34,16 @@ signals:
     void request_set_current_move_and_branch_start_id(int move_id);
     void request_move_list_forward();
     void request_move_list_back();
+    void request_move_list_import(std::string url);
+    void request_move_list_export(std::string url);
     void request_delete_branch(int move_id);
     void added_move(int move_id, int piece_number);
 
+private slots:
+    void chosen_move_list_path(const QVariant& file_urls);
+
 private:
+    QQuickItem* file_dialog_root {nullptr};
     std::vector<std::unique_ptr<Move_List_Qml>> move_lists;
 };
 

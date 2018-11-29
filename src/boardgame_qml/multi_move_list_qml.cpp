@@ -2,6 +2,7 @@
 
 #include <QQmlEngine>
 #include <QQuickItem>
+#include <QQmlProperty>
 
 namespace boardgame_qml
 {
@@ -55,14 +56,35 @@ void cut_off(Multi_Move_List_Qml* mui, const int move_id)
     }
 }
 
-Multi_Move_List_Qml::Multi_Move_List_Qml(QQmlEngine* engine, std::vector<QQuickItem*> move_list_root_entries)
+Multi_Move_List_Qml::Multi_Move_List_Qml(QQmlEngine* engine, std::vector<QQuickItem*> move_list_root_entries, const QString& description, const QString& suffix)
 {
     for (auto entry : move_list_root_entries) {
         move_lists.push_back(std::make_unique<Move_List_Qml>(engine, entry));
         connect(move_lists.back().get(), &Move_List_Qml::request_set_current_move_and_branch_start_id, this, &Multi_Move_List_Qml::request_set_current_move_and_branch_start_id);
         connect(move_lists.back().get(), &Move_List_Qml::request_move_list_forward, this, &Multi_Move_List_Qml::request_move_list_forward);
         connect(move_lists.back().get(), &Move_List_Qml::request_move_list_back, this, &Multi_Move_List_Qml::request_move_list_back);
+        connect(move_lists.back().get(), &Move_List_Qml::request_move_list_import, this, [this] {
+            if (file_dialog_root) {
+                QQmlProperty(file_dialog_root, "choose_move_list_file_existing").write(true);
+                QQmlProperty(file_dialog_root, "choose_move_list_file_visible").write(true);
+            }
+        });
+        connect(move_lists.back().get(), &Move_List_Qml::request_move_list_export, this, [this] {
+            if (file_dialog_root) {
+                QQmlProperty(file_dialog_root, "choose_move_list_file_existing").write(false);
+                QQmlProperty(file_dialog_root, "choose_move_list_file_visible").write(true);
+            }
+        });
         connect(move_lists.back().get(), &Move_List_Qml::request_delete_branch, this, &Multi_Move_List_Qml::request_delete_branch);
+    }
+    if (!move_lists.empty()) {
+        file_dialog_root = move_list_root_entries.front();
+        QList<QString> name_filters;
+        name_filters.push_back(QString(description).append(" (*.").append(suffix).append(")"));
+        name_filters.push_back("* (*)");
+        QQmlProperty(file_dialog_root, "name_filters").write(QVariant(name_filters));
+        QQmlProperty(file_dialog_root, "default_suffix").write(suffix);
+        connect(file_dialog_root, SIGNAL(chosen_move_list_path(QVariant)), this, SLOT(chosen_move_list_path(QVariant)));
     }
 }
 
@@ -70,6 +92,18 @@ void Multi_Move_List_Qml::set_move_color(const int move_id, const std::string& c
 {
     for (auto& ml : move_lists) {
         ml->set_move_color(move_id, c);
+    }
+}
+
+// private slots
+
+void Multi_Move_List_Qml::chosen_move_list_path(const QVariant& file_urls)
+{
+    auto urls = file_urls.value<QList<QUrl>>();
+    if (urls.length() == 1) {
+        emit QQmlProperty(file_dialog_root, "choose_move_list_file_existing").read().toBool() ?
+                    request_move_list_import(urls.at(0).path().toStdString()) :
+                    request_move_list_export(urls.at(0).path().toStdString());
     }
 }
 

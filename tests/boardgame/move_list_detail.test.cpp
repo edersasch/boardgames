@@ -35,7 +35,7 @@ void Move_List_Detail_Test::delete_moves(int move_id)
     move_list.delete_move(move_id);
 }
 
-TEST_F(Move_List_Detail_Test, commit_sequence_test)
+TEST_F(Move_List_Detail_Test, commit_sequence)
 {
     commit_sequence(-1, 0, 99, 0, 0);
     commit_sequence(50, 100, 199, 100, 100);
@@ -90,7 +90,7 @@ TEST_F(Move_List_Detail_Test, commit_sequence_test)
      */
     }
 
-TEST_F(Move_List_Detail_Test, delete_moves_test)
+TEST_F(Move_List_Detail_Test, delete_moves)
 {
     commit_sequence(-1, 0, 99, 0, 0);
     commit_sequence(50, 100, 199, 100, 100);

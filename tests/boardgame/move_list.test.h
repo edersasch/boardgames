@@ -9,6 +9,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 class Move_List_Ui_Mock
 {
@@ -24,10 +25,12 @@ class Move_List_Test
         : public ::testing::Test
 {
 protected:
+    Move_List_Test();
     void commit_sequence(int predecessor, int start, int end, int expected_committed_move_id, int expected_branch_start_id);
     void expect_present_move(int move_id, int predecessor);
+    void expect_import_sequence(int predecessor, int start, int end, int expected_committed_move_id, int expected_branch_start_id);
     ::testing::StrictMock<Move_List_Ui_Mock> ui {};
-    boardgame::Move_List<int, boardgame::Move_List_Ui> move_list {boardgame::Move_List_Ui(&ui)};
+    std::unique_ptr<boardgame::Move_List<std::vector<int>, boardgame::Move_List_Ui>> move_list {};
 };
 
 void initial_constellation(::testing::StrictMock<Move_List_Ui_Mock>* mui, const int constellation_id) { mui->initial_constellation(constellation_id); }

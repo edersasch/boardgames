@@ -1,36 +1,5 @@
 #include "muehle_state.h"
 
-namespace {
-
-constexpr std::array<const char*, 24> coordinate_names {
-    "A7",
-    "D7",
-    "G7",
-    "B6",
-    "D6",
-    "F6",
-    "C5",
-    "D5",
-    "E5",
-    "A4",
-    "B4",
-    "C4",
-    "E4",
-    "F4",
-    "G4",
-    "C3",
-    "D3",
-    "E3",
-    "B2",
-    "D2",
-    "F2",
-    "A1",
-    "D1",
-    "G1"
-};
-
-}
-
 namespace muehle
 {
 
@@ -116,6 +85,7 @@ void Muehle_State::request_occupy(const boardgame::Field_Number fn)
         set_occupiable_empty_fields();
         return;
     }
+    move_list_hint = piece.v;
     auto [fields_of_removable_pieces, successor] = muehle::occupy(key, from , fn.v);
     (void)successor;
     check_hide_drawer();
@@ -166,11 +136,37 @@ void Muehle_State::request_move_list_back()
     }
 }
 
+void Muehle_State::request_move_list_import(const std::string& path)
+{
+    request_white_engine_active(false);
+    request_black_engine_active(false);
+    if (engine.is_running()) {
+        import_path = path;
+        engine.discard();
+    } else {
+        import_path.clear();
+        move_list = std::make_unique<boardgame::Move_List<muehle::Muehle_Constellation, boardgame::Move_List_Ui>>(move_list_ui, muehle::diff_text, path);
+        if (move_list->get_current_move_id() != 0) {
+            new_game();
+        } else {
+            request_set_current_move_and_branch_start_id(move_list->get_current_move_id());
+        }
+    }
+}
+
+bool Muehle_State::request_move_list_export(const std::string& path)
+{
+    return move_list->export_move_list(path);
+}
+
 void Muehle_State::engine_move(bool is_valid)
 {
     if (is_valid) {
         for (auto d : diff_key(engine.get_next())) {
             set_field_helper(field_to_piece(d.at(0)), d.at(1));
+            if (is_in_group(d.at(1), game_board)) {
+                move_list_hint = field_to_piece(d.at(1)).v;
+            }
         }
         swap_players();
     } else {
@@ -180,7 +176,11 @@ void Muehle_State::engine_move(bool is_valid)
             if (setup_mode) {
                 enter_setup_mode();
             } else {
-                update_game();
+                if (!import_path.empty()) {
+                    request_move_list_import(import_path);
+                } else {
+                    update_game();
+                }
             }
         }
     }
@@ -228,28 +228,7 @@ void Muehle_State::start_move()
 
 void Muehle_State::swap_players()
 {
-    std::string commitmsg = "--"; // used in case the player was not able to move
-    boardgame::Field_Number dest_field;
-    if (auto diffed = diff(move_list->constellation(), current_constellation); !diffed.empty()) { // example "21-22 x18" means: moved from field 21 to field 22, removed piece from field 18
-        std::string from;
-        std::string to;
-        std::string removed;
-        for (const auto& d : diffed) {
-            if (is_in_group(d.at(1), game_board)) {
-                dest_field = d.at(1);
-                to = coordinate_names.at(dest_field.v);
-                if (is_in_group(d.at(0), game_board)) {
-                    from = std::string(coordinate_names.at(d.at(0).v)) + "-";
-                }
-            } else {
-                if (is_in_group(d.at(1), opponent_player->prison_group)) {
-                    removed = " x" + std::string(coordinate_names.at(d.at(0).v));
-                }
-            }
-        }
-        commitmsg = from + to + removed;
-    }
-    move_list->commit(current_constellation, commitmsg, {field_to_piece(dest_field).v});
+    move_list->commit(current_constellation, {move_list_hint});
     if (first_empty_field(opponent_player->prison_group) == boardgame::no_field) {
         set_removable_pieces({});
         win(boardgame_ui, current_player->id);
@@ -279,24 +258,11 @@ void Muehle_State::set_field_helper(const boardgame::Piece_Number pn, const boar
 void Muehle_State::update_game()
 {
     if (!engine.is_running()) {
-        auto& constellation = move_list->constellation();
         request_white_engine_active(false);
         request_black_engine_active(false);
         set_selected_piece(boardgame::no_piece);
-        std::fill(all_fields.begin(), all_fields.end(), boardgame::no_piece);
-        std::fill(current_constellation.begin(), current_constellation.end(), boardgame::no_field);
-        for (int i = 0; i < static_cast<int>(constellation.size()); i += 1) {
-            set_field_helper(boardgame::Piece_Number{i}, constellation.at(static_cast<std::size_t>(i)));
-        }
-        current_player = &white_player;
-        opponent_player = &black_player;
-        auto& hint = move_list->hint();
-        if (!hint.empty()) {
-            if (hint.front() < muehle::first_black_piece.v) {
-                current_player = &black_player;
-                opponent_player = &white_player;
-            }
-        }
+        reconstruct(move_list->constellation());
+        set_player_on_hint(move_list->hint());
         leave_setup_mode();
     } else {
         engine.discard();
@@ -421,8 +387,8 @@ void Muehle_State::leave_setup_mode()
     setup_mode = false;
     if (sm) {
         setup_mode_active(boardgame_ui, false);
-        move_list = std::make_unique<boardgame::Move_List<muehle::Muehle_Constellation, boardgame::Move_List_Ui>>(move_list_ui);
-        move_list->commit(current_constellation, std::string(), {current_player == &white_player ? muehle::first_black_piece.v : muehle::first_white_piece.v}); // initial position, hint is the potential piece that "moved"
+        move_list = std::make_unique<boardgame::Move_List<muehle::Muehle_Constellation, boardgame::Move_List_Ui>>(move_list_ui, muehle::diff_text, current_constellation,
+            std::vector<int>{current_player == &white_player ? muehle::first_black_piece.v : muehle::first_white_piece.v}); // initial position, hint is the potential piece that "moved"
     }
     set_selected_piece(boardgame::no_piece);
     set_selectable_pieces({});
@@ -448,9 +414,9 @@ void Muehle_State::check_show_prison()
     }
 }
 
-boardgame::Diff Muehle_State::diff_key(Muehle_Key key)
+boardgame::Field_Number_Diff Muehle_State::diff_key(Muehle_Key key)
 {
-    boardgame::Diff diffed;
+    boardgame::Field_Number_Diff diffed;
     auto single_diff = [this, &key, &diffed]() {
         std::vector<int> single_from;
         std::vector<int> single_to;
@@ -491,6 +457,27 @@ boardgame::Diff Muehle_State::diff_key(Muehle_Key key)
     key.reset(54);
     single_diff();
     return diffed;
+}
+
+void Muehle_State::reconstruct(const Muehle_Constellation& constellation)
+{
+    std::fill(all_fields.begin(), all_fields.end(), boardgame::no_piece);
+    std::fill(current_constellation.begin(), current_constellation.end(), boardgame::no_field);
+    for (int i = 0; i < static_cast<int>(constellation.size()); i += 1) {
+        set_field_helper(boardgame::Piece_Number{i}, constellation.at(static_cast<std::size_t>(i)));
+    }
+}
+
+void Muehle_State::set_player_on_hint(const std::vector<int>& hint)
+{
+    current_player = &white_player;
+    opponent_player = &black_player;
+    if (!hint.empty()) {
+        if (hint.front() < muehle::first_black_piece.v) {
+            current_player = &black_player;
+            opponent_player = &white_player;
+        }
+    }
 }
 
 }

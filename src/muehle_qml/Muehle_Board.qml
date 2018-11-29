@@ -5,6 +5,8 @@ import QtQuick.Controls 2.2
 //import "../boardgame_qml" // causes crash
 
 RowLayout {
+    id: root
+
     property color white_color: "white"
     property color black_color: "black"
     property bool hor_orientation: true

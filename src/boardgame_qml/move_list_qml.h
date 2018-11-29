@@ -20,7 +20,7 @@ class Move_List_Qml
 {
     Q_OBJECT
 public:
-    Move_List_Qml(QQmlEngine* engine, QQuickItem* move_list_root_entries);
+    Move_List_Qml(QQmlEngine* engine, QQuickItem* move_list_root_entry);
     void set_move_color(const int move_id, const std::string& c);
 
     void initial_constellation(const int constellation_id);
@@ -33,6 +33,8 @@ signals:
     void request_set_current_move_and_branch_start_id(int move_id);
     void request_move_list_forward();
     void request_move_list_back();
+    void request_move_list_import();
+    void request_move_list_export();
     void request_delete_branch(int move_id);
 
 private slots:
@@ -40,7 +42,7 @@ private slots:
 
 private:
     void add_move_button(const int move_id, const std::string& description);
-    QQuickItem* root_entries;
+    QQuickItem* root_entry;
     QQmlComponent move_button;
     QQmlComponent move_list_entry;
     std::string white_color;

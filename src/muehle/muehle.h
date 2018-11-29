@@ -40,6 +40,7 @@ unsigned long prisoner_count(const Muehle_Key& key);
 std::pair<std::vector<int>, Muehle_Key> occupy(Muehle_Key key, const int from, const int to);
 bool can_slide(const Muehle_Key& key, const std::size_t field);
 const std::vector<int>& free_adjacent_fields(const Muehle_Key& key, const std::size_t field);
+std::string diff_text(boardgame::Field_Number_Diff fndiff);
 
 struct Engine_Helper
 {

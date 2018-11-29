@@ -5,7 +5,7 @@ import QtQuick.Controls 2.3
 RowLayout {
     id: root
 
-    signal request_move_list_back_to_start()
+    signal request_move_list_back_to_start
     signal request_move_list_forward
     signal request_move_list_back
     signal request_move_list_import

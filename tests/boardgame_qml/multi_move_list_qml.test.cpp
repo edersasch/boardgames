@@ -19,7 +19,7 @@ Multi_Move_List_Qml_Test::Multi_Move_List_Qml_Test()
     , move_list_back_to_start_button(move_list_control->childItems().at(0))
     , move_list_back_button(move_list_control->childItems().at(1))
     , move_list_forward_button(move_list_control->childItems().at(2))
-    , mlq(v.engine(), {move_list_root_entry1, move_list_root_entry2})
+    , mlq(v.engine(), {move_list_root_entry1, move_list_root_entry2}, "test", "tst")
 {
     Q_INIT_RESOURCE(boardgame_qml);
     Q_INIT_RESOURCE(move_list_qml_test);

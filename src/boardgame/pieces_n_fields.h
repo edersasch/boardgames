@@ -1,6 +1,8 @@
 #ifndef SRC_BOARDGAME_PIECES_N_FIELDS
 #define SRC_BOARDGAME_PIECES_N_FIELDS
 
+#include <nlohmann/json.hpp>
+
 #include <algorithm>
 #include <vector>
 #include <array>
@@ -140,6 +142,9 @@ using Field_Range = detail::Element_Range<const Field_Tag>;
 template <typename T>
 using Fieldgroup = detail::Elementgroup<T, const Field_Tag>;
 
+void from_json(const nlohmann::json& j, boardgame::Field_Number& d);
+void to_json(nlohmann::json& j, const Field_Number& d);
+
 template <typename T>
 constexpr auto make_fieldgroup(const T& fields, const Field_Number start, const Field_Range range)
 {
@@ -182,33 +187,7 @@ auto positions_of_pieces_in_fieldgroup(const T& piecegroup, const U& fieldgroup)
     return filter_elements_in_group(piecegroup, fieldgroup);
 }
 
-using Diff = std::vector<std::array<Field_Number, 2>>;
-
-template <typename T>
-Diff diff(const T& first, const T& second)
-{
-    Diff diffed;
-    auto [f, s] = std::mismatch(first.begin(), first.end(), second.begin());
-    while (s != second.end()) {
-        diffed.push_back({*f, *s}); // narrowing ok if less than 2 million pieces
-        f += 1;
-        s += 1;
-        std::tie(f, s) = std::mismatch(f, first.end(), s);
-    }
-    return diffed;
-}
-
-template <typename T>
-Diff diff (const T& move_list, const int id)
-{
-    int prev = move_list.prev();
-    if (prev == T::invalid_id) {
-        return {};
-    }
-    auto target = constellation(move_list.constellation(id));
-    auto before = constellation(move_list.constellation(prev));
-    return diff(before, target);
-}
+using Field_Number_Diff = std::vector<std::array<Field_Number, 2>>;
 
 }
 

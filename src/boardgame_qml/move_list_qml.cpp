@@ -6,15 +6,17 @@
 namespace boardgame_qml
 {
 
-Move_List_Qml::Move_List_Qml(QQmlEngine* engine, QQuickItem* move_list_root_entries)
-    : root_entries(move_list_root_entries)
+Move_List_Qml::Move_List_Qml(QQmlEngine* engine, QQuickItem* move_list_root_entry)
+    : root_entry(move_list_root_entry)
     , move_button(engine, QUrl(QStringLiteral("qrc:/Move_Button.qml")))
     , move_list_entry(engine, QUrl(QStringLiteral("qrc:/Move_List_Entry.qml")))
 {
-    auto control = QQmlProperty(root_entries, "control").read().value<QQuickItem*>();
+    auto control = QQmlProperty(root_entry, "control").read().value<QQuickItem*>();
     connect(control, SIGNAL(request_move_list_back_to_start()), this, SLOT(request_move_list_back_to_start()));
     connect(control, SIGNAL(request_move_list_forward()), this, SIGNAL(request_move_list_forward()));
     connect(control, SIGNAL(request_move_list_back()), this, SIGNAL(request_move_list_back()));
+    connect(control, SIGNAL(request_move_list_import()), this, SIGNAL(request_move_list_import()));
+    connect(control, SIGNAL(request_move_list_export()), this, SIGNAL(request_move_list_export()));
 }
 
 void Move_List_Qml::initial_constellation(const int constellation_id)
@@ -43,7 +45,7 @@ std::vector<QQuickItem*> Move_List_Qml::add_move(const int move_id, const int br
 {
     std::vector<QQuickItem*> branch_cols;
     auto buttons = current_move_id == start_id ?
-                QQmlProperty(root_entries, "buttons").read().value<QQuickItem*>() :
+                QQmlProperty(root_entry, "buttons").read().value<QQuickItem*>() :
                 move_buttons.at(current_move_id)->parentItem();
     if (move_id == branch_id) {
         auto make_branch = [this, buttons, &branch_cols](int id) -> QQuickItem* {

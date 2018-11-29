@@ -61,6 +61,33 @@ constexpr std::array<std::initializer_list<int>, 24> adjacent_fields {{
     {14, 22}
 }};
 
+constexpr std::array<const char*, 24> coordinate_names {
+    "A7",
+    "D7",
+    "G7",
+    "B6",
+    "D6",
+    "F6",
+    "C5",
+    "D5",
+    "E5",
+    "A4",
+    "B4",
+    "C4",
+    "E4",
+    "F4",
+    "G4",
+    "C3",
+    "D3",
+    "E3",
+    "B2",
+    "D2",
+    "F2",
+    "A1",
+    "D1",
+    "G1"
+};
+
 std::vector<int> fields_of_removable_pieces;
 std::vector<int> free_fields_store;
 std::vector<int> fields_of_selectable_pieces_store;
@@ -190,7 +217,7 @@ bool closed_muehle(const Muehle_Key& key, const int field)
         return key[field_one + offset] && key[field_two + offset] && key[field_three + offset];
     };
 
-    if (muehle_on_fields(field, vertical_muehle[static_cast<std::size_t>(field)][0], vertical_muehle[static_cast<std::size_t>(field)][1])) {
+    if (muehle_on_fields(field, vertical_muehle.at(static_cast<std::size_t>(field)).at(0), vertical_muehle.at(static_cast<std::size_t>(field)).at(1))) {
         return true;
     }
 
@@ -251,6 +278,30 @@ const std::vector<int>& free_adjacent_fields(const Muehle_Key& key, const std::s
     free_adjacent_fields_store.resize(adjacent_fields.at(field).size());
     free_adjacent_fields_store.erase(std::copy_if(adjacent_fields.at(field).begin(), adjacent_fields.at(field).end(), free_adjacent_fields_store.begin(), check_free), free_adjacent_fields_store.end());
     return free_adjacent_fields_store;
+}
+
+std::string diff_text(boardgame::Field_Number_Diff fndiff)
+{
+    std::string commitmsg = "--"; // used in case the player was not able to move
+    if (!fndiff.empty()) { // example "21-22 x18" means: moved from field 21 to field 22, removed piece from field 18
+        std::string from;
+        std::string to;
+        std::string removed;
+        for (const auto& d : fndiff) {
+            if (d.at(1).v >= muehle::first_board_field.v && d.at(1).v < muehle::first_board_field.v + muehle::number_of_board_fields.v) {
+                to = coordinate_names.at(d.at(1).v);
+                if (d.at(0).v >= muehle::first_board_field.v && d.at(0).v < muehle::first_board_field.v + muehle::number_of_board_fields.v) {
+                    from = std::string(coordinate_names.at(d.at(0).v)) + "-";
+                }
+            } else {
+                if (d.at(1).v >= muehle::first_white_prison_field.v) {
+                    removed = " x" + std::string(coordinate_names.at(d.at(0).v));
+                }
+            }
+        }
+        commitmsg = from + to + removed;
+    }
+    return commitmsg;
 }
 
 const std::vector<Muehle_Key> Engine_Helper::successor_constellations(const Muehle_Key& key)

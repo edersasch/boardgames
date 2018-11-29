@@ -1,3 +1,3 @@
 project(muehle_test)
-set(OBJLIBS $<TARGET_OBJECTS:boardgames_muehle>)
 include(prjtest)
+target_link_libraries(${PROJECT_NAME} PRIVATE boardgame boardgames_muehle)

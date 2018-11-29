@@ -4,7 +4,7 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>8</x>
+      <x>0</x>
       <y>728</y>
       <w>1200</w>
       <h>328</h>
@@ -25,6 +25,8 @@
 + request_cut_off(move_id: const int)
 + request_move_list_forward()
 + request_move_list_back()
++ request_move_list_import(path: string): bool
++ request_move_list_export(path: string): bool
 
 &lt;&lt;engine&gt;&gt;
 + engine_move(is_valid: bool);
@@ -35,7 +37,7 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>584</x>
+      <x>576</x>
       <y>1576</y>
       <w>200</w>
       <h>88</h>
@@ -52,7 +54,7 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>8</x>
+      <x>0</x>
       <y>1192</y>
       <w>1192</w>
       <h>296</h>
@@ -66,7 +68,7 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>928</x>
+      <x>920</x>
       <y>1576</y>
       <w>328</w>
       <h>88</h>
@@ -83,7 +85,7 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>680</x>
+      <x>672</x>
       <y>1480</y>
       <w>32</w>
       <h>112</h>
@@ -96,7 +98,7 @@ m2=*</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1080</x>
+      <x>1072</x>
       <y>1480</y>
       <w>32</w>
       <h>112</h>
@@ -109,7 +111,7 @@ m2=*</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>32</x>
+      <x>24</x>
       <y>1048</y>
       <w>24</w>
       <h>160</h>
@@ -121,7 +123,7 @@ m2=*</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>600</x>
+      <x>592</x>
       <y>1736</y>
       <w>168</w>
       <h>104</h>
@@ -139,7 +141,7 @@ boardgame_qml::Piece
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>984</x>
+      <x>976</x>
       <y>1728</y>
       <w>208</w>
       <h>144</h>
@@ -161,7 +163,7 @@ boardgame_qml::Field
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1080</x>
+      <x>1072</x>
       <y>1656</y>
       <w>32</w>
       <h>88</h>
@@ -174,7 +176,7 @@ m2=1</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>680</x>
+      <x>672</x>
       <y>1656</y>
       <w>32</w>
       <h>96</h>
@@ -187,7 +189,7 @@ m2=1</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>776</x>
+      <x>768</x>
       <y>1608</y>
       <w>168</w>
       <h>40</h>
@@ -200,10 +202,10 @@ get_field() &gt;
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>296</x>
+      <x>288</x>
       <y>1576</y>
       <w>272</w>
-      <h>312</h>
+      <h>360</h>
     </coordinates>
     <panel_attributes>&lt;&lt;Qml&gt;&gt;
 muehle_qml::Muehle_Board
@@ -235,7 +237,7 @@ muehle_qml::Muehle_Board
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>440</x>
+      <x>432</x>
       <y>1480</y>
       <w>32</w>
       <h>112</h>
@@ -248,7 +250,7 @@ m2=1</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>8</x>
+      <x>0</x>
       <y>1576</y>
       <w>272</w>
       <h>248</h>
@@ -277,7 +279,7 @@ muehle_qml::Muehle_Control
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>136</x>
+      <x>128</x>
       <y>1480</y>
       <w>32</w>
       <h>112</h>
@@ -290,7 +292,7 @@ m2=1</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>728</x>
+      <x>720</x>
       <y>360</y>
       <w>192</w>
       <h>128</h>
@@ -309,8 +311,8 @@ boardgame::Alpha_Beta
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1312</x>
-      <y>1576</y>
+      <x>2104</x>
+      <y>1808</y>
       <w>224</w>
       <h>128</h>
     </coordinates>
@@ -330,10 +332,10 @@ boardgame_qml::Move_List_Control
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1328</x>
+      <x>1320</x>
       <y>672</y>
       <w>528</w>
-      <h>168</h>
+      <h>200</h>
     </coordinates>
     <panel_attributes>boardgame::Move_List
 --
@@ -346,15 +348,16 @@ boardgame_qml::Move_List_Control
 + move_list_back(): bool
 + constellation(move_id: int): const &lt;T&gt;
 + hint(move_id: const int): const int[]
-+ commit(onstellation: &lt;T&gt;, commitmsg: string, hint: int[])
++ commit(constellation: &lt;T&gt;, commitmsg: string, hint: int[])
 + cut_off(move_id: const int)
-</panel_attributes>
++ export_move_list(path: string): bool
++ import_move_list(path: string): bool</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1200</x>
+      <x>1192</x>
       <y>768</y>
       <w>144</w>
       <h>32</h>
@@ -367,10 +370,10 @@ m2=1</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1376</x>
+      <x>1368</x>
       <y>1304</y>
-      <w>632</w>
-      <h>184</h>
+      <w>552</w>
+      <h>208</h>
     </coordinates>
     <panel_attributes>boardgame_qml::Move_List_Qml
 --
@@ -385,6 +388,8 @@ m2=1</panel_attributes>
 + request_set_current_move_and_branch_start_id(move_id: id)
 + request_move_list_forward()
 + request_move_list_back()
++ request_move_list_import()
++ request_move_list_export()
 + request_delete_branch(move_id: int)
 </panel_attributes>
     <additional_attributes/>
@@ -392,28 +397,32 @@ m2=1</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1504</x>
-      <y>1088</y>
+      <x>1496</x>
+      <y>1048</y>
       <w>376</w>
-      <h>152</h>
+      <h>192</h>
     </coordinates>
     <panel_attributes>boardgame_qml::Multi_Move_List_Qml
 --
 --
 &lt;&lt;signals&gt;&gt;
-request_set_current_move_and_branch_start_id(int move_id);
-request_move_list_forward();
-request_move_list_back();
-request_delete_branch(int move_id);
-added_move(move_id: int, piece_number: int)
++ request_set_current_move_and_branch_start_id(int move_id);
++ request_move_list_forward();
++ request_move_list_back();
++ request_move_list_import(url: string)
++ request_move_list_export(url: string)
++ request_delete_branch(int move_id);
++ added_move(move_id: int, piece_number: int)
 --
-+ set_move_color(move_id: const int, c: string)</panel_attributes>
++ set_move_color(move_id: const int, c: string)
+&lt;&lt;slots&gt;&gt;
+chosen_move_list_path(file_urls: QVariant)</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1680</x>
+      <x>1672</x>
       <y>1232</y>
       <w>32</w>
       <h>88</h>
@@ -426,7 +435,7 @@ m2=*</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1192</x>
+      <x>1184</x>
       <y>1216</y>
       <w>328</w>
       <h>32</h>
@@ -439,7 +448,7 @@ m2=1</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1552</x>
+      <x>1560</x>
       <y>1576</y>
       <w>304</w>
       <h>128</h>
@@ -458,7 +467,7 @@ boardgame_qml::Move_List_Entry
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1872</x>
+      <x>1288</x>
       <y>1576</y>
       <w>256</w>
       <h>128</h>
@@ -478,46 +487,46 @@ boardgame_qml::Move_Button
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1416</x>
-      <y>1480</y>
-      <w>32</w>
-      <h>112</h>
+      <x>2016</x>
+      <y>1872</y>
+      <w>104</w>
+      <h>32</h>
     </coordinates>
-    <panel_attributes>lt=-
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
 m1=1
 m2=1</panel_attributes>
-    <additional_attributes>10.0;120.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;110.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1696</x>
-      <y>1480</y>
+      <x>1704</x>
+      <y>1504</y>
       <w>32</w>
-      <h>112</h>
+      <h>88</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-
 m1=1
 m2=*</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;120.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1888</x>
-      <y>1480</y>
+      <x>1416</x>
+      <y>1504</y>
       <w>32</w>
-      <h>112</h>
+      <h>88</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-
 m1=1
 m2=*</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;120.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1112</x>
+      <x>1104</x>
       <y>504</y>
       <w>24</w>
       <h>240</h>
@@ -539,7 +548,7 @@ m2=*</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>968</x>
+      <x>960</x>
       <y>360</y>
       <w>528</w>
       <h>152</h>
@@ -600,19 +609,19 @@ innerclass}
     <coordinates>
       <x>520</x>
       <y>440</y>
-      <w>224</w>
+      <w>216</w>
       <h>48</h>
     </coordinates>
     <panel_attributes>lt=-
 &lt; successor_constellation()
 evaluate()
 switch_player()</panel_attributes>
-    <additional_attributes>10.0;20.0;260.0;20.0</additional_attributes>
+    <additional_attributes>10.0;20.0;250.0;20.0</additional_attributes>
   </element>
   <element>
     <id>UMLInterface</id>
     <coordinates>
-      <x>984</x>
+      <x>976</x>
       <y>0</y>
       <w>192</w>
       <h>80</h>
@@ -626,7 +635,7 @@ engine_future(ef: future&lt;bool&gt;)
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>80</x>
+      <x>72</x>
       <y>1048</y>
       <w>184</w>
       <h>96</h>
@@ -639,7 +648,7 @@ m1=boardgame::Boardgame_Ui
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>88</x>
+      <x>80</x>
       <y>1128</y>
       <w>176</w>
       <h>80</h>
@@ -652,7 +661,7 @@ m2=boardgame::Boardgame_Ui
   <element>
     <id>UMLInterface</id>
     <coordinates>
-      <x>416</x>
+      <x>408</x>
       <y>0</y>
       <w>528</w>
       <h>120</h>
@@ -669,7 +678,7 @@ cut_off(move_id: const_int)</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>288</x>
+      <x>280</x>
       <y>1048</y>
       <w>160</w>
       <h>96</h>
@@ -681,7 +690,7 @@ m1=boardgame::Main_Loop</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>296</x>
+      <x>288</x>
       <y>1128</y>
       <w>152</w>
       <h>80</h>
@@ -723,8 +732,8 @@ black_engine_active(is_active: bool)
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1680</x>
-      <y>976</y>
+      <x>1672</x>
+      <y>936</y>
       <w>168</w>
       <h>128</h>
     </coordinates>
@@ -736,19 +745,19 @@ m2=boardgame::Move_List_Ui
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1672</x>
-      <y>832</y>
+      <x>1664</x>
+      <y>864</y>
       <w>176</w>
-      <h>160</h>
+      <h>88</h>
     </coordinates>
     <panel_attributes>lt=)-
 m1=boardgame::Move_List_Ui</panel_attributes>
-    <additional_attributes>20.0;170.0;20.0;10.0</additional_attributes>
+    <additional_attributes>20.0;80.0;20.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>808</x>
+      <x>800</x>
       <y>480</y>
       <w>32</w>
       <h>264</h>
@@ -757,5 +766,50 @@ m1=boardgame::Move_List_Ui</panel_attributes>
 m1=1
 m2=1</panel_attributes>
     <additional_attributes>10.0;310.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>552</x>
+      <y>1904</y>
+      <w>1184</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1=1
+m2=*</panel_attributes>
+    <additional_attributes>10.0;10.0;1460.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1720</x>
+      <y>1808</y>
+      <w>304</w>
+      <h>128</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Qml&gt;&gt;
+boardgame_qml::Move_List_Root_Entry
+--
+&lt;&lt;properties&gt;&gt;
++ control: QQuickItem
++ choose_move_list_file_existing: bool
++ choose_move_list_file_visible: bool
+--
+&lt;&lt;signals&gt;&gt;
++ signal chosen_move_list_path(file_urls: QVariant)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1736</x>
+      <y>1696</y>
+      <w>24</w>
+      <h>128</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;140.0</additional_attributes>
   </element>
 </diagram>

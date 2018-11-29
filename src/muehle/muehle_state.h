@@ -12,6 +12,7 @@
 #include <array>
 #include <vector>
 #include <memory>
+#include <string>
 
 /** Model setup and rule checking
  *
@@ -58,6 +59,8 @@ public:
     void request_cut_off(const int move_id);
     void request_move_list_forward();
     void request_move_list_back();
+    void request_move_list_import(const std::string& path);
+    bool request_move_list_export(const std::string& path);
     void engine_move(bool is_valid);
     void force_engine_move();
 private:
@@ -67,7 +70,8 @@ private:
     const boardgame::Boardgame_Ui boardgame_ui;
     const boardgame::Move_List_Ui move_list_ui;
     const boardgame::Main_Loop main_loop;
-    std::unique_ptr<boardgame::Move_List<muehle::Muehle_Constellation, boardgame::Move_List_Ui>> move_list {new boardgame::Move_List<muehle::Muehle_Constellation, boardgame::Move_List_Ui>(move_list_ui)};
+    int move_list_hint {-1};
+    std::unique_ptr<boardgame::Move_List<muehle::Muehle_Constellation, boardgame::Move_List_Ui>> move_list {};
     struct Player
     {
         const boardgame::Piecegroup<decltype(current_constellation.cbegin())>& piece_group;
@@ -97,7 +101,9 @@ private:
     void leave_setup_mode();
     void check_hide_drawer();
     void check_show_prison();
-    boardgame::Diff diff_key(Muehle_Key key);
+    boardgame::Field_Number_Diff diff_key(Muehle_Key key);
+    void reconstruct(const Muehle_Constellation& constellation);
+    void set_player_on_hint(const std::vector<int>& hint);
     const boardgame::Piecegroup<decltype(current_constellation.cbegin())> white_pieces { make_piecegroup(current_constellation, muehle::first_white_piece, muehle::number_of_pieces_per_player) };
     const boardgame::Piecegroup<decltype(current_constellation.cbegin())> black_pieces { make_piecegroup(current_constellation, muehle::first_black_piece, muehle::number_of_pieces_per_player) };
     const boardgame::Fieldgroup<decltype(all_fields.cbegin())> game_board { make_fieldgroup(all_fields, muehle::first_board_field, muehle::number_of_board_fields) };
@@ -115,6 +121,7 @@ private:
     bool setup_mode {false};
     boardgame::Alpha_Beta<muehle::Muehle_Key, muehle::Engine_Helper> engine;
     bool restart {false};
+    std::string import_path {};
 };
 
 }
