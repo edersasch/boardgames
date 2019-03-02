@@ -56,6 +56,13 @@ void cut_off(Multi_Move_List_Qml* mui, const int move_id)
     }
 }
 
+void need_confirm(Multi_Move_List_Qml* mui, const bool is_needed)
+{
+    for (auto& ml : mui->move_lists) {
+        ml->need_confirm(is_needed);
+    }
+}
+
 Multi_Move_List_Qml::Multi_Move_List_Qml(QQmlEngine* engine, std::vector<QQuickItem*> move_list_root_entries, const QString& description, const QString& suffix)
 {
     for (auto entry : move_list_root_entries) {

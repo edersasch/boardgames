@@ -5,7 +5,7 @@
     <id>UMLClass</id>
     <coordinates>
       <x>0</x>
-      <y>728</y>
+      <y>800</y>
       <w>1200</w>
       <h>328</h>
     </coordinates>
@@ -38,7 +38,7 @@
     <id>UMLClass</id>
     <coordinates>
       <x>576</x>
-      <y>1576</y>
+      <y>1648</y>
       <w>200</w>
       <h>88</h>
     </coordinates>
@@ -55,7 +55,7 @@
     <id>UMLClass</id>
     <coordinates>
       <x>0</x>
-      <y>1192</y>
+      <y>1264</y>
       <w>1192</w>
       <h>296</h>
     </coordinates>
@@ -69,7 +69,7 @@
     <id>UMLClass</id>
     <coordinates>
       <x>920</x>
-      <y>1576</y>
+      <y>1648</y>
       <w>328</w>
       <h>88</h>
     </coordinates>
@@ -86,7 +86,7 @@
     <id>Relation</id>
     <coordinates>
       <x>672</x>
-      <y>1480</y>
+      <y>1552</y>
       <w>32</w>
       <h>112</h>
     </coordinates>
@@ -99,7 +99,7 @@ m2=*</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>1072</x>
-      <y>1480</y>
+      <y>1552</y>
       <w>32</w>
       <h>112</h>
     </coordinates>
@@ -112,7 +112,7 @@ m2=*</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>24</x>
-      <y>1048</y>
+      <y>1120</y>
       <w>24</w>
       <h>160</h>
     </coordinates>
@@ -124,7 +124,7 @@ m2=*</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>592</x>
-      <y>1736</y>
+      <y>1808</y>
       <w>168</w>
       <h>104</h>
     </coordinates>
@@ -142,7 +142,7 @@ boardgame_qml::Piece
     <id>UMLClass</id>
     <coordinates>
       <x>976</x>
-      <y>1728</y>
+      <y>1800</y>
       <w>208</w>
       <h>144</h>
     </coordinates>
@@ -164,7 +164,7 @@ boardgame_qml::Field
     <id>Relation</id>
     <coordinates>
       <x>1072</x>
-      <y>1656</y>
+      <y>1728</y>
       <w>32</w>
       <h>88</h>
     </coordinates>
@@ -177,7 +177,7 @@ m2=1</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>672</x>
-      <y>1656</y>
+      <y>1728</y>
       <w>32</w>
       <h>96</h>
     </coordinates>
@@ -190,7 +190,7 @@ m2=1</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>768</x>
-      <y>1608</y>
+      <y>1680</y>
       <w>168</w>
       <h>40</h>
     </coordinates>
@@ -203,7 +203,7 @@ get_field() &gt;
     <id>UMLClass</id>
     <coordinates>
       <x>288</x>
-      <y>1576</y>
+      <y>1648</y>
       <w>272</w>
       <h>360</h>
     </coordinates>
@@ -238,7 +238,7 @@ muehle_qml::Muehle_Board
     <id>Relation</id>
     <coordinates>
       <x>432</x>
-      <y>1480</y>
+      <y>1552</y>
       <w>32</w>
       <h>112</h>
     </coordinates>
@@ -251,7 +251,7 @@ m2=1</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>0</x>
-      <y>1576</y>
+      <y>1648</y>
       <w>272</w>
       <h>248</h>
     </coordinates>
@@ -264,6 +264,7 @@ muehle_qml::Muehle_Control
 + setup_mode_active: bool
 + white_engine_active: bool
 + black_engine_active: bool
++ confirm: bool
 --
 &lt;&lt;signals&gt;&gt;
 + horizontal()
@@ -280,7 +281,7 @@ muehle_qml::Muehle_Control
     <id>Relation</id>
     <coordinates>
       <x>128</x>
-      <y>1480</y>
+      <y>1552</y>
       <w>32</w>
       <h>112</h>
     </coordinates>
@@ -293,7 +294,7 @@ m2=1</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>720</x>
-      <y>360</y>
+      <y>432</y>
       <w>192</w>
       <h>128</h>
     </coordinates>
@@ -312,13 +313,15 @@ boardgame::Alpha_Beta
     <id>UMLClass</id>
     <coordinates>
       <x>2104</x>
-      <y>1808</y>
+      <y>1856</y>
       <w>224</w>
-      <h>128</h>
+      <h>152</h>
     </coordinates>
     <panel_attributes>&lt;&lt;Qml&gt;&gt;
 boardgame_qml::Move_List_Control
 --
+&lt;&lt;properties&gt;&gt;
++ confirm: bool
 --
 &lt;&lt;signals&gt;&gt;
 + request_move_list_back_to_start()
@@ -333,7 +336,7 @@ boardgame_qml::Move_List_Control
     <id>UMLClass</id>
     <coordinates>
       <x>1320</x>
-      <y>672</y>
+      <y>744</y>
       <w>528</w>
       <h>200</h>
     </coordinates>
@@ -351,14 +354,14 @@ boardgame_qml::Move_List_Control
 + commit(constellation: &lt;T&gt;, commitmsg: string, hint: int[])
 + cut_off(move_id: const int)
 + export_move_list(path: string): bool
-+ import_move_list(path: string): bool</panel_attributes>
++ is_dirty(): bool</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
       <x>1192</x>
-      <y>768</y>
+      <y>840</y>
       <w>144</w>
       <h>32</h>
     </coordinates>
@@ -371,7 +374,7 @@ m2=1</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>1368</x>
-      <y>1304</y>
+      <y>1376</y>
       <w>552</w>
       <h>208</h>
     </coordinates>
@@ -398,7 +401,7 @@ m2=1</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>1496</x>
-      <y>1048</y>
+      <y>1120</y>
       <w>376</w>
       <h>192</h>
     </coordinates>
@@ -423,7 +426,7 @@ chosen_move_list_path(file_urls: QVariant)</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>1672</x>
-      <y>1232</y>
+      <y>1304</y>
       <w>32</w>
       <h>88</h>
     </coordinates>
@@ -436,7 +439,7 @@ m2=*</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>1184</x>
-      <y>1216</y>
+      <y>1288</y>
       <w>328</w>
       <h>32</h>
     </coordinates>
@@ -449,7 +452,7 @@ m2=1</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>1560</x>
-      <y>1576</y>
+      <y>1648</y>
       <w>304</w>
       <h>128</h>
     </coordinates>
@@ -468,7 +471,7 @@ boardgame_qml::Move_List_Entry
     <id>UMLClass</id>
     <coordinates>
       <x>1288</x>
-      <y>1576</y>
+      <y>1648</y>
       <w>256</w>
       <h>128</h>
     </coordinates>
@@ -488,7 +491,7 @@ boardgame_qml::Move_Button
     <id>Relation</id>
     <coordinates>
       <x>2016</x>
-      <y>1872</y>
+      <y>1944</y>
       <w>104</w>
       <h>32</h>
     </coordinates>
@@ -501,7 +504,7 @@ m2=1</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>1704</x>
-      <y>1504</y>
+      <y>1576</y>
       <w>32</w>
       <h>88</h>
     </coordinates>
@@ -514,7 +517,7 @@ m2=*</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>1416</x>
-      <y>1504</y>
+      <y>1576</y>
       <w>32</w>
       <h>88</h>
     </coordinates>
@@ -527,7 +530,7 @@ m2=*</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>1104</x>
-      <y>504</y>
+      <y>576</y>
       <w>24</w>
       <h>240</h>
     </coordinates>
@@ -538,7 +541,7 @@ m2=*</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>256</x>
-      <y>616</y>
+      <y>688</y>
       <w>24</w>
       <h>128</h>
     </coordinates>
@@ -549,7 +552,7 @@ m2=*</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>960</x>
-      <y>360</y>
+      <y>432</y>
       <w>528</w>
       <h>152</h>
     </coordinates>
@@ -573,7 +576,7 @@ m2=*</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>0</x>
-      <y>360</y>
+      <y>432</y>
       <w>528</w>
       <h>264</h>
     </coordinates>
@@ -608,7 +611,7 @@ innerclass}
     <id>Relation</id>
     <coordinates>
       <x>520</x>
-      <y>440</y>
+      <y>512</y>
       <w>216</w>
       <h>48</h>
     </coordinates>
@@ -622,7 +625,7 @@ switch_player()</panel_attributes>
     <id>UMLInterface</id>
     <coordinates>
       <x>976</x>
-      <y>0</y>
+      <y>16</y>
       <w>192</w>
       <h>80</h>
     </coordinates>
@@ -636,7 +639,7 @@ engine_future(ef: future&lt;bool&gt;)
     <id>Relation</id>
     <coordinates>
       <x>72</x>
-      <y>1048</y>
+      <y>1120</y>
       <w>184</w>
       <h>96</h>
     </coordinates>
@@ -649,7 +652,7 @@ m1=boardgame::Boardgame_Ui
     <id>Relation</id>
     <coordinates>
       <x>80</x>
-      <y>1128</y>
+      <y>1200</y>
       <w>176</w>
       <h>80</h>
     </coordinates>
@@ -662,9 +665,9 @@ m2=boardgame::Boardgame_Ui
     <id>UMLInterface</id>
     <coordinates>
       <x>408</x>
-      <y>0</y>
+      <y>16</y>
       <w>528</w>
-      <h>120</h>
+      <h>136</h>
     </coordinates>
     <panel_attributes>boardgame::Move_List_Ui
 --
@@ -672,14 +675,15 @@ initial_constellation(constellation_id: const int)
 current_move(move_id: const int)
 add_move(move_id: const int, branch_id: const int, description:const string, hint: const int[])
 delete_move(move_id: const_int)
-cut_off(move_id: const_int)</panel_attributes>
+cut_off(move_id: const_int)
+need_confirm(is_needed: bool)</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
       <x>280</x>
-      <y>1048</y>
+      <y>1120</y>
       <w>160</w>
       <h>96</h>
     </coordinates>
@@ -691,7 +695,7 @@ m1=boardgame::Main_Loop</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>288</x>
-      <y>1128</y>
+      <y>1200</y>
       <w>152</w>
       <h>80</h>
     </coordinates>
@@ -704,28 +708,36 @@ m2=boardgame::Main_Loop
     <id>UMLInterface</id>
     <coordinates>
       <x>0</x>
-      <y>0</y>
+      <y>16</y>
       <w>352</w>
-      <h>280</h>
+      <h>384</h>
     </coordinates>
     <panel_attributes>boardgame::Boardgame_Ui
 --
+&lt;&lt;gameend&gt;&gt;
 draw()
-win(player: string)
-white_drawer_can_hide(can_hide: bool)
-black_drawer_can_hide(can_hide: bool)
-white_prison_can_hide(can_hide: bool)
-black_prison_can_hide(can_hide: bool)
+win(player_id: string)
+
+&lt;&lt;uicontrol&gt;&gt;
+drawer_can_hide(player_id: string, can_hide: bool)
+prison_can_hide(player_id: string, can_hide: bool)
+
+&lt;&lt;piececontrol&gt;&gt;
 lock_piece(piece_id: Piece_Number)
 selectable(piece_id: Piece_Number)
 removable(piece_id: Piece_Number)
+
+&lt;&lt;fieldcontrol&gt;&gt;
 lock_field(field_id: Field_Number)
 highlight(field_id: Field_Number)
 occupiable(field_id: Field_Number, piece_id: Piece_Number)
+
+&lt;&lt;visualfeedback&gt;&gt;
 set_field(piece_id: Piece_Number, field_id: Field_Number)
 setup_mode_active(is_active: bool)
-white_engine_active(is_active: bool)
-black_engine_active(is_active: bool)
+engine_active(player_id: string, is_active: bool)
+active_player(player_id: string)
+need_confirm(is_needed: bool)
 </panel_attributes>
     <additional_attributes/>
   </element>
@@ -733,7 +745,7 @@ black_engine_active(is_active: bool)
     <id>Relation</id>
     <coordinates>
       <x>1672</x>
-      <y>936</y>
+      <y>1008</y>
       <w>168</w>
       <h>128</h>
     </coordinates>
@@ -746,7 +758,7 @@ m2=boardgame::Move_List_Ui
     <id>Relation</id>
     <coordinates>
       <x>1664</x>
-      <y>864</y>
+      <y>936</y>
       <w>176</w>
       <h>88</h>
     </coordinates>
@@ -758,7 +770,7 @@ m1=boardgame::Move_List_Ui</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>800</x>
-      <y>480</y>
+      <y>552</y>
       <w>32</w>
       <h>264</h>
     </coordinates>
@@ -771,7 +783,7 @@ m2=1</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>552</x>
-      <y>1904</y>
+      <y>1976</y>
       <w>1184</w>
       <h>32</h>
     </coordinates>
@@ -784,9 +796,9 @@ m2=*</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>1720</x>
-      <y>1808</y>
+      <y>1856</y>
       <w>304</w>
-      <h>128</h>
+      <h>152</h>
     </coordinates>
     <panel_attributes>&lt;&lt;Qml&gt;&gt;
 boardgame_qml::Move_List_Root_Entry
@@ -805,11 +817,11 @@ boardgame_qml::Move_List_Root_Entry
     <id>Relation</id>
     <coordinates>
       <x>1736</x>
-      <y>1696</y>
+      <y>1768</y>
       <w>24</w>
-      <h>128</h>
+      <h>104</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;140.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;110.0</additional_attributes>
   </element>
 </diagram>

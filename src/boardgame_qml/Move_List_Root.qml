@@ -40,10 +40,12 @@ Flickable {
         leftPadding: 0
         maxChildWidth: control.width
         control_buttons_visible: false
+        buttons.z: 100
 
         Move_List_Control {
             id: control
             parent: entries.buttons
+            z: 100
         }
 
         FileDialog {

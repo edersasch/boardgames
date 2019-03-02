@@ -8,9 +8,9 @@ void Muehle_State::new_game()
     if (engine.is_running()) {
         restart = true;
         engine.discard();
-        request_white_engine_active(false); // necessary here becuase engine might run for black
+        request_engine_active(white_id, false); // necessary here becuase engine might run for black
     } else {
-        request_white_engine_active(false); // necessary here because engine might not be running, but could become so in leave_setup_mode()
+        request_engine_active(white_id, false); // necessary here because engine might not be running, but could become so in leave_setup_mode()
         restart = false;
         current_player = &white_player;
         opponent_player = &black_player;
@@ -42,9 +42,7 @@ void Muehle_State::request_setup_mode_active(bool is_active)
 void Muehle_State::piece_removed(const boardgame::Piece_Number pn)
 {
     if (std::find(selectable_pieces.begin(), selectable_pieces.end(), pn) != selectable_pieces.end()) {
-        opponent_player == &white_player ?
-                    white_prison_can_hide(boardgame_ui, false) :
-                    black_prison_can_hide(boardgame_ui, false);
+        prison_can_hide(boardgame_ui, opponent_player->id, false);
         set_field_helper(pn, first_empty_field(opponent_player->prison_group));
         swap_players();
     }
@@ -96,17 +94,18 @@ void Muehle_State::request_occupy(const boardgame::Field_Number fn)
     }
 }
 
-void Muehle_State::request_white_engine_active(bool is_active)
+void Muehle_State::request_engine_active(const std::string& player_id, bool is_active)
 {
-    change_engine_active(&white_player, is_active);
-    white_engine_active(boardgame_ui, is_active);
+    if (player_id == white_id) {
+        change_engine_active(&white_player, is_active);
+    } else if (player_id == black_id) {
+        change_engine_active(&black_player, is_active);
+    } else {
+        return;
+    }
+    engine_active(boardgame_ui, player_id, is_active);
 }
 
-void Muehle_State::request_black_engine_active(bool is_active)
-{
-    change_engine_active(&black_player, is_active);
-    black_engine_active(boardgame_ui, is_active);
-}
 
 void Muehle_State::request_set_current_move_and_branch_start_id(const int move_id)
 {
@@ -138,8 +137,8 @@ void Muehle_State::request_move_list_back()
 
 void Muehle_State::request_move_list_import(const std::string& path)
 {
-    request_white_engine_active(false);
-    request_black_engine_active(false);
+    request_engine_active(white_id, false);
+    request_engine_active(black_id, false);
     if (engine.is_running()) {
         import_path = path;
         engine.discard();
@@ -228,7 +227,11 @@ void Muehle_State::start_move()
 
 void Muehle_State::swap_players()
 {
+    auto old_dirty = move_list->is_modified();
     move_list->commit(current_constellation, {move_list_hint});
+    if (move_list->is_modified() && !old_dirty) {
+        need_confirm(boardgame_ui, move_list->is_modified());
+    }
     if (first_empty_field(opponent_player->prison_group) == boardgame::no_field) {
         set_removable_pieces({});
         win(boardgame_ui, current_player->id);
@@ -258,8 +261,8 @@ void Muehle_State::set_field_helper(const boardgame::Piece_Number pn, const boar
 void Muehle_State::update_game()
 {
     if (!engine.is_running()) {
-        request_white_engine_active(false);
-        request_black_engine_active(false);
+        request_engine_active(white_id, false);
+        request_engine_active(black_id, false);
         set_selected_piece(boardgame::no_piece);
         reconstruct(move_list->constellation());
         set_player_on_hint(move_list->hint());
@@ -363,8 +366,8 @@ void Muehle_State::enter_setup_mode()
     if (engine.is_running()) {
         engine.discard();
     } else {
-        request_white_engine_active(false);
-        request_black_engine_active(false);
+        request_engine_active(white_id, false);
+        request_engine_active(black_id, false);
         if (selected_piece == boardgame::no_piece) {
             set_selected_piece(current_player == &white_player ? muehle::first_white_piece : muehle::first_black_piece);
         }
@@ -374,10 +377,10 @@ void Muehle_State::enter_setup_mode()
             fosp.push_back(fn.v);
         }
         set_selectable_pieces(fosp);
-        white_drawer_can_hide(boardgame_ui, false);
-        white_prison_can_hide(boardgame_ui, false);
-        black_drawer_can_hide(boardgame_ui, false);
-        black_prison_can_hide(boardgame_ui, false);
+        drawer_can_hide(boardgame_ui, white_id, false);
+        drawer_can_hide(boardgame_ui, black_id, false);
+        prison_can_hide(boardgame_ui, white_id, false);
+        prison_can_hide(boardgame_ui, black_id, false);
     }
 }
 
@@ -389,28 +392,29 @@ void Muehle_State::leave_setup_mode()
         setup_mode_active(boardgame_ui, false);
         move_list = std::make_unique<boardgame::Move_List<muehle::Muehle_Constellation, boardgame::Move_List_Ui>>(move_list_ui, muehle::diff_text, current_constellation,
             std::vector<int>{current_player == &white_player ? muehle::first_black_piece.v : muehle::first_white_piece.v}); // initial position, hint is the potential piece that "moved"
+        need_confirm(boardgame_ui, move_list->is_modified());
     }
     set_selected_piece(boardgame::no_piece);
     set_selectable_pieces({});
     set_occupiable_fields({});
-    white_drawer_can_hide(boardgame_ui, is_fieldgroup_empty(white_drawer));
-    black_drawer_can_hide(boardgame_ui, is_fieldgroup_empty(black_drawer));
-    white_prison_can_hide(boardgame_ui, is_fieldgroup_empty(white_prison));
-    black_prison_can_hide(boardgame_ui, is_fieldgroup_empty(black_prison));
+    drawer_can_hide(boardgame_ui, white_id, is_fieldgroup_empty(white_drawer));
+    drawer_can_hide(boardgame_ui, black_id, is_fieldgroup_empty(black_drawer));
+    prison_can_hide(boardgame_ui, white_id, is_fieldgroup_empty(white_prison));
+    prison_can_hide(boardgame_ui, black_id, is_fieldgroup_empty(black_prison));
     start_move();
 }
 
 void Muehle_State::check_hide_drawer()
 {
     if (is_fieldgroup_empty(current_player->drawer_group)) {
-        current_player == &white_player ? white_drawer_can_hide(boardgame_ui, true) : black_drawer_can_hide(boardgame_ui, true);
+        drawer_can_hide(boardgame_ui, current_player->id, true);
     }
 }
 
 void Muehle_State::check_show_prison()
 {
     if (!is_fieldgroup_empty(current_player->prison_group)) {
-        current_player == &white_player ? white_prison_can_hide(boardgame_ui, false) : black_prison_can_hide(boardgame_ui, false);
+        prison_can_hide(boardgame_ui, current_player->id, false);
     }
 }
 

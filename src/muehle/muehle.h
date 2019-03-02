@@ -24,6 +24,8 @@ static constexpr boardgame::Field_Number first_white_prison_field  = first_black
 static constexpr boardgame::Field_Number first_black_prison_field  = first_white_prison_field + number_of_prison_fields;
 static constexpr int drawer_field = -1;
 static constexpr int prison_field = -2;
+static constexpr char white_id[] = "white";
+static constexpr char black_id[] = "black";
 
 using Muehle_Constellation = std::array<boardgame::Field_Number, number_of_pieces.v>;
 using Key_Diff = std::vector<std::pair<int, int>>;
@@ -50,6 +52,5 @@ struct Engine_Helper
 };
 
 }
-
 
 #endif // SRC_MUEHLE_MUEHLE_TYPES

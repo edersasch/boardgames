@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.5.1)
 project(boardgames)
 
-option(BOARDGAMES_USE_EXTERNAL_JSON "Use an external JSON library" OFF)
 option(BOARDGAMES_BUILD_TESTS "Build unit tests" ON)
 option(BOARDGAMES_COVERAGE_REPORT "Compile with coverage instrumentation" OFF)
+option(BOARDGAMES_USE_EXTERNAL_JSON "Use an external JSON library" OFF)
 
 add_compile_options(
     -Wall -Wextra -Werror -Wshadow
@@ -20,7 +20,7 @@ set(PROCESSOR_COUNT 1)
 include(ProcessorCount)
 ProcessorCount(N)
 if(NOT N EQUAL 0)
-  set(PROCESSOR_COUNT ${N})
+    set(PROCESSOR_COUNT ${N})
 endif()
 
 if(BOARDGAMES_COVERAGE_REPORT)
@@ -33,14 +33,17 @@ if(BOARDGAMES_COVERAGE_REPORT)
         EXECUTABLE
         ctest -j ${PROCESSOR_COUNT}
     )
-endif(BOARDGAMES_COVERAGE_REPORT)
+endif()
 
+set(DOXYGEN_EXCLUDE_PATTERNS "*/*.md")
 include(FindDoxygen)
 find_package(Doxygen)
-doxygen_add_docs(
-    apidoc
-    ${PROJECT_SOURCE_DIR}
-)
+if(DOXYGEN_FOUND)
+    doxygen_add_docs(
+        apidoc
+        ${PROJECT_SOURCE_DIR}
+    )
+endif()
 
 if(BOARDGAMES_USE_EXTERNAL_JSON)
     find_package(nlohmann_json 3.4.0 REQUIRED)

@@ -25,6 +25,7 @@ void Move_List_Qml::initial_constellation(const int constellation_id)
     branches.clear();
     current_move_id = constellation_id;
     start_id = constellation_id;
+    need_confirm(false);
 }
 
 void Move_List_Qml::current_move(const int move_id)
@@ -116,6 +117,11 @@ void Move_List_Qml::cut_off(const int move_id)
             branches.erase(branches.find(branch_start_id));
         }
     }
+}
+
+void Move_List_Qml::need_confirm(const bool is_needed)
+{
+    QQmlProperty(QQmlProperty(root_entry, "control").read().value<QQuickItem*>(), "confirm").write(is_needed);
 }
 
 void Move_List_Qml::set_move_color(const int move_id, const std::string& c)

@@ -53,8 +53,7 @@ public:
     void piece_removed(const boardgame::Piece_Number pn);
     void request_select_piece(const boardgame::Piece_Number pn);
     void request_occupy(const boardgame::Field_Number fn);
-    void request_white_engine_active(bool is_active);
-    void request_black_engine_active(bool is_active);
+    void request_engine_active(const std::string& player_id, bool is_active);
     void request_set_current_move_and_branch_start_id(const int move_id);
     void request_cut_off(const int move_id);
     void request_move_list_forward();
@@ -111,8 +110,8 @@ private:
     const boardgame::Fieldgroup<decltype(all_fields.cbegin())> black_drawer { make_fieldgroup(all_fields, muehle::first_black_drawer_field, muehle::number_of_drawer_fields) };
     const boardgame::Fieldgroup<decltype(all_fields.cbegin())> white_prison { make_fieldgroup(all_fields, muehle::first_white_prison_field, muehle::number_of_prison_fields) };
     const boardgame::Fieldgroup<decltype(all_fields.cbegin())> black_prison { make_fieldgroup(all_fields, muehle::first_black_prison_field, muehle::number_of_prison_fields) };
-    Player white_player {white_pieces, white_drawer, white_prison, "white", false};
-    Player black_player {black_pieces, black_drawer, black_prison, "black", false};
+    Player white_player {white_pieces, white_drawer, white_prison, white_id, false};
+    Player black_player {black_pieces, black_drawer, black_prison, black_id, false};
     const Player* current_player {&white_player};
     const Player* opponent_player {&black_player};
     boardgame::Piece_Number selected_piece {};

@@ -32,10 +32,8 @@ public:
     // Boardgame_Ui functions
     friend void draw(Muehle_Qml* mui);
     friend void win(Muehle_Qml* mui, const std::string& player);
-    friend void white_drawer_can_hide(Muehle_Qml* ui, const bool can_hide) { ui->board_property("white_drawer_can_hide").write(can_hide); }
-    friend void black_drawer_can_hide(Muehle_Qml* ui, const bool can_hide) { ui->board_property("black_drawer_can_hide").write(can_hide); }
-    friend void white_prison_can_hide(Muehle_Qml* ui, const bool can_hide) { ui->board_property("white_prison_can_hide").write(can_hide); }
-    friend void black_prison_can_hide(Muehle_Qml* ui, const bool can_hide) { ui->board_property("black_prison_can_hide").write(can_hide); }
+    friend void drawer_can_hide(Muehle_Qml* ui, const std::string& player_id, const bool can_hide) { ui->board_property(player_id + "_drawer_can_hide").write(can_hide); }
+    friend void prison_can_hide(Muehle_Qml* ui, const std::string& player_id, const bool can_hide) { ui->board_property(player_id + "_prison_can_hide").write(can_hide); }
     friend void lock_piece(Muehle_Qml* ui, const boardgame::Piece_Number pieceId) { ui->pieces.at(static_cast<std::size_t>(pieceId.v))->lock(); }
     friend void selectable(Muehle_Qml* ui, const boardgame::Piece_Number pieceId) { ui->pieces.at(static_cast<std::size_t>(pieceId.v))->selectable(); }
     friend void removable(Muehle_Qml* ui, const boardgame::Piece_Number pieceId) { ui->pieces.at(static_cast<std::size_t>(pieceId.v))->removable(); }
@@ -44,9 +42,9 @@ public:
     friend void occupiable(Muehle_Qml* ui, const boardgame::Field_Number fieldId, boardgame::Piece_Number pieceId);
     friend void set_field(Muehle_Qml* ui, const boardgame::Piece_Number pieceId, const boardgame::Field_Number fieldId) { ui->pieces.at(static_cast<std::size_t>(pieceId.v))->setField(*(ui->fields.at(static_cast<std::size_t>(fieldId.v)).get())); }
     friend void setup_mode_active(const Muehle_Qml* ui, const bool is_active) { QQmlProperty(ui->control.get(), "setup_mode_active").write(is_active); }
-    friend void white_engine_active(const Muehle_Qml* ui, const bool is_active) { QQmlProperty(ui->control.get(), "white_engine_active").write(is_active); }
-    friend void black_engine_active(const Muehle_Qml* ui, const bool is_active) { QQmlProperty(ui->control.get(), "black_engine_active").write(is_active); }
-    friend void active_player(const Muehle_Qml* ui, const std::string& player);
+    friend void engine_active(const Muehle_Qml* ui, const std::string& player_id, const bool is_active) { QQmlProperty(ui->control.get(), (player_id + "_engine_active").c_str()).write(is_active); }
+    friend void active_player(const Muehle_Qml* ui, const std::string& player_id);
+    friend void need_confirm(Muehle_Qml* ui, const bool is_needed) { QQmlProperty(ui->control.get(), "confirm").write(is_needed); }
 
     // Main_Loop functions
     friend void engine_future(Muehle_Qml* ml, std::future<bool>&& efu) { ml->wait_for_engine_move(std::move(efu)); }
@@ -57,8 +55,8 @@ signals:
 private slots:
     void new_game() { muehle_state.new_game(); }
     void show_move_list(bool show) { board_property("show_move_list").write(show); }
-    void request_white_engine_active(bool is_active) { muehle_state.request_white_engine_active(is_active); }
-    void request_black_engine_active(bool is_active) { muehle_state.request_black_engine_active(is_active); }
+    void request_white_engine_active(bool is_active) { muehle_state.request_engine_active(muehle::white_id, is_active); }
+    void request_black_engine_active(bool is_active) { muehle_state.request_engine_active(muehle::black_id, is_active); }
     void request_setup_mode_active(bool is_active) { muehle_state.request_setup_mode_active(is_active); }
     void horizontal();
     void vertical();

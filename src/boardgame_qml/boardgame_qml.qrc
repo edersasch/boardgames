@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
+        <file>Confirm_Button.qml</file>
         <file>Field.qml</file>
         <file>Move_Button.qml</file>
         <file>Move_List_Control.qml</file>

@@ -1,7 +1,56 @@
 # Boardgames
 
-* framework with piece / field association, move list, engine and UI
+* C++ 17 framework with piece / field association, move list, engine and UI
 * Mühle (German name for nine Men's Morris or Mill)
+
+
+## Framework UI Independent
+
+* Interface `boardgame_ui` for commands from the game to its user interface
+* Interface `move_list_ui` for commands from the provided `move_list` implementation to its user interface
+* Interface `main_loop` to delegate tasks to the utilized main loop implementation
+* Engine implementation `alpha_beta`
+* Move list implementation `move_list`, supporting variants and json import / export (depends on nlohmann/json, see "Build Requirements" below)
+* Piece and field functions `pieces_n_fields` that help manage associations; defines strong types to prevent mixing up field and piece ids
+
+
+## Framework UI
+
+depends on Qt, see "Build Requirements" below
+
+* `Confirm_Button` widget
+* `Field` and `Piece`, `Piece_Column_Box`. `Piece_Row_Box`
+* `multi_move_list`, `move_list` with `Move_Button`, `Move_List_Control`, `Move_List_Entry`, `Move_List_Root`
+
+
+## Mühle UI Independent
+
+* `muehle` with constants, free functions and engine methods
+* `muehle_state` class
+
+
+## Mühle UI
+
+depends on Qt, see "Build Requirements" below
+
+* `Muehle_Board`
+* `muehle` entry point and setup
+
+
+# Build Requirements
+
+* C++ 17 toolchain (e.g. [gcc](https://gcc.gnu.org/) >= 7.3.0)
+* [CMake](https://cmake.org) >= 3.5.1
+* [Qt](https://qt.io) >= 5.11 with Qml
+* [nlohmann/json](https://github.com/nlohmann/json/) >= 3.4.0, downloaded automatically if option `BOARDGAMES_USE_EXTERNAL_JSON` is `OFF`
+
+
+# Optional Tools
+
+* [GTest](https://github.com/abseil/googletest) >= 1.8.1, downloaded automatically if option `BOARDGAMES_BUILD_TESTS` is `ON`
+* [Umlet](https://www.umlet.com) UML Editor (`*.uxf` files in `/docs`)
+* [Doxygen](http://www.doxygen.nl) documentation tool, enables `apidoc` build target
+* GCov (part of [gcc](https://gcc.gnu.org/)) / [LCov](http://ltp.sourceforge.net/coverage/lcov.php) for coverage report if option `BOARDGAMES_COVERAGE_REPORT` is `ON`
 
 
 # Directory Structure
@@ -21,8 +70,8 @@ Contains graphics files and a valgrind memcheck suppression file [memcheck.supp]
 
 ## `src/`
 
-The framework parts are located in the directories `boardgame/` and `boardgam_qml/`.
-The game "Mühle" resides in `muehle` and `muehle_qml`.
+Framework parts are located in the directories `boardgame/` and `boardgam_qml/`.
+"Mühle" resides in `muehle` and `muehle_qml`.
 
 
 ## `tests/`
@@ -39,30 +88,16 @@ The directories whose names match a directory name from `src/` contain unit
 tests.
 
 
-# Build Requirements
-
-* C++ 17 toolchain (e.g. [gcc](https://gcc.gnu.org/) >= 7.3.0)
-* [CMake](https://cmake.org) >= 3.5.1
-* [Qt](https://qt.io) >= 5.11 with Qml
-* [nlohmann/json](https://github.com/nlohmann/json/) >= 3.4.0, downloaded automatically if option `BOARDGAMES_USE_EXTERNAL_JSON` is `OFF`
-
-
-# Optional Tools
-
-* [GTest](https://github.com/abseil/googletest) >= 1.8.1, downloaded automatically if option `BOARDGAMES_BUILD_TESTS` is `ON`
-* [Umlet](https://www.umlet.com) UML Editor (`*.uxf` files in `/docs`)
-
-
 # Included Resources
 
-CMake file AddGoogleTest.cmake adapted from
-https://github.com/CLIUtils/cmake/blob/4e52e4d0bc2e9fd27171926d0b5d9f396dd8637c/AddGoogleTest.cmake
+CMake file `AddGoogleTest.cmake` adapted from
+<https://github.com/CLIUtils/cmake/blob/4e52e4d0bc2e9fd27171926d0b5d9f396dd8637c/AddGoogleTest.cmake>
 is licensed under a
 [BSD 3-Clause License](https://github.com/CLIUtils/cmake/blob/master/LICENSE):
-changed GIT_TAG to release-1.8.1
+changed `GIT_TAG` to `release-1.8.1`
 
-CMake file CodeCoverage.cmake adapted from
-https://github.com/bilke/cmake-modules/blob/7727aa773b8d72afe6801436af9e60cb1688351e/CodeCoverage.cmake
+CMake file `CodeCoverage.cmake` adapted from
+<https://github.com/bilke/cmake-modules/blob/7727aa773b8d72afe6801436af9e60cb1688351e/CodeCoverage.cmake>
 is licensed under a BSD 3-Clause License included in the file itself: commented
 out `COMMAND ${LCOV_PATH} --gcov-tool ${GCOV_PATH} --remove ${Coverage_NAME}.total ${COVERAGE_LCOV_EXCLUDES} ...`
 and added `COMMAND ${LCOV_PATH} --gcov-tool ${GCOV_PATH} --extract ${Coverage_NAME}.total ${COVERAGE_LCOV_INCLUDES} ...`
@@ -78,6 +113,7 @@ under a [BSD 3-Clause License](https://tiddlywiki.com/#License): added
 `version="1.1" xmlns="http://www.w3.org/2000/svg"` to svg tag
 
 * back.svg ([$:/core/images/left-arrow](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fleft-arrow))
+* cancel.svg ([$:/core/images/cancel-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fcancel-button))
 * delete.svg ([$:/core/images/delete-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fdelete-button))
 * export.svg ([$:/core/images/unfold-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Funfold-button))
 * forward.svg ([$:/core/images/right-arrow](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fright-arrow))

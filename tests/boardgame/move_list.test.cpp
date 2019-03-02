@@ -54,6 +54,7 @@ void Move_List_Test::expect_import_sequence(int predecessor, int start, int end,
 
 TEST_F(Move_List_Test, commit_sequence)
 {
+    EXPECT_CALL(ui, need_confirm(true));
     commit_sequence(0, 1, 99, 1, 0);
     EXPECT_FALSE(move_list->move_list_forward());
     commit_sequence(50, 100, 199, 100, 100);
@@ -130,6 +131,7 @@ TEST_F(Move_List_Test, commit_sequence)
 
 TEST_F(Move_List_Test, cut_off)
 {
+    EXPECT_CALL(ui, need_confirm(true));
     commit_sequence(0, 1, 99, 1, 0);
     commit_sequence(50, 100, 199, 100, 100);
     commit_sequence(50, 200, 299, 200, 200);
@@ -200,6 +202,7 @@ TEST_F(Move_List_Test, cut_off)
 
 TEST_F(Move_List_Test, detect_present_constellation)
 {
+    EXPECT_CALL(ui, need_confirm(true));
     commit_sequence(0, 1, 99, 1, 0);
     commit_sequence(50, 100, 199, 100, 100);
     commit_sequence(50, 200, 299, 200, 200);
@@ -248,6 +251,7 @@ TEST_F(Move_List_Test, detect_present_constellation)
 
 TEST_F(Move_List_Test, import_export)
 {
+    EXPECT_CALL(ui, need_confirm(true));
     commit_sequence(0, 1, 1, 1, 0);
     commit_sequence(0, 2, 3, 2, 2);
     EXPECT_TRUE(move_list->export_move_list("/tmp/Move_List_Test_import_export_1.out"));
@@ -265,6 +269,7 @@ TEST_F(Move_List_Test, import_export)
     EXPECT_CALL(ui, initial_constellation(0));
     EXPECT_CALL(ui, current_move(0));
     move_list = std::make_unique<boardgame::Move_List<std::vector<int>, boardgame::Move_List_Ui>>(boardgame::Move_List_Ui(&ui), diff_text, std::vector<int>{0}, std::vector<int>{0});
+    EXPECT_CALL(ui, need_confirm(true));
     commit_sequence(0, 1, 2, 1, 0);
     commit_sequence(1, 3, 5, 3, 3);
     commit_sequence(1, 6, 8, 6, 6);
@@ -275,6 +280,7 @@ TEST_F(Move_List_Test, import_export)
     EXPECT_CALL(ui, initial_constellation(0));
     EXPECT_CALL(ui, current_move(0));
     move_list = std::make_unique<boardgame::Move_List<std::vector<int>, boardgame::Move_List_Ui>>(boardgame::Move_List_Ui(&ui), diff_text, std::vector<int>{0}, std::vector<int>{0});
+    EXPECT_CALL(ui, need_confirm(true));
     commit_sequence(0, 1, 99, 1, 0);
     commit_sequence(50, 100, 199, 100, 100);
     commit_sequence(50, 200, 299, 200, 200);
@@ -300,6 +306,7 @@ TEST_F(Move_List_Test, import_export)
     EXPECT_CALL(ui, initial_constellation(0));
     EXPECT_CALL(ui, current_move(0));
     move_list = std::make_unique<boardgame::Move_List<std::vector<int>, boardgame::Move_List_Ui>>(boardgame::Move_List_Ui(&ui), diff_text, std::vector<int>{0}, std::vector<int>{0});
+    EXPECT_CALL(ui, need_confirm(true));
     commit_sequence(0, 1, 2, 1, 0);
     commit_sequence(1, 3, 5, 3, 3);
     commit_sequence(1, 6, 8, 6, 6);

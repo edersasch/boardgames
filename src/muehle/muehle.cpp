@@ -89,6 +89,7 @@ constexpr std::array<const char*, 24> coordinate_names {
 };
 
 std::vector<int> fields_of_removable_pieces;
+std::vector<int> pieces_in_muehle;
 std::vector<int> free_fields_store;
 std::vector<int> fields_of_selectable_pieces_store;
 std::vector<int> free_adjacent_fields_store;
@@ -240,6 +241,7 @@ std::pair<std::vector<int>, Muehle_Key> occupy(Muehle_Key key, const int from, c
 {
     auto offset = board_offset(key);
     fields_of_removable_pieces.clear();
+    pieces_in_muehle.clear();
     if ((from == drawer_field || key.test(from + offset)) && is_field_free(key, to)) {
         if (from != drawer_field) {
             key.reset(from + offset);
@@ -249,14 +251,18 @@ std::pair<std::vector<int>, Muehle_Key> occupy(Muehle_Key key, const int from, c
             key.flip(54);
             offset = board_offset(key);
             for (int i = 0; i < number_of_board_fields.v; i += 1) {
-                if (key.test(i + offset) && !closed_muehle(key, i)) {
-                    fields_of_removable_pieces.push_back(i);
+                if (key.test(i + offset)) {
+                    if (!closed_muehle(key, i)) {
+                        fields_of_removable_pieces.push_back(i);
+                    } else {
+                        pieces_in_muehle.push_back(i);
+                    }
                 }
             }
             key.flip(54);
         }
     }
-    return {fields_of_removable_pieces, key};
+    return {fields_of_removable_pieces.empty() ? pieces_in_muehle : fields_of_removable_pieces, key};
 }
 
 /// @param field < number_of_board_fields

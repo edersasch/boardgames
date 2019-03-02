@@ -5,6 +5,8 @@ import QtQuick.Controls 2.3
 RowLayout {
     id: root
 
+    property bool confirm: false
+
     signal request_move_list_back_to_start
     signal request_move_list_forward
     signal request_move_list_back
@@ -34,9 +36,13 @@ RowLayout {
         icon.source: "qrc:/forward.svg"
     }
 
-    ToolButton {
-        onClicked: root.request_move_list_import()
+    Confirm_Button {
+        id: mlimport
 
+        onConfirmed: root.request_move_list_import()
+
+        direction: mlimport.direction_down
+        confirm: root.confirm
         flat: true
         icon.source: "qrc:/import.svg"
     }

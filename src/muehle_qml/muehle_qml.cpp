@@ -28,10 +28,10 @@ void occupiable(Muehle_Qml* ui, const boardgame::Field_Number fieldId, const boa
                                                         ui->board_property("black_color").read().toString().toStdString());
 }
 
-void active_player(const Muehle_Qml* ui, const std::string& player)
+void active_player(const Muehle_Qml* ui, const std::string& player_id)
 {
-    QQmlProperty(ui->control.get(), "white_player_active").write(player == "white");
-    QQmlProperty(ui->control.get(), "black_player_active").write(player == "black");
+    QQmlProperty(ui->control.get(), "white_player_active").write(player_id == muehle::white_id);
+    QQmlProperty(ui->control.get(), "black_player_active").write(player_id == muehle::black_id);
 }
 
 Muehle_Qml::Muehle_Qml(QQmlEngine* engine, QQuickItem* parentItem)

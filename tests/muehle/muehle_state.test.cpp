@@ -31,12 +31,13 @@ void Muehle_State_Test::check_new_game()
     check_all_free_become_occupiable(boardgame::Piece_Number{0});
     EXPECT_CALL(mUi, selectable(0));
     EXPECT_CALL(mUi, highlight(muehle::first_white_drawer_field.v));
-    EXPECT_CALL(mUi, white_drawer_can_hide(false));
-    EXPECT_CALL(mUi, black_drawer_can_hide(false));
-    EXPECT_CALL(mUi, white_prison_can_hide(true));
-    EXPECT_CALL(mUi, black_prison_can_hide(true));
+    EXPECT_CALL(mUi, drawer_can_hide(muehle::white_id, false));
+    EXPECT_CALL(mUi, drawer_can_hide(muehle::black_id, false));
+    EXPECT_CALL(mUi, prison_can_hide(muehle::white_id, true));
+    EXPECT_CALL(mUi, prison_can_hide(muehle::black_id, true));
     EXPECT_CALL(mUi, setup_mode_active(false));
-    EXPECT_CALL(mUi, white_engine_active(false));
+    EXPECT_CALL(mUi, engine_active(muehle::white_id, false));
+    EXPECT_CALL(mUi, need_confirm(false));
 }
 
 void Muehle_State_Test::check_all_free_become_locked()
@@ -97,6 +98,8 @@ TEST_F(Muehle_State_Test, testPhase1)
     check_new_game();
     mM.new_game();
     EXPECT_CALL(mUi, lock_field(24));
+    EXPECT_CALL(mUi, need_confirm(true));
+    EXPECT_CALL(mlUi, need_confirm(true));
     phase1_place_piece(boardgame::Piece_Number{0}, boardgame::Field_Number{5});
     EXPECT_CALL(mUi, lock_field(33));
     phase1_place_piece(boardgame::Piece_Number{9}, boardgame::Field_Number{9});
@@ -124,16 +127,16 @@ TEST_F(Muehle_State_Test, testEnterLeaveSetupMode)
     for (int i = 0; i < muehle::number_of_board_fields.v; i += 1) {
         EXPECT_CALL(mUi, occupiable(muehle::first_board_field.v + i, 0));
     }
-    EXPECT_CALL(mUi, white_drawer_can_hide(false));
-    EXPECT_CALL(mUi, black_drawer_can_hide(false));
-    EXPECT_CALL(mUi, white_prison_can_hide(false));
-    EXPECT_CALL(mUi, black_prison_can_hide(false));
+    EXPECT_CALL(mUi, drawer_can_hide(muehle::white_id, false));
+    EXPECT_CALL(mUi, drawer_can_hide(muehle::black_id, false));
+    EXPECT_CALL(mUi, prison_can_hide(muehle::white_id, false));
+    EXPECT_CALL(mUi, prison_can_hide(muehle::black_id, false));
     for (int i = 0; i < muehle::number_of_board_fields.v; i += 1) {
         EXPECT_CALL(mUi, lock_field(muehle::first_board_field.v + i));
     }
     EXPECT_CALL(mUi, setup_mode_active(true));
-    EXPECT_CALL(mUi, white_engine_active(false));
-    EXPECT_CALL(mUi, black_engine_active(false));
+    EXPECT_CALL(mUi, engine_active(muehle::white_id, false));
+    EXPECT_CALL(mUi, engine_active(muehle::black_id, false));
     mM.request_setup_mode_active(true);
     mM.request_select_piece(boardgame::Piece_Number{0});
     for (int i = 1; i < muehle::number_of_pieces_per_player.v - 2; i += 1) {

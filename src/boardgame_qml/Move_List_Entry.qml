@@ -58,12 +58,14 @@ Column {
             NumberAnimation { properties: "opacity"; to: 1 } // "add" probably interrupted
         }
 
-        ToolButton {
+        Confirm_Button {
             id: delete_branch_button
             flat: true
+            direction: delete_branch_button.direction_right
             icon.source: "qrc:/delete.svg"
             visible: col.control_buttons_visible
-            onClicked: col.request_delete_branch(buttons.children[2].move_id);
+            z: 100
+            onConfirmed: col.request_delete_branch(buttons.children[2].move_id);
         }
 
         ToolButton {

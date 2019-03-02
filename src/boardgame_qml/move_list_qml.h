@@ -28,6 +28,7 @@ public:
     std::vector<QQuickItem*> add_move(const int move_id, const int branch_id, const std::string& description);
     void delete_move(const int move_id);
     void cut_off(const int move_id);
+    void need_confirm(const bool is_needed);
 
 signals:
     void request_set_current_move_and_branch_start_id(int move_id);

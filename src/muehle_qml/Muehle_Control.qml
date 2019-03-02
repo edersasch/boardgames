@@ -3,6 +3,8 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.3
 
 RowLayout {
+    id: root
+
     width: 640
     height: 480
     spacing: 0
@@ -15,6 +17,7 @@ RowLayout {
     property bool black_engine_active: false
     property bool white_player_active: false
     property bool black_player_active: false
+    property bool confirm: false
     readonly property bool hor_orientation: width >= height
     signal horizontal
     signal vertical
@@ -79,10 +82,14 @@ RowLayout {
         visible: hor_orientation
         z: 100
 
-        ToolButton {
+        Confirm_Button {
+            id: v_new_game
+
             flat: true
+            direction: v_new_game.direction_right
             icon.source: "qrc:/refresh.svg"
-            onClicked: new_game()
+            confirm: root.confirm
+            onConfirmed: new_game()
         }
 
         ToolButton {
@@ -93,10 +100,14 @@ RowLayout {
             onCheckedChanged: show_move_list(checked)
         }
 
-        ToolButton {
+        Confirm_Button {
+            id: v_setup
+
             flat: true
             checkable: true
+            direction: v_setup.direction_right
             icon.source: "qrc:/setup.svg"
+            confirm: root.confirm
             checked: setup_mode_active;
             onCheckedChanged: setup_mode_active = checked
         }
@@ -146,10 +157,14 @@ RowLayout {
             visible: !hor_orientation
             z: 100
 
-            ToolButton {
+            Confirm_Button {
+                id: h_new_game
+
                 flat: true
+                direction: h_new_game.direction_down
                 icon.source: "qrc:/refresh.svg"
-                onClicked: new_game()
+                confirm: root.confirm
+                onConfirmed: new_game()
             }
 
             ToolButton {
@@ -160,10 +175,14 @@ RowLayout {
                 onCheckedChanged: move_list_v_button.checked = checked
             }
 
-            ToolButton {
+            Confirm_Button {
+                id: h_setup
+
                 flat: true
                 checkable: true
+                direction: h_setup.direction_down
                 icon.source: "qrc:/setup.svg"
+                confirm: root.confirm
                 checked: setup_mode_active;
                 onCheckedChanged: setup_mode_active = checked;
             }
