@@ -31,7 +31,7 @@ Flickable {
         property alias default_suffix: choose_move_list_file.defaultSuffix
         property alias name_filters: choose_move_list_file.nameFilters
 
-        signal chosen_move_list_path(var file_urls)
+        signal chosen_move_list_path(var file_url)
 
         onAdding: {
             adjContentY();
@@ -51,9 +51,9 @@ Flickable {
         FileDialog {
             id: choose_move_list_file;
 
-            onAccepted: entries.chosen_move_list_path(choose_move_list_file.fileUrls)
+            onAccepted: entries.chosen_move_list_path(choose_move_list_file.fileUrl)
         }
     }
 
-    Behavior on contentY { NumberAnimation { easing.type: Easing.OutCirc } }
+    Behavior on contentY { NumberAnimation { easing.type: Easing.OutBack } }
 }

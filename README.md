@@ -40,8 +40,8 @@ depends on Qt, see "Build Requirements" below
 # Build Requirements
 
 * C++ 17 toolchain (e.g. [gcc](https://gcc.gnu.org/) >= 7.3.0)
-* [CMake](https://cmake.org) >= 3.5.1
-* [Qt](https://qt.io) >= 5.11 with Qml
+* [CMake](https://cmake.org) >= 3.10.0
+* [Qt](https://qt.io) >= 5.11.0 with Qml
 * [nlohmann/json](https://github.com/nlohmann/json/) >= 3.4.0, downloaded automatically if option `BOARDGAMES_USE_EXTERNAL_JSON` is `OFF`
 
 
@@ -115,6 +115,7 @@ under a [BSD 3-Clause License](https://tiddlywiki.com/#License): added
 * back.svg ([$:/core/images/left-arrow](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fleft-arrow))
 * cancel.svg ([$:/core/images/cancel-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fcancel-button))
 * delete.svg ([$:/core/images/delete-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fdelete-button))
+* depth.svg ([$:/core/images/line-width](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fline-width))
 * export.svg ([$:/core/images/unfold-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Funfold-button))
 * forward.svg ([$:/core/images/right-arrow](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fright-arrow))
 * hide.svg ([$:/core/images/preview-closed](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fpreview-closed))
@@ -123,7 +124,9 @@ under a [BSD 3-Clause License](https://tiddlywiki.com/#License): added
 * list.svg ([$:/core/images/list-bullet](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Flist-bullet))
 * refresh.svg ([$:/core/images/refresh-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Frefresh-button))
 * setup.svg ([$:/core/images/copy-clipboard](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fcopy-clipboard))
+* settings.svg ([$:/core/images/options-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Foptions-button))
 * show.svg ([$:/core/images/preview-open](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fpreview-open))
+* time.svg ([$:/core/images/timestamp-on](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Ftimestamp-on))
 
 Icon taken from [openclipart](https://openclipart.com) is licensed under
 [Creative Commons Zero 1.0 Public Domain License](https://openclipart.org/share):

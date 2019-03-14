@@ -102,16 +102,20 @@ void Multi_Move_List_Qml::set_move_color(const int move_id, const std::string& c
     }
 }
 
+void Multi_Move_List_Qml::change_move_color(const QString& old_color, const QString& new_color)
+{
+    for (auto& ml : move_lists) {
+        ml->change_move_color(old_color, new_color);
+    }
+}
+
 // private slots
 
-void Multi_Move_List_Qml::chosen_move_list_path(const QVariant& file_urls)
+void Multi_Move_List_Qml::chosen_move_list_path(const QVariant& file_url)
 {
-    auto urls = file_urls.value<QList<QUrl>>();
-    if (urls.length() == 1) {
-        emit QQmlProperty(file_dialog_root, "choose_move_list_file_existing").read().toBool() ?
-                    request_move_list_import(urls.at(0).path().toStdString()) :
-                    request_move_list_export(urls.at(0).path().toStdString());
-    }
+    emit QQmlProperty(file_dialog_root, "choose_move_list_file_existing").read().toBool() ?
+                request_move_list_import(file_url.toUrl().path().toStdString()) :
+                request_move_list_export(file_url.toUrl().path().toStdString());
 }
 
 }

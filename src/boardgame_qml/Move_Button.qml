@@ -10,10 +10,8 @@ ToolButton {
 
     signal request_set_move_id(int m_id)
 
-    onColorChanged: bg.color = Qt.binding(function() { return Qt.darker(color, move_button.pressed ? 1.5 : 1.0); });
-
-    onHighlightChanged: {
-        bg.border.width = Qt.binding(function() { return highlight ? 2 : 0; });
+    onColorChanged: {
+        contentItem.color = color.hslLightness < 0.5 ? "white" : "black";
     }
 
     onClicked: request_set_move_id(move_id)
@@ -21,7 +19,8 @@ ToolButton {
     background: Rectangle {
         id: bg
         radius: 5
-        border.color: "black"
-        border.width: 0
+        color: Qt.darker(move_button.color, move_button.pressed ? 1.5 : 1.0)
+        border.color: color.hslLightness < 0.5 ? "grey" : "black";
+        border.width: highlight ? 4 : 0
     }
 }

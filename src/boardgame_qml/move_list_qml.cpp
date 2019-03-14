@@ -105,6 +105,10 @@ void Move_List_Qml::cut_off(const int move_id)
             }
         };
         QQuickItem* vParent = it->second->parentItem();
+        it->second->setVisible(false);
+        it->second->setParentItem(nullptr);
+        it->second->setParent(nullptr);
+        it->second.release()->deleteLater(); // includes the button that caused the cut_off, so main loop must delete
         branches.erase(it);
         if (vParent->childItems().length() == 2) {
             auto vonly_child = vParent->childItems().at(1);
@@ -129,6 +133,16 @@ void Move_List_Qml::set_move_color(const int move_id, const std::string& c)
     auto button = move_buttons.find(move_id);
     if (button != move_buttons.end()) {
         QQmlProperty(button->second.get(), "color").write(c.c_str());
+    }
+}
+
+void Move_List_Qml::change_move_color(const QString& old_color, const QString& new_color)
+{
+    for (auto& button : move_buttons) {
+        auto prop = QQmlProperty(button.second.get(), "color");
+        if (prop.read().toString() == old_color) {
+            prop.write(new_color);
+        }
     }
 }
 

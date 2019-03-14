@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.1)
+cmake_minimum_required(VERSION 3.10.0)
 
 add_subdirectory(boardgame)
 add_subdirectory(boardgame_qml)

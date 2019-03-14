@@ -19,10 +19,12 @@ public:
     bool is_running() { return running; }
     void stop_running() { running = false; }
     void discard();
+    void set_target_depth(int depth);
 private:
     void iterative_depth(const T key);
     int engine(const T key, const int depth, int alpha, const int beta);
-    int target_depth {30};
+    static constexpr int target_depth_default {9999};
+    int target_depth {target_depth_default};
     int current_depth {0};
     T possible_next;
     T next;
@@ -57,6 +59,13 @@ void Alpha_Beta<T, U>::discard()
         running = false;
     }
 }
+
+template <typename T, typename U>
+void Alpha_Beta<T, U>::set_target_depth(int depth)
+{
+    target_depth = depth > 0 ? depth : target_depth_default;
+}
+
 
 // private
 

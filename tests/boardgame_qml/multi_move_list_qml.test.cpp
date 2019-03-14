@@ -19,19 +19,25 @@ Multi_Move_List_Qml_Test::Multi_Move_List_Qml_Test()
     , move_list_back_to_start_button(move_list_control->childItems().at(0))
     , move_list_back_button(move_list_control->childItems().at(1))
     , move_list_forward_button(move_list_control->childItems().at(2))
+    , move_list_import_button(move_list_control->childItems().at(3))
+    , move_list_export_button(move_list_control->childItems().at(4))
     , mlq(v.engine(), {move_list_root_entry1, move_list_root_entry2}, "test", "tst")
 {
     Q_INIT_RESOURCE(boardgame_qml);
     Q_INIT_RESOURCE(move_list_qml_test);
     move_list_item->setParentItem(v.contentItem());
 
+    const char odd_move_number_as_piece_id[] = "#111111";
+    const char even_move_number_as_piece_id[] = "#222222";
     connect(&mlq, &boardgame_qml::Multi_Move_List_Qml::request_set_current_move_and_branch_start_id, &move_list_slots, &Multi_Move_List_Qml_Test_Slots::request_set_current_move_and_branch_start_id);
     auto set_current_move = [this](const int move_id) { current_move(&mlq, move_id); };
     ON_CALL(move_list_slots, request_set_current_move_and_branch_start_id(_)).WillByDefault(Invoke(set_current_move));
     connect(&mlq, &boardgame_qml::Multi_Move_List_Qml::request_move_list_forward, &move_list_slots, &Multi_Move_List_Qml_Test_Slots::request_move_list_forward);
     connect(&mlq, &boardgame_qml::Multi_Move_List_Qml::request_move_list_back, &move_list_slots, &Multi_Move_List_Qml_Test_Slots::request_move_list_back);
     connect(&mlq, &boardgame_qml::Multi_Move_List_Qml::added_move, &move_list_slots, &Multi_Move_List_Qml_Test_Slots::added_move);
-    auto set_move_color = [this](const int move_id, const int piece_id) { mlq.set_move_color(move_id, piece_id % 2 ? "odd" : "even"); };
+    connect(&mlq, &boardgame_qml::Multi_Move_List_Qml::request_move_list_import, &move_list_slots, &Multi_Move_List_Qml_Test_Slots::request_move_list_import);
+    connect(&mlq, &boardgame_qml::Multi_Move_List_Qml::request_move_list_export, &move_list_slots, &Multi_Move_List_Qml_Test_Slots::request_move_list_export);
+    auto set_move_color = [this, odd_move_number_as_piece_id, even_move_number_as_piece_id](const int move_id, const int piece_id) { mlq.set_move_color(move_id, piece_id % 2 ? odd_move_number_as_piece_id : even_move_number_as_piece_id); };
     ON_CALL(move_list_slots, added_move(_, _)).WillByDefault(Invoke(set_move_color));
     initial_constellation(&mlq, 0);
     processEvents();
@@ -41,8 +47,8 @@ void Multi_Move_List_Qml_Test::add_sequence(int move_id, int branch_start_id, in
 {
     auto end = move_id + number_of_moves;
     for (; move_id < end; move_id += 1) {
-        EXPECT_CALL(move_list_slots, added_move(move_id, -1));
-        add_move(&mlq, move_id, branch_start_id, std::to_string(move_id), {});
+        EXPECT_CALL(move_list_slots, added_move(move_id, move_id));
+        add_move(&mlq, move_id, branch_start_id, std::to_string(move_id), {move_id});
     }
 }
 
@@ -62,6 +68,15 @@ TEST_F(Multi_Move_List_Qml_Test, controls)
     EXPECT_CALL(move_list_slots, request_move_list_forward());
     QMetaObject::invokeMethod(move_list_forward_button, "clicked");
     processEvents();
+    EXPECT_EQ(false, QQmlProperty(move_list_root_entry1, "choose_move_list_file_visible").read().toBool());
+    QMetaObject::invokeMethod(move_list_import_button, "confirmed");
+    processEvents();
+    EXPECT_EQ(true, QQmlProperty(move_list_root_entry1, "choose_move_list_file_existing").read().toBool());
+    EXPECT_EQ(true, QQmlProperty(move_list_root_entry1, "choose_move_list_file_visible").read().toBool());
+    QMetaObject::invokeMethod(move_list_export_button, "clicked");
+    processEvents();
+    EXPECT_EQ(false, QQmlProperty(move_list_root_entry1, "choose_move_list_file_existing").read().toBool());
+    EXPECT_EQ(true, QQmlProperty(move_list_root_entry1, "choose_move_list_file_visible").read().toBool());
 }
 
 TEST_F(Multi_Move_List_Qml_Test, lots_of_moves)
@@ -200,4 +215,44 @@ TEST_F(Multi_Move_List_Qml_Test, delete_and_cut_off)
 
     cut_off(&mlq, 51); // 101 - 300 move behind 50
     EXPECT_EQ(203, move_list_root_buttons->childItems().length()); // one more because of controls, so 203
+}
+
+TEST_F(Multi_Move_List_Qml_Test, change_color)
+{
+    add_sequence(1, 0, 30);
+    for (int i = 3; i < 28; i += 2) {
+        EXPECT_EQ("#111111", QQmlProperty(move_list_root_buttons->childItems()[i], "color").read().toString().toStdString());
+        EXPECT_EQ("#222222", QQmlProperty(move_list_root_buttons->childItems()[i + 1], "color").read().toString().toStdString());
+    }
+    mlq.change_move_color("#111111", "#333333");
+    for (int i = 3; i < 28; i += 2) {
+        EXPECT_EQ("#333333", QQmlProperty(move_list_root_buttons->childItems()[i], "color").read().toString().toStdString());
+        EXPECT_EQ("#222222", QQmlProperty(move_list_root_buttons->childItems()[i + 1], "color").read().toString().toStdString());
+    }
+    mlq.change_move_color("#222222", "#444444");
+    for (int i = 3; i < 28; i += 2) {
+        EXPECT_EQ("#333333", QQmlProperty(move_list_root_buttons->childItems()[i], "color").read().toString().toStdString());
+        EXPECT_EQ("#444444", QQmlProperty(move_list_root_buttons->childItems()[i + 1], "color").read().toString().toStdString());
+    }
+}
+
+TEST_F(Multi_Move_List_Qml_Test, change_need_confirm)
+{
+    add_sequence(1, 0, 30);
+    EXPECT_EQ(false, QQmlProperty(move_list_control, "confirm").read().toBool());
+    need_confirm(&mlq, true);
+    EXPECT_EQ(true, QQmlProperty(move_list_control, "confirm").read().toBool());
+    need_confirm(&mlq, false);
+    EXPECT_EQ(false, QQmlProperty(move_list_control, "confirm").read().toBool());
+}
+
+TEST_F(Multi_Move_List_Qml_Test, import_export)
+{
+    EXPECT_CALL(move_list_slots, request_move_list_import("/import/path"));
+    QMetaObject::invokeMethod(move_list_root_entry1, "chosen_move_list_path", Q_ARG(QVariant, QVariant(QUrl("file:///import/path"))));
+    processEvents();
+    EXPECT_CALL(move_list_slots, request_move_list_export("/export/path"));
+    QQmlProperty(move_list_root_entry1, "choose_move_list_file_existing").write(false);
+    QMetaObject::invokeMethod(move_list_root_entry1, "chosen_move_list_path", Q_ARG(QVariant, QVariant(QUrl("file:///export/path"))));
+    processEvents();
 }

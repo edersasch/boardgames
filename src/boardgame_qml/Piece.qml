@@ -4,10 +4,11 @@ Rectangle {
     id: piece
 
     property var next_parent
+    property int piece_id
     readonly property real parent_width: parent ? parent.width : 0
     readonly property real parent_height: parent ? parent.height : 0
-    signal selected
-    signal removed
+    signal selected(int p_id)
+    signal removed(int p_id)
 
     onNext_parentChanged: {
         var next_point;
@@ -96,7 +97,7 @@ Rectangle {
                 target: mouse_area
                 drag.target: piece
                 cursorShape: Qt.OpenHandCursor // looks the same as ClosedHandCursor, changing to CrossCursor shows effect
-                onClicked: { piece.selected() }
+                onClicked: { piece.selected(piece.piece_id) }
             }
         },
         State {
@@ -111,7 +112,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: mouse_area
-                onClicked: { piece.removed() }
+                onClicked: { piece.removed(piece.piece_id) }
             }
         }
     ]
@@ -148,6 +149,7 @@ Rectangle {
         }
     }
     Behavior on width {
+        enabled: xbeh.enabled
         NumberAnimation { duration: 100 }
     }
     Behavior on scale {
@@ -171,14 +173,14 @@ Rectangle {
                         piece.parent.z = 1;
                         piece.anchors.horizontalCenter = undefined;
                         piece.anchors.verticalCenter = undefined;
-                        piece.selected();
+                        piece.selected(piece.piece_id);
                     }
                 }
             }
         ]
         onReleased: {
             if (piece.Drag.target) {
-                piece.Drag.target.occupy();
+                piece.Drag.target.occupy(piece.Drag.target.field_id);
             } else {
                 if (drag.active && piece.parent) {
                     piece.xypos();
@@ -187,21 +189,17 @@ Rectangle {
         }
     }
 
-    Item {
+    Rectangle {
         id: remove_hint
         anchors.fill: parent
+        color: "red"
+        radius: 10
         opacity: 0
+        scale: 1.1
         z: -1
 
         Behavior on opacity {
             NumberAnimation {}
-        }
-
-        Rectangle {
-            anchors.fill: parent
-            color: "red"
-            radius: 10
-            opacity: remove_hint.opacity
         }
     }
 }

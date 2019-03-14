@@ -44,6 +44,7 @@ class Main_Loop_Mock
 {
 public:
     MOCK_METHOD1(engine_future, void(std::future<bool>&& efu));
+    MOCK_METHOD1(set_main_loop_engine_time, void(std::chrono::seconds time_in_s));
 };
 
 class Muehle_State_Test
@@ -65,14 +66,15 @@ protected:
     std::vector<int> mOccupiedBoardFields {};
 };
 
-void draw(::testing::StrictMock<Muehle_Ui_Mock>* mui) { mui->draw(); }
-void win(::testing::StrictMock<Muehle_Ui_Mock>* mui, const std::string& player) { mui->win(player); }
 void initial_constellation(::testing::StrictMock<Move_List_Ui_Mock>* mui, const int constellation_id) { mui->initial_constellation(constellation_id); }
 void current_move(::testing::StrictMock<Move_List_Ui_Mock>* mui, const int move_id) { mui->current_move(move_id); }
 void add_move(::testing::StrictMock<Move_List_Ui_Mock>* mui, const int move_id, const int branch_id, const std::string& description, const std::vector<int>& hint) { mui->add_move(move_id, branch_id, description, hint); }
 void delete_move(::testing::StrictMock<Move_List_Ui_Mock>* mui, const int move_id) { mui->delete_move(move_id); }
 void cut_off(::testing::StrictMock<Move_List_Ui_Mock>* mui, const int move_id) { mui->cut_off(move_id); }
 void need_confirm(::testing::StrictMock<Move_List_Ui_Mock>* mui, const bool in) { mui->need_confirm(in); }
+
+void draw(::testing::StrictMock<Muehle_Ui_Mock>* mui) { mui->draw(); }
+void win(::testing::StrictMock<Muehle_Ui_Mock>* mui, const std::string& player) { mui->win(player); }
 void drawer_can_hide(::testing::StrictMock<Muehle_Ui_Mock>* mui, const std::string& player_id, bool can_hide) { mui->drawer_can_hide(player_id, can_hide); }
 void prison_can_hide(::testing::StrictMock<Muehle_Ui_Mock>* mui, const std::string& player_id, bool can_hide) { mui->prison_can_hide(player_id, can_hide); }
 void lock_piece(::testing::StrictMock<Muehle_Ui_Mock>* mui, boardgame::Piece_Number piece_id) { mui->lock_piece(piece_id.v); }
@@ -85,7 +87,9 @@ void set_field(::testing::StrictMock<Muehle_Ui_Mock>* mui, boardgame::Piece_Numb
 void setup_mode_active(::testing::StrictMock<Muehle_Ui_Mock>* mui, const bool is_active) { mui->setup_mode_active(is_active); }
 void engine_active(::testing::StrictMock<Muehle_Ui_Mock>* mui, const std::string& player_id, const bool is_active) { mui->engine_active(player_id, is_active); }
 void active_player(::testing::StrictMock<Muehle_Ui_Mock>* mui, const std::string& player_id) { (void)mui; (void)player_id; }
-void engine_future(::testing::StrictMock<Main_Loop_Mock>* ml, std::future<bool>&& efu) { ml->engine_future(std::move(efu)); }
 void need_confirm(::testing::StrictMock<Muehle_Ui_Mock>* mui, const bool in) { mui->need_confirm(in); }
+
+void engine_future(::testing::StrictMock<Main_Loop_Mock>* ml, std::future<bool>&& efu) { ml->engine_future(std::move(efu)); }
+void set_main_loop_engine_time(::testing::StrictMock<Main_Loop_Mock>* ml, std::chrono::seconds time_in_s) { ml->set_main_loop_engine_time(time_in_s); }
 
 # endif // TESTS_MUEHLE_MUEHLE_STATE_TEST

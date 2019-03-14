@@ -54,7 +54,7 @@ Column {
         }
 
         move: Transition {
-            NumberAnimation { properties: "x,y"; easing.type: Easing.OutCirc }
+            NumberAnimation { properties: "x,y"; easing.type: Easing.OutBack }
             NumberAnimation { properties: "opacity"; to: 1 } // "add" probably interrupted
         }
 

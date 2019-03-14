@@ -13,9 +13,7 @@ Rectangle {
     Layout.preferredHeight: (can_hide) ? 0 : width / fields.model * size_factor
 
     Behavior on Layout.preferredHeight {
-        NumberAnimation {
-            duration: 100
-        }
+        NumberAnimation { easing.type: Easing.OutBack; duration: 200 }
     }
 
     RowLayout {

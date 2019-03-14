@@ -13,6 +13,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <chrono>
 
 /** Model setup and rule checking
  *
@@ -55,11 +56,17 @@ public:
     void request_occupy(const boardgame::Field_Number fn);
     void request_engine_active(const std::string& player_id, bool is_active);
     void request_set_current_move_and_branch_start_id(const int move_id);
+    void request_set_current_move_and_branch_start_id(const int move_id, const int branch_start_id);
     void request_cut_off(const int move_id);
     void request_move_list_forward();
     void request_move_list_back();
-    void request_move_list_import(const std::string& path);
+    void request_move_list_import(const std::string& import, bool is_path = true);
     bool request_move_list_export(const std::string& path);
+    std::string get_move_list_string();
+    int get_move_id() { return move_list->get_current_move_id(); }
+    int get_branch_start_id() { return move_list->get_current_branch_start_id(); }
+    void set_engine_depth(int depth);
+    void set_engine_time(std::chrono::seconds time_in_s);
     void engine_move(bool is_valid);
     void force_engine_move();
 private:
@@ -103,6 +110,7 @@ private:
     boardgame::Field_Number_Diff diff_key(Muehle_Key key);
     void reconstruct(const Muehle_Constellation& constellation);
     void set_player_on_hint(const std::vector<int>& hint);
+    void modified_if_not_start_constellation();
     const boardgame::Piecegroup<decltype(current_constellation.cbegin())> white_pieces { make_piecegroup(current_constellation, muehle::first_white_piece, muehle::number_of_pieces_per_player) };
     const boardgame::Piecegroup<decltype(current_constellation.cbegin())> black_pieces { make_piecegroup(current_constellation, muehle::first_black_piece, muehle::number_of_pieces_per_player) };
     const boardgame::Fieldgroup<decltype(all_fields.cbegin())> game_board { make_fieldgroup(all_fields, muehle::first_board_field, muehle::number_of_board_fields) };
@@ -120,7 +128,8 @@ private:
     bool setup_mode {false};
     boardgame::Alpha_Beta<muehle::Muehle_Key, muehle::Engine_Helper> engine;
     bool restart {false};
-    std::string import_path {};
+    std::string import_string {};
+    bool import_string_is_path {true};
 };
 
 }

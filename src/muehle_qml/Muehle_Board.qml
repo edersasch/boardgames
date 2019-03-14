@@ -14,23 +14,22 @@ RowLayout {
     property bool black_drawer_can_hide: true
     property bool white_prison_can_hide: true
     property bool black_prison_can_hide: true
-    property bool show_move_list: false
+    property bool move_list_visible: false
     property alias board_fields: board_fields
     property alias white_h_drawer_fields: white_h_drawer.fields
     property alias white_v_drawer_fields: white_v_drawer.fields
     property alias white_h_prison_fields: white_h_prison.fields
     property alias white_v_prison_fields: white_v_prison.fields
-    property alias blackHFields: black_h_drawer.fields
-    property alias blackVFields: black_v_drawer.fields
-    property alias blackHPFields: black_h_prison.fields
-    property alias blackVPFields: black_v_prison.fields
-    property alias v_move_list: v_move_list_root.entries
+    property alias black_h_drawer_fields: black_h_drawer.fields
+    property alias black_v_drawer_fields: black_v_drawer.fields
+    property alias black_h_prison_fields: black_h_prison.fields
+    property alias black_v_prison_fields: black_v_prison.fields
     property alias h_move_list: h_move_list_root.entries
+    property alias v_move_list: v_move_list_root.entries
 
     width: 640
     height: 480
     spacing: 1
-    anchors.fill: parent ? parent : undefined
 
     Piece_Column_Box {
         id: white_h_prison
@@ -275,11 +274,11 @@ RowLayout {
         Move_List_Root {
             id: v_move_list_root
 
-            implicitHeight: (!hor_orientation && show_move_list) ? Math.max(width / white_v_drawer_fields.model, 200) : 0
+            implicitHeight: (!hor_orientation && move_list_visible) ? Math.max(width / white_v_drawer_fields.model, 200) : 0
             Layout.fillWidth: true
             contentWidth: width
 
-            Behavior on implicitHeight { NumberAnimation { duration: 100 } }
+            Behavior on implicitHeight { NumberAnimation { easing.type: Easing.OutBack; duration: 200 } }
         }
     }
 
@@ -303,10 +302,10 @@ RowLayout {
     Move_List_Root {
         id: h_move_list_root
 
-        implicitWidth: (hor_orientation && show_move_list) ? Math.max(height / white_h_drawer_fields.model, entries.maxChildWidth) : 0
+        implicitWidth: (hor_orientation && move_list_visible) ? Math.max(height / white_h_drawer_fields.model, entries.maxChildWidth) : 0
         contentWidth: implicitWidth
         Layout.fillHeight: true
 
-        Behavior on implicitWidth { NumberAnimation { duration: 100 } }
+        Behavior on implicitWidth { NumberAnimation { easing.type: Easing.OutBack; duration: 200 } }
     }
 }

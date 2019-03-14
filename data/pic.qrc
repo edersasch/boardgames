@@ -3,6 +3,7 @@
         <file>back.svg</file>
         <file>cancel.svg</file>
         <file>delete.svg</file>
+        <file>depth.svg</file>
         <file>engine.svg</file>
         <file>export.svg</file>
         <file>forward.svg</file>
@@ -12,6 +13,8 @@
         <file>list.svg</file>
         <file>refresh.svg</file>
         <file>setup.svg</file>
+        <file>settings.svg</file>
         <file>show.svg</file>
+        <file>time.svg</file>
     </qresource>
 </RCC>
