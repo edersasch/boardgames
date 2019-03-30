@@ -3,22 +3,26 @@ import QtQuick 2.7
 Rectangle {
     id: piece
 
-    property var next_parent
     property int piece_id
+    property var next_parent
+    property color next_color
     readonly property real parent_width: parent ? parent.width : 0
     readonly property real parent_height: parent ? parent.height : 0
+    readonly property real next_width: Math.min(parent_width, parent_height)
+    readonly property real x_offset: (parent_width - next_width) / 2
+    readonly property real y_offset: (parent_height - next_width) / 2
     signal selected(int p_id)
     signal removed(int p_id)
 
     onNext_parentChanged: {
         var next_point;
+        var old_z;
         if (next_parent && parent !== next_parent) {
             if (parent) {
                 next_point = piece.mapToItem(next_parent, 0, 0)
-                anchors.horizontalCenter = undefined;
-                anchors.verticalCenter = undefined;
-                next_parent.z = parent.z
+                old_z = parent.z;
                 parent.z = 0;
+                next_parent.z = old_z; // in case parent and next_parent have the same parent, set potential 1 after 0
                 x = next_point.x;
                 y = next_point.y;
             }
@@ -26,49 +30,35 @@ Rectangle {
         }
     }
 
-    onParentChanged:        { xypos(); }
-    onParent_widthChanged:  { adjxy(); }
-    onParent_heightChanged: { adjxy(); }
+    onNext_colorChanged: {
+        win_animation.stop();
+    }
 
-    function adjxy() {
-        if (xbeh.enabled) {
-            xypos();
-        }
+    onParentChanged: {
+        xypos();
     }
 
     function xypos() {
-        var next_width = Math.min(parent_width, parent_height); // end value for computation needed now, same as future width
-        var next_x = (parent_width - next_width) / 2;
-        var next_y = (parent_height - next_width) / 2;
-        if (x !== next_x || y !== next_y) {
-            xbeh.enabled = true;
-            ybeh.enabled = true;
-            x = next_x;
-            y = next_y;
-            parent.z = 1;
-        }
+        xbeh.enabled = x !== x_offset || y !== y_offset;
+        x = Qt.binding(function() { return x_offset; });
+        y = Qt.binding(function() { return y_offset; });
     }
 
     function anchorparent() {
-        if (!xanim.running && !yanim.running && parent) {
-            parent.z = 0;
-            xbeh.enabled = false;
-            ybeh.enabled = false;
-            anchors.horizontalCenter = Qt.binding(function() { return parent.horizontalCenter; });
-            anchors.verticalCenter = Qt.binding(function() { return parent.verticalCenter; });
+        xbeh.enabled = xanim.running || yanim.running;
+        if (parent) {
+            parent.z = xbeh.enabled || mouse_area.drag.active ? 1 : 0;
         }
     }
 
-    anchors.horizontalCenter: parent ? parent.horizontalCenter : undefined
-    anchors.verticalCenter: parent ? parent.verticalCenter : undefined;
-    width: Math.min(parent_width, parent_height)
+    width: next_width
     height: width
     radius: width / 2
     border.color: "black"
     border.width: 1
     scale: 0.8
-    opacity: 0
-    z: 1
+    opacity: 1
+    color: next_color
 
     Drag.hotSpot.x: width / 2
     Drag.hotSpot.y: height / 2
@@ -76,21 +66,9 @@ Rectangle {
 
     states: [
         State {
-            name: "lock"
-            PropertyChanges {
-                target: piece
-                opacity: 1
-            }
-            PropertyChanges {
-                target: mouse_area
-                cursorShape: Qt.ArrowCursor
-            }
-        },
-        State {
             name: "selectable"
             PropertyChanges {
                 target: piece
-                opacity: 1
                 scale: 1
             }
             PropertyChanges {
@@ -103,16 +81,21 @@ Rectangle {
         State {
             name: "removable"
             PropertyChanges {
-                target: piece
-                opacity: 1
-            }
-            PropertyChanges {
                 target: remove_hint
                 opacity: 1
             }
             PropertyChanges {
                 target: mouse_area
+                cursorShape: Qt.CrossCursor
                 onClicked: { piece.removed(piece.piece_id) }
+            }
+        },
+        State {
+            name: "win"
+            StateChangeScript {
+                script: {
+                    piece.color = piece.next_color; // break binding to next_color without flicker
+                }
             }
         }
     ]
@@ -121,6 +104,34 @@ Rectangle {
             NumberAnimation { properties: "opacity" }
         }
     ]
+
+    SequentialAnimation {
+        id: win_animation
+
+        running: state === "win"
+        alwaysRunToEnd: true
+        loops: Animation.Infinite
+        ColorAnimation {
+            target: piece
+            properties: "color"
+            from: next_color
+            to: next_color.hslLightness > 0.5 ? "black" : "white"
+            duration: 500
+        }
+        ColorAnimation {
+            target: piece
+            properties: "color"
+            to: next_color
+            duration: 1000
+        }
+        onStopped: {
+            if (piece.state === "win") {
+                win_animation.start();
+            } else {
+                piece.color = Qt.binding(function() { return piece.next_color; });
+            }
+        }
+    }
 
     Behavior on x {
         id: xbeh
@@ -136,8 +147,7 @@ Rectangle {
         }
     }
     Behavior on y {
-        id: ybeh
-        enabled: false
+        enabled: xbeh.enabled
         NumberAnimation {
             id: yanim
             easing.type: Easing.OutElastic
@@ -161,6 +171,7 @@ Rectangle {
         enabled: true
         anchors.fill: parent
         drag.axis: Drag.XAndYAxis
+        cursorShape: Qt.ArrowCursor
         states: [
             State {
                 when: mouse_area.pressed && mouse_area.drag.active
@@ -170,9 +181,9 @@ Rectangle {
                 }
                 StateChangeScript {
                     script: {
-                        piece.parent.z = 1;
-                        piece.anchors.horizontalCenter = undefined;
-                        piece.anchors.verticalCenter = undefined;
+                        if (piece.parent) {
+                            piece.parent.z = 1;
+                        }
                         piece.selected(piece.piece_id);
                     }
                 }
@@ -182,7 +193,7 @@ Rectangle {
             if (piece.Drag.target) {
                 piece.Drag.target.occupy(piece.Drag.target.field_id);
             } else {
-                if (drag.active && piece.parent) {
+                if (drag.active) {
                     piece.xypos();
                 }
             }

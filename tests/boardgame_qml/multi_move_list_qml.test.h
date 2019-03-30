@@ -38,7 +38,7 @@ class Multi_Move_List_Qml_Test
     Q_OBJECT
 public:
     Multi_Move_List_Qml_Test();
-    void add_sequence(int move_id, int branch_start_id, int number_of_moves);
+    void add_sequence(int move_id, int number_of_moves);
 protected:
     QQuickView v;
     QQmlComponent move_list_component;

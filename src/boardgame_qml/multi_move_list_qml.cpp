@@ -21,11 +21,11 @@ void current_move(Multi_Move_List_Qml* mui, const int move_id)
     }
 }
 
-void add_move(Multi_Move_List_Qml* mui, const int move_id, const int branch_id, const std::string& description, const std::vector<int>& hint)
+void add_move(Multi_Move_List_Qml* mui, const int move_id, const std::string& description, const std::vector<int>& hint)
 {
     std::vector<std::vector<QQuickItem*>> all_cols;
     for (auto& ml : mui->move_lists) {
-        all_cols.push_back(ml->add_move(move_id, branch_id, description));
+        all_cols.push_back(ml->add_move(move_id, description));
     }
     if (!all_cols.empty()) {
         for (unsigned i = 0; i < all_cols[0].size(); i += 1) {

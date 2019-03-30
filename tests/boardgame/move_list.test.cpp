@@ -24,7 +24,7 @@ void Move_List_Test::commit_sequence(int predecessor, int start, int end, int ex
     EXPECT_CALL(ui, current_move(predecessor));
     EXPECT_TRUE(move_list->set_current_move_and_branch_start_id(predecessor));
     for (int i = start; i <= end; i += 1, expected_committed_move_id += 1) {
-        EXPECT_CALL(ui, add_move(expected_committed_move_id, expected_branch_start_id, std::to_string(i), std::vector<int>{}));
+        EXPECT_CALL(ui, add_move(expected_committed_move_id, std::to_string(i), std::vector<int>{}));
         EXPECT_CALL(ui, current_move(expected_committed_move_id));
         EXPECT_TRUE(move_list->commit({i}, {}));
         EXPECT_EQ(expected_committed_move_id, move_list->get_current_move_id());
@@ -41,14 +41,14 @@ void Move_List_Test::expect_present_move(int move_id, int predecessor)
     EXPECT_TRUE(move_list->commit({move_id}, {}));
 }
 
-void Move_List_Test::expect_import_sequence(int predecessor, int start, int end, int expected_committed_move_id, int expected_branch_start_id)
+void Move_List_Test::expect_import_sequence(int predecessor, int start, int end, int expected_committed_move_id)
 {
     EXPECT_CALL(ui, current_move(predecessor)).RetiresOnSaturation();
     for (int i = start; i <= end; i += 1, expected_committed_move_id += 1) {
         if (i != end) {
             EXPECT_CALL(ui, current_move(expected_committed_move_id));
         }
-        EXPECT_CALL(ui, add_move(expected_committed_move_id, expected_branch_start_id, std::to_string(i), std::vector<int>{}));
+        EXPECT_CALL(ui, add_move(expected_committed_move_id, std::to_string(i), std::vector<int>{}));
     }
 }
 
@@ -290,17 +290,17 @@ TEST_F(Move_List_Test, import_export)
 
     EXPECT_CALL(ui, initial_constellation(0));
     EXPECT_CALL(ui, current_move(0));
-    expect_import_sequence(0, 1, 1, 1, 0);
-    expect_import_sequence(0, 2, 3, 2, 2);
+    expect_import_sequence(0, 1, 1, 1);
+    expect_import_sequence(0, 2, 3, 2);
     move_list = std::make_unique<boardgame::Move_List<std::vector<int>, boardgame::Move_List_Ui>>(boardgame::Move_List_Ui(&ui), diff_text, "/tmp/Move_List_Test_import_export_1.out", true);
 
     EXPECT_CALL(ui, initial_constellation(0));
     EXPECT_CALL(ui, current_move(0));
-    expect_import_sequence(0, 1, 2, 1, 0);
-    expect_import_sequence(1, 3, 5, 3, 3);
-    expect_import_sequence(1, 6, 8, 6, 6);
-    expect_import_sequence(7, 9, 11, 9, 9);
-    expect_import_sequence(6, 12, 14, 12, 12);
+    expect_import_sequence(0, 1, 2, 1);
+    expect_import_sequence(1, 3, 5, 3);
+    expect_import_sequence(1, 6, 8, 6);
+    expect_import_sequence(7, 9, 11, 9);
+    expect_import_sequence(6, 12, 14, 12);
     move_list = std::make_unique<boardgame::Move_List<std::vector<int>, boardgame::Move_List_Ui>>(boardgame::Move_List_Ui(&ui), diff_text, "/tmp/Move_List_Test_import_export_2.out", true);
 
     EXPECT_CALL(ui, initial_constellation(0));
@@ -316,20 +316,20 @@ TEST_F(Move_List_Test, import_export)
 
     EXPECT_CALL(ui, initial_constellation(0));
     EXPECT_CALL(ui, current_move(0));
-    expect_import_sequence(0, 1, 99, 1, 0);
-    expect_import_sequence(50, 100, 199, 100, 100);
-    expect_import_sequence(50, 200, 299, 200, 200);
-    expect_import_sequence(250, 300, 399, 300, 300);
-    expect_import_sequence(150, 400, 499, 400, 400);
+    expect_import_sequence(0, 1, 99, 1);
+    expect_import_sequence(50, 100, 199, 100);
+    expect_import_sequence(50, 200, 299, 200);
+    expect_import_sequence(250, 300, 399, 300);
+    expect_import_sequence(150, 400, 499, 400);
     move_list = std::make_unique<boardgame::Move_List<std::vector<int>, boardgame::Move_List_Ui>>(boardgame::Move_List_Ui(&ui), diff_text, "/tmp/Move_List_Test_import_export_3.out", true);
 
     EXPECT_CALL(ui, initial_constellation(0));
     EXPECT_CALL(ui, current_move(0));
-    expect_import_sequence(0, 1, 2, 1, 0);
-    expect_import_sequence(1, 3, 5, 3, 3);
-    expect_import_sequence(1, 6, 8, 6, 6);
-    expect_import_sequence(7, 9, 11, 9, 9);
-    expect_import_sequence(4, 12, 14, 12, 12);
+    expect_import_sequence(0, 1, 2, 1);
+    expect_import_sequence(1, 3, 5, 3);
+    expect_import_sequence(1, 6, 8, 6);
+    expect_import_sequence(7, 9, 11, 9);
+    expect_import_sequence(4, 12, 14, 12);
     move_list = std::make_unique<boardgame::Move_List<std::vector<int>, boardgame::Move_List_Ui>>(boardgame::Move_List_Ui(&ui), diff_text, "/tmp/Move_List_Test_import_export_4.out", true);
     for (int i = 12; i < 15; i += 1) {
         EXPECT_CALL(ui, delete_move(i));
@@ -377,8 +377,8 @@ TEST_F(Move_List_Test, import_export_string)
 
     EXPECT_CALL(ui, initial_constellation(0));
     EXPECT_CALL(ui, current_move(0));
-    expect_import_sequence(0, 1, 3, 1, 0);
-    expect_import_sequence(2, 4, 6, 4, 4);
+    expect_import_sequence(0, 1, 3, 1);
+    expect_import_sequence(2, 4, 6, 4);
     move_list = std::make_unique<boardgame::Move_List<std::vector<int>, boardgame::Move_List_Ui>>(boardgame::Move_List_Ui(&ui), diff_text, to_import, false);
     EXPECT_CALL(ui, current_move(3));
     EXPECT_FALSE(move_list->set_current_move_and_branch_start_id(3, 4));

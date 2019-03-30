@@ -35,7 +35,7 @@ class Move_List_Qml_Test
     Q_OBJECT
 public:
     Move_List_Qml_Test();
-    std::vector<QQuickItem*> add_sequence(int move_id, int branch_start_id, int number_of_moves, int current_move_id = -1);
+    std::vector<QQuickItem*> add_sequence(int current_move_id, int move_id, int number_of_moves, int expected_number_of_childItems);
 protected:
     QQuickView v;
     QQmlComponent move_list_component;

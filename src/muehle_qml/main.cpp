@@ -7,7 +7,7 @@
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
-    app.setOrganizationName("edersaschOpensource");
+    app.setOrganizationName("Edersasch_Opensource");
     app.setApplicationName("Muehle");
 
     QSettings settings;

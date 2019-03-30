@@ -42,42 +42,42 @@ void Move_List_Qml::current_move(const int move_id)
     current_move_id = move_id;
 }
 
-std::vector<QQuickItem*> Move_List_Qml::add_move(const int move_id, const int branch_id, const std::string& description)
+std::vector<QQuickItem*> Move_List_Qml::add_move(const int move_id, const std::string& description)
 {
     std::vector<QQuickItem*> branch_cols;
     auto buttons = current_move_id == start_id ?
                 QQmlProperty(root_entry, "buttons").read().value<QQuickItem*>() :
                 move_buttons.at(current_move_id)->parentItem();
-    if (move_id == branch_id) {
-        auto make_branch = [this, buttons, &branch_cols](int id) -> QQuickItem* {
-            auto branch_col = qobject_cast<QQuickItem*>(move_list_entry.create());
-            branch_col->setParentItem(buttons->parentItem());
-            branch_cols.push_back(branch_col);
-            connect(branch_col, SIGNAL(request_delete_branch(int)), this, SIGNAL(request_delete_branch(int)));
-            if (current_move_id == start_id) {
-                QQmlProperty(branch_col, "leftPadding").write(0);
-            }
-            branches[id] = std::unique_ptr<QQuickItem>(branch_col);
-            return QQmlProperty(branch_col, "buttons").read().value<QQuickItem*>();
-        };
-        auto reparent_buttons = [this] (QQuickItem* src, QQuickItem* dest) {
-            for (auto button : src->childItems()) {
-                auto buttonid = QQmlProperty(button, "move_id").read().value<int>();
-                if (buttonid > current_move_id) {
-                    button->setParentItem(dest);
-                }
-            }
-        };
-        for (auto button : buttons->childItems()) {
-            if (auto buttonid = QQmlProperty(button, "move_id").read().value<int>(); buttonid > current_move_id) {
-                auto buttons_to_move = make_branch(buttonid);
-                while (buttons->parentItem()->childItems().length() > 2) {
-                    buttons->parentItem()->childItems().at(1)->setParentItem(buttons_to_move->parentItem());
-                }
-                reparent_buttons(buttons, buttons_to_move);
-                break;
+    auto make_branch = [this, buttons, &branch_cols](int id) -> QQuickItem* {
+        auto branch_col = qobject_cast<QQuickItem*>(move_list_entry.create());
+        branch_col->setParentItem(buttons->parentItem());
+        branch_cols.push_back(branch_col);
+        connect(branch_col, SIGNAL(request_delete_branch(int)), this, SIGNAL(request_delete_branch(int)));
+        if (current_move_id == start_id) {
+            QQmlProperty(branch_col, "leftPadding").write(0);
+        }
+        branches[id] = std::unique_ptr<QQuickItem>(branch_col);
+        return QQmlProperty(branch_col, "buttons").read().value<QQuickItem*>();
+    };
+    auto reparent_buttons = [this] (QQuickItem* src, QQuickItem* dest) {
+        for (auto button : src->childItems()) {
+            auto buttonid = QQmlProperty(button, "move_id").read().value<int>();
+            if (buttonid > current_move_id) {
+                button->setParentItem(dest);
             }
         }
+    };
+    for (auto button : buttons->childItems()) {
+        if (auto buttonid = QQmlProperty(button, "move_id").read().value<int>(); buttonid > current_move_id) {
+            auto buttons_to_move = make_branch(buttonid);
+            while (buttons->parentItem()->childItems().length() > 2) {
+                buttons->parentItem()->childItems().at(1)->setParentItem(buttons_to_move->parentItem());
+            }
+            reparent_buttons(buttons, buttons_to_move);
+            break;
+        }
+    }
+    if (buttons->parentItem()->childItems().length() > 1) { // only necessary if a branch already exists
         buttons = make_branch(move_id);
     }
     add_move_button(move_id, description);

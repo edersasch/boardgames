@@ -50,13 +50,26 @@ if(BOARDGAMES_USE_EXTERNAL_JSON)
 else()
     include(DownloadProject)
     download_project(PROJ   nlohmann_json
-        GIT_REPOSITORY      https://github.com/nlohmann/json.git
-        GIT_TAG             v3.4.0
+        URL                 https://github.com/nlohmann/json/releases/download/v3.4.0/include.zip
+        URL_HASH            SHA256=bfec46fc0cee01c509cf064d2254517e7fa80d1e7647fea37cf81d97c5682bdc
         UPDATE_DISCONNECTED 1
         QUIET
     )
-    set(JSON_BuildTests OFF CACHE INTERNAL "")
-    add_subdirectory(${nlohmann_json_SOURCE_DIR} ${nlohmann_json_BINARY_DIR})
+    include_directories(${nlohmann_json_SOURCE_DIR})
+endif()
+
+if(UNIX AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    include(GNUInstallDirs)
+endif()
+
+find_program(PANDOC pandoc)
+if(NOT PANDOC STREQUAL "PANDOC-NOTFOUND")
+    add_custom_target(manuals ALL
+        ${PANDOC} -o ${CMAKE_BINARY_DIR}/muehle_de.html -s --self-contained -c ../../data/pandoc.css muehle_de.md
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/docs/manuals
+        COMMENT "Generate HTML manuals with pandoc" VERBATIM
+    )
+    install(FILES ${CMAKE_BINARY_DIR}/muehle_de.html DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/doc/boardgames)
 endif()
 
 include_directories(src)

@@ -31,19 +31,22 @@ DropArea {
                 target: destination
                 enabled: true
             }
-            PropertyChanges {
-                target: field
-                opacity: 0
-            }
         },
         State {
             name: "highlight"
             PropertyChanges {
                 target: field
-                color: "green"
                 opacity: 0.5
             }
         }
+    ]
+    transitions: [
+        Transition {
+            NumberAnimation {
+                properties: "opacity"
+            }
+        }
+
     ]
 
     Rectangle {
@@ -51,13 +54,15 @@ DropArea {
         anchors.fill: parent
         opacity: 0
         radius: 10
-        Behavior on opacity {
-            NumberAnimation {}
-        }
+        color: (destination.parent && destination.parent.children.length === 2 &&
+                destination.parent.children[1].color.hslLightness < 0.5) ?
+                   "darkgreen" :
+                   "lightgreen"; // other way round than movebutton / engine button, can be seen well in prison
     }
 
     Piece {
         id: hint
+        opacity: 0
         states: [
             State {
                 when: destination.enabled === true && destination.containsDrag === false

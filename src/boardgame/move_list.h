@@ -60,7 +60,7 @@ public:
     nlohmann::json make_json();
 
     // modify move_list_entries
-    std::pair<int, int> commit(const T& constellation, int predecessor = invalid_id, const std::vector<int>& hint = {});
+    std::pair<int, bool> commit(const T& constellation, int predecessor = invalid_id, const std::vector<int>& hint = {});
     void delete_move(const int move_id);
     bool process_json(nlohmann::json&& j);
 
@@ -71,7 +71,7 @@ private:
 };
 
 template <typename T>
-std::pair<int, int> Move_List<T>::commit(const T& constellation, int predecessor, const std::vector<int>& hint)
+std::pair<int, bool> Move_List<T>::commit(const T& constellation, int predecessor, const std::vector<int>& hint)
 {
     int entry_id = next_id;
     int branch_start_id = entry_id;
@@ -82,7 +82,7 @@ std::pair<int, int> Move_List<T>::commit(const T& constellation, int predecessor
         } else {
             for (int i : val.next) { // if to be commited constellation matches a successor, return its entry id
                 if (move_list_entries.at(i).constellation == constellation) {
-                    return {i, invalid_id};
+                    return {i, false};
                 }
             }
             for (int i = predecessor; i != invalid_id; i = move_list_entries.at(i).prev) {
@@ -95,7 +95,7 @@ std::pair<int, int> Move_List<T>::commit(const T& constellation, int predecessor
     }
     move_list_entries[entry_id] = { constellation, hint, {branch_start_id}, predecessor, {} };
     next_id += 1;
-    return {entry_id, branch_start_id};
+    return {entry_id, true};
 }
 
 template <typename T>
@@ -196,7 +196,7 @@ private:
 
     detail::Move_List<T> move_list {};
     U ui;
-    int current_move_id {detail::Move_List<T>::initial_id};
+    int current_move_id {detail::Move_List<T>::invalid_id};
     int current_branch_start_id{detail::Move_List<T>::invalid_id};
     std::string (*msg)(std::vector<std::array<typename T::value_type, 2>>);
     bool modified { false };
@@ -277,9 +277,9 @@ bool Move_List<T, U>::move_list_forward()
 template <typename T, typename U>
 bool Move_List<T, U>::commit(const T& new_constellation, const std::vector<int>& hint)
 {
-     auto [move_id, branch_start_id] = move_list.commit(new_constellation, current_move_id, hint);
-     if (branch_start_id != detail::Move_List<T>::invalid_id) {
-         add_move(ui, move_id, branch_start_id, msg(diff(constellation(), new_constellation)), hint);
+     auto [move_id, is_new_move] = move_list.commit(new_constellation, current_move_id, hint);
+     if (is_new_move) {
+         add_move(ui, move_id, msg(diff(constellation(), new_constellation)), hint);
          set_modified();
      }
      return set_current_move_and_branch_start_id(move_id);
@@ -359,7 +359,7 @@ void Move_List<T, U>::ui_replay(const int move_id)
 {
     for (auto successor : move_list.next(move_id)) {
         set_current_move_and_branch_start_id(move_id);
-        add_move(ui, successor, move_list.branch_start_ids(successor).at(0), msg(diff(move_list.constellation(move_id), move_list.constellation(successor))), move_list.hint(successor));
+        add_move(ui, successor, msg(diff(move_list.constellation(move_id), move_list.constellation(successor))), move_list.hint(successor));
         ui_replay(successor);
     }
 }

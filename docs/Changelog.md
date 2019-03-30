@@ -4,7 +4,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## Unreleased "Klaus" - 2019-??-??
+## 0.1.0 "Klaus" - 2019-04-16
 
 The first five big commits up to d1c4d8b served to find a good design and
 naming. The other commits are also larger than they would have been when

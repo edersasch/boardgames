@@ -17,7 +17,8 @@ RowLayout {
     property alias white_color: white_color_select.color
     property alias black_color: black_color_select.color
     property alias move_list_visible: move_list_v_button.checked
-    property bool setup_mode_active: false
+    property alias setup_mode_active: v_setup.checked
+    property alias info_visible: info.visible
     property bool white_engine_active: false
     property bool black_engine_active: false
     property bool white_player_active: false
@@ -34,6 +35,7 @@ RowLayout {
     signal engine_time_in_s(int time_in_s)
     signal white_color_changed(string new_white_color)
     signal black_color_changed(string new_black_color)
+    signal show_help()
 
     onHor_orientationChanged: {
         hor_orientation ? horizontal() : vertical()
@@ -51,40 +53,6 @@ RowLayout {
         request_black_engine_active(black_engine_active);
     }
 
-    NumberAnimation {
-        targets: [
-            white_v_bg,
-            white_h_bg
-        ]
-        properties: "border.width"
-        from: 4
-        to: 0
-        alwaysRunToEnd: true
-        loops: Animation.Infinite
-        running: white_engine_active && white_player_active
-        onStopped: {
-            white_v_bg.border.width = Qt.binding(function() { return white_engine_v_button.checked ? 4 : 0; })
-            white_h_bg.border.width = Qt.binding(function() { return white_engine_v_button.checked ? 4 : 0; })
-        }
-   }
-
-    NumberAnimation {
-        targets: [
-            black_v_bg,
-            black_h_bg
-        ]
-        properties: "border.width"
-        from: 4
-        to: 0
-        alwaysRunToEnd: true
-        loops: Animation.Infinite
-        running: black_engine_active && black_player_active
-        onStopped: {
-            black_v_bg.border.width = Qt.binding(function() { return black_engine_v_button.checked ? 4 : 0; })
-            black_h_bg.border.width = Qt.binding(function() { return black_engine_v_button.checked ? 4 : 0; })
-        }
-   }
-
     ColumnLayout {
         spacing: 0
         visible: hor_orientation
@@ -100,37 +68,24 @@ RowLayout {
             onConfirmed: new_game()
         }
 
-        ToolButton {
+        Engine_Button {
             id: white_engine_v_button
-            flat: true
-            checkable: true
-            icon.source: "qrc:/engine.svg"
+
+            color: white_color
+            border_color: "darkgreen"
+            working: white_player_active
             checked: white_engine_active
             onCheckedChanged: white_engine_active = checked
-
-            background: Rectangle {
-                id: white_v_bg
-                color: white_color
-                border.color: "darkgreen"
-                border.width: white_engine_v_button.checked ? 4 : 0
-            }
         }
 
-        ToolButton {
+        Engine_Button {
             id: black_engine_v_button
-            flat: true
-            checkable: true
-            icon.source: "qrc:/engine.svg"
-            icon.color: "white"
+
+            color: black_color
+            border_color: "lightgreen"
+            working: black_player_active
             checked: black_engine_active
             onCheckedChanged: black_engine_active = checked
-
-            background: Rectangle {
-                id: black_v_bg
-                color: black_color
-                border.color: "lightgreen"
-                border.width: black_engine_v_button.checked ? 4 : 0
-            }
         }
 
         ToolButton {
@@ -148,8 +103,7 @@ RowLayout {
             direction: v_setup.direction_right
             icon.source: "qrc:/setup.svg"
             confirm: root.confirm
-            checked: setup_mode_active;
-            onCheckedChanged: setup_mode_active = checked
+            onCheckedChanged: h_setup.checked = checked // why is this necessary?
         }
 
         ToolButton {
@@ -157,6 +111,13 @@ RowLayout {
             flat: true
             checkable: true
             icon.source: "qrc:/settings.svg"
+        }
+
+        ToolButton {
+            id: help_v_button
+            flat: true
+            icon.source: "qrc:/help.svg"
+            onClicked: show_help()
         }
 
         Item {
@@ -182,37 +143,24 @@ RowLayout {
                 onConfirmed: new_game()
             }
 
-            ToolButton {
+            Engine_Button {
                 id: white_engine_h_button
-                flat: true
-                checkable: true
-                icon.source: "qrc:/engine.svg"
+
+                color: white_color
+                border_color: "darkgreen"
+                working: white_player_active
                 checked: white_engine_active
                 onCheckedChanged: white_engine_active = checked
-
-                background: Rectangle {
-                    id: white_h_bg
-                    color: white_color
-                    border.color: Qt.hsla(Math.abs(color.hslHue - 0.5), 1, 0.5, 1);
-                    border.width: white_engine_h_button.checked ? 4 : 0
-                }
             }
 
-            ToolButton {
+            Engine_Button {
                 id: black_engine_h_button
-                flat: true
-                checkable: true
-                icon.source: "qrc:/engine.svg"
-                icon.color: "white"
+
+                color: black_color
+                border_color: "lightgreen"
+                working: black_player_active
                 checked: black_engine_active
                 onCheckedChanged: black_engine_active = checked
-
-                background: Rectangle {
-                    id: black_h_bg
-                    color: black_color
-                    border.color: Qt.hsla(Math.abs(color.hslHue - 0.5), 1, 0.5, 1);
-                    border.width: black_engine_h_button.checked ? 4 : 0
-                }
             }
 
             ToolButton {
@@ -231,8 +179,8 @@ RowLayout {
                 direction: h_setup.direction_down
                 icon.source: "qrc:/setup.svg"
                 confirm: root.confirm
-                checked: setup_mode_active;
-                onCheckedChanged: setup_mode_active = checked;
+                checked: v_setup.checked
+                onCheckedChanged: v_setup.checked = checked
             }
 
             ToolButton {
@@ -242,6 +190,13 @@ RowLayout {
                 icon.source: "qrc:/settings.svg"
                 checked: settings_v_button.checked
                 onCheckedChanged: settings_v_button.checked = checked
+            }
+
+            ToolButton {
+                id: help_h_button
+                flat: true
+                icon.source: "qrc:/help.svg"
+                onClicked: show_help()
             }
 
             Item {
@@ -306,6 +261,20 @@ RowLayout {
                         }
                     }
                 }
+            }
+        }
+
+        Rectangle {
+            id: info
+
+            visible: false
+            implicitHeight: visible ? infotext.implicitHeight * 2 : 0
+            Layout.fillWidth: true
+            Text {
+                id: infotext
+
+                text: "Muehle v0.1.0 (2019-04-16) / Alexander Eder";
+                anchors.centerIn: parent
             }
         }
 

@@ -47,9 +47,10 @@ depends on Qt, see "Build Requirements" below
 
 # Optional Tools
 
-* [GTest](https://github.com/abseil/googletest) >= 1.8.1, downloaded automatically if option `BOARDGAMES_BUILD_TESTS` is `ON`
+* [GTest](https://github.com/google/googletest) >= 1.8.1, downloaded automatically if option `BOARDGAMES_BUILD_TESTS` is `ON`
 * [Umlet](https://www.umlet.com) UML Editor (`*.uxf` files in `/docs`)
 * [Doxygen](http://www.doxygen.nl) documentation tool, enables `apidoc` build target
+* [Pandoc](https://pandoc.org) enables `manuals` build target
 * GCov (part of [gcc](https://gcc.gnu.org/)) / [LCov](http://ltp.sourceforge.net/coverage/lcov.php) for coverage report if option `BOARDGAMES_COVERAGE_REPORT` is `ON`
 
 
@@ -94,7 +95,7 @@ CMake file `AddGoogleTest.cmake` adapted from
 <https://github.com/CLIUtils/cmake/blob/4e52e4d0bc2e9fd27171926d0b5d9f396dd8637c/AddGoogleTest.cmake>
 is licensed under a
 [BSD 3-Clause License](https://github.com/CLIUtils/cmake/blob/master/LICENSE):
-changed `GIT_TAG` to `release-1.8.1`
+use URL instead of GIT
 
 CMake file `CodeCoverage.cmake` adapted from
 <https://github.com/bilke/cmake-modules/blob/7727aa773b8d72afe6801436af9e60cb1688351e/CodeCoverage.cmake>
@@ -118,6 +119,7 @@ under a [BSD 3-Clause License](https://tiddlywiki.com/#License): added
 * depth.svg ([$:/core/images/line-width](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fline-width))
 * export.svg ([$:/core/images/unfold-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Funfold-button))
 * forward.svg ([$:/core/images/right-arrow](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fright-arrow))
+* help.svg ([$:/core/images/help](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fhelp))
 * hide.svg ([$:/core/images/preview-closed](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fpreview-closed))
 * home.svg ([$:/core/images/home-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fhome-button))
 * import.svg ([$:/core/images/fold-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Ffold-button))
@@ -132,3 +134,6 @@ Icon taken from [openclipart](https://openclipart.com) is licensed under
 [Creative Commons Zero 1.0 Public Domain License](https://openclipart.org/share):
 
 * engine.svg ([Wireframe-Head.svg](https://openclipart.org/detail/275796/wireframe-head)): changed stroke-width to 19.0665, set width and height to 22pt
+
+pandoc.css taken from <https://gist.github.com/killercup/5917178> is most likely licensed under
+[Creative Commons Zero 1.0 Public Domain License](https://gist.github.com/killercup/5917178#gistcomment-1924106)

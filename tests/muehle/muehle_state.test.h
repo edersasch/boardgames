@@ -34,7 +34,7 @@ class Move_List_Ui_Mock
 public:
     MOCK_METHOD1(initial_constellation, void(const int));
     MOCK_METHOD1(current_move, void(const int));
-    MOCK_METHOD4(add_move, void(const int, const int, const std::string&, const std::vector<int>&));
+    MOCK_METHOD3(add_move, void(const int, const std::string&, const std::vector<int>&));
     MOCK_METHOD1(delete_move, void(const int));
     MOCK_METHOD1(cut_off, void(const int));
     MOCK_METHOD1(need_confirm, void(bool));
@@ -68,7 +68,7 @@ protected:
 
 void initial_constellation(::testing::StrictMock<Move_List_Ui_Mock>* mui, const int constellation_id) { mui->initial_constellation(constellation_id); }
 void current_move(::testing::StrictMock<Move_List_Ui_Mock>* mui, const int move_id) { mui->current_move(move_id); }
-void add_move(::testing::StrictMock<Move_List_Ui_Mock>* mui, const int move_id, const int branch_id, const std::string& description, const std::vector<int>& hint) { mui->add_move(move_id, branch_id, description, hint); }
+void add_move(::testing::StrictMock<Move_List_Ui_Mock>* mui, const int move_id, const std::string& description, const std::vector<int>& hint) { mui->add_move(move_id, description, hint); }
 void delete_move(::testing::StrictMock<Move_List_Ui_Mock>* mui, const int move_id) { mui->delete_move(move_id); }
 void cut_off(::testing::StrictMock<Move_List_Ui_Mock>* mui, const int move_id) { mui->cut_off(move_id); }
 void need_confirm(::testing::StrictMock<Move_List_Ui_Mock>* mui, const bool in) { mui->need_confirm(in); }

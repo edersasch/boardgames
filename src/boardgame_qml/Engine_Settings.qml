@@ -72,6 +72,7 @@ Rectangle {
         SpinBox {
             id: time_spinbox
 
+            from: 1
             to: 999
             value: 4
             visible: time_button.checked

@@ -1,11 +1,11 @@
 #include "move_list_detail.test.h"
 
-void Move_List_Detail_Test::commit_sequence(int predecessor, int start, int end, int expected_committed_move_id, int expected_branch_start_id)
+void Move_List_Detail_Test::commit_sequence(int predecessor, int start, int end, int expected_committed_move_id)
 {
-    int branch_start_id = 0;
     for (int i = start; i <= end; i += 1, expected_committed_move_id += 1) {
         int old = predecessor;
-        std::tie(predecessor, branch_start_id) = move_list.commit(i, predecessor);
+        bool is_new_move = false;
+        std::tie(predecessor, is_new_move) = move_list.commit(i, predecessor);
         EXPECT_EQ(expected_committed_move_id, predecessor);
         EXPECT_EQ(old, move_list.prev(expected_committed_move_id));
         EXPECT_EQ(i, move_list.constellation(predecessor));
@@ -16,15 +16,15 @@ void Move_List_Detail_Test::commit_sequence(int predecessor, int start, int end,
             }
         }
         EXPECT_TRUE(move_list.has_entry(expected_committed_move_id));
-        EXPECT_EQ(expected_branch_start_id, branch_start_id);
+        EXPECT_EQ(true, is_new_move);
     }
 }
 
 void Move_List_Detail_Test::expect_present_constellation(int content, int predecessor)
 {
-    auto [move_id, branch_start_id] = move_list.commit(content, predecessor);
+    auto [move_id, is_new_move] = move_list.commit(content, predecessor);
     EXPECT_EQ(content, move_id);
-    EXPECT_EQ(-1, branch_start_id);
+    EXPECT_EQ(false, is_new_move);
 }
 
 void Move_List_Detail_Test::delete_moves(int move_id)
@@ -37,10 +37,10 @@ void Move_List_Detail_Test::delete_moves(int move_id)
 
 TEST_F(Move_List_Detail_Test, commit_sequence)
 {
-    commit_sequence(-1, 0, 99, 0, 0);
-    commit_sequence(50, 100, 199, 100, 100);
-    commit_sequence(150, 200, 299, 200, 200);
-    commit_sequence(250, 300, 399, 300, 300);
+    commit_sequence(-1, 0, 99, 0);
+    commit_sequence(50, 100, 199, 100);
+    commit_sequence(150, 200, 299, 200);
+    commit_sequence(250, 300, 399, 300);
 
     EXPECT_EQ(2U, move_list.next(50).size());
     EXPECT_EQ(2U, move_list.next(150).size());
@@ -68,7 +68,7 @@ TEST_F(Move_List_Detail_Test, commit_sequence)
      *                                                                                                                                              +---+   +---+          +---+   +---+
      */
 
-    commit_sequence(99, 400, 499, 400, 0);
+    commit_sequence(99, 400, 499, 400);
     EXPECT_EQ(1U, move_list.next(99).size());
 
     /* move_list content:
@@ -92,11 +92,11 @@ TEST_F(Move_List_Detail_Test, commit_sequence)
 
 TEST_F(Move_List_Detail_Test, delete_moves)
 {
-    commit_sequence(-1, 0, 99, 0, 0);
-    commit_sequence(50, 100, 199, 100, 100);
-    commit_sequence(50, 200, 299, 200, 200);
-    commit_sequence(250, 300, 399, 300, 300);
-    commit_sequence(150, 400, 499, 400, 400);
+    commit_sequence(-1, 0, 99, 0);
+    commit_sequence(50, 100, 199, 100);
+    commit_sequence(50, 200, 299, 200);
+    commit_sequence(250, 300, 399, 300);
+    commit_sequence(150, 400, 499, 400);
 
     EXPECT_EQ(3U, move_list.next(50).size());
     EXPECT_EQ((std::vector<int>{0, 100, 200, 300, 400}), move_list.branch_start_ids(0));
@@ -158,11 +158,11 @@ TEST_F(Move_List_Detail_Test, delete_moves)
 
 TEST_F(Move_List_Detail_Test, detect_present_constellation)
 {
-    commit_sequence(-1, 0, 99, 0, 0);
-    commit_sequence(50, 100, 199, 100, 100);
-    commit_sequence(50, 200, 299, 200, 200);
-    commit_sequence(250, 300, 399, 300, 300);
-    commit_sequence(150, 400, 499, 400, 400);
+    commit_sequence(-1, 0, 99, 0);
+    commit_sequence(50, 100, 199, 100);
+    commit_sequence(50, 200, 299, 200);
+    commit_sequence(250, 300, 399, 300);
+    commit_sequence(150, 400, 499, 400);
 
     EXPECT_EQ((std::vector<int>{0, 100, 200, 300, 400}), move_list.branch_start_ids(0));
     EXPECT_EQ((std::vector<int>{0, 100, 200, 300, 400}), move_list.branch_start_ids(1));
@@ -205,7 +205,7 @@ TEST_F(Move_List_Detail_Test, detect_present_constellation)
     EXPECT_EQ((std::vector<int>{0, 100, 200, 300}), move_list.branch_start_ids(50));
     EXPECT_EQ((std::vector<int>{100}), move_list.branch_start_ids(123));
 
-    commit_sequence(150, 400, 499, 500, 500);
+    commit_sequence(150, 400, 499, 500);
 
     EXPECT_EQ((std::vector<int>{0, 100, 200, 300, 500}), move_list.branch_start_ids(0));
     EXPECT_EQ((std::vector<int>{0, 100, 200, 300, 500}), move_list.branch_start_ids(1));

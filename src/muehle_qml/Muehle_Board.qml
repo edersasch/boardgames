@@ -207,6 +207,7 @@ RowLayout {
                         Item {
                             onZChanged: {
                                 bg.z = z;
+                                board_grid.z = z;
                                 column_layout.z = z;
                             }
 

@@ -38,6 +38,19 @@ Item {
         }
     }
 
+    onCheckedChanged: {
+        if (checkable) {
+            if (checked) {
+                trigger_button.checkable = true;
+                trigger_button.checked = true;
+                confirmed();
+            } else {
+                trigger_button.checked = false;
+                trigger_button.checkable = false;
+            }
+        }
+    }
+
     Timer {
         id: auto_cancel
 
@@ -47,8 +60,6 @@ Item {
 
     ToolButton {
         id: trigger_button
-
-        checked: root.checked
 
         onClicked: {
             if (!root.checkable) {
@@ -61,12 +72,9 @@ Item {
             } else {
                 if (root.checked) {
                     root.checked = false;
-                    checkable = false;
                 } else {
                     if (!root.confirm || state === "show") {
-                        root.confirmed()
                         state = "";
-                        checkable = true;
                         root.checked = true;
                     } else {
                         state = "show";

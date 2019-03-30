@@ -27,7 +27,7 @@ public:
     // from move_list_ui
     friend void initial_constellation(Multi_Move_List_Qml* mui, const int constellation_id);
     friend void current_move(Multi_Move_List_Qml* mui, const int move_id);
-    friend void add_move(Multi_Move_List_Qml* mui, const int move_id, const int branch_id, const std::string& description, const std::vector<int>& hint);
+    friend void add_move(Multi_Move_List_Qml* mui, const int move_id, const std::string& description, const std::vector<int>& hint);
     friend void delete_move(Multi_Move_List_Qml* mui, const int move_id);
     friend void cut_off(Multi_Move_List_Qml* mui, const int move_id);
     friend void need_confirm(Multi_Move_List_Qml* mui, const bool is_needed);

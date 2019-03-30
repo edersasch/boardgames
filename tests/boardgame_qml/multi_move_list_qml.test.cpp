@@ -37,30 +37,31 @@ Multi_Move_List_Qml_Test::Multi_Move_List_Qml_Test()
     connect(&mlq, &boardgame_qml::Multi_Move_List_Qml::added_move, &move_list_slots, &Multi_Move_List_Qml_Test_Slots::added_move);
     connect(&mlq, &boardgame_qml::Multi_Move_List_Qml::request_move_list_import, &move_list_slots, &Multi_Move_List_Qml_Test_Slots::request_move_list_import);
     connect(&mlq, &boardgame_qml::Multi_Move_List_Qml::request_move_list_export, &move_list_slots, &Multi_Move_List_Qml_Test_Slots::request_move_list_export);
+    connect(&mlq, &boardgame_qml::Multi_Move_List_Qml::request_delete_branch, &move_list_slots, &Multi_Move_List_Qml_Test_Slots::request_delete_branch);
     auto set_move_color = [this, odd_move_number_as_piece_id, even_move_number_as_piece_id](const int move_id, const int piece_id) { mlq.set_move_color(move_id, piece_id % 2 ? odd_move_number_as_piece_id : even_move_number_as_piece_id); };
     ON_CALL(move_list_slots, added_move(_, _)).WillByDefault(Invoke(set_move_color));
     initial_constellation(&mlq, 0);
     processEvents();
 }
 
-void Multi_Move_List_Qml_Test::add_sequence(int move_id, int branch_start_id, int number_of_moves)
+void Multi_Move_List_Qml_Test::add_sequence(int move_id, int number_of_moves)
 {
     auto end = move_id + number_of_moves;
     for (; move_id < end; move_id += 1) {
         EXPECT_CALL(move_list_slots, added_move(move_id, move_id));
-        add_move(&mlq, move_id, branch_start_id, std::to_string(move_id), {move_id});
+        add_move(&mlq, move_id, std::to_string(move_id), {move_id});
     }
 }
 
 TEST_F(Multi_Move_List_Qml_Test, controls)
 {
     EXPECT_CALL(move_list_slots, added_move(1, -1));
-    add_move(&mlq, 1, 0, "01", {});
+    add_move(&mlq, 1, "01", {});
     EXPECT_CALL(move_list_slots, request_set_current_move_and_branch_start_id(0));
     QMetaObject::invokeMethod(move_list_back_to_start_button, "clicked");
     current_move(&mlq, 0);
     EXPECT_CALL(move_list_slots, added_move(2, 5));
-    add_move(&mlq, 2, 2, "02", {5});
+    add_move(&mlq, 2, "02", {5});
     processEvents();
     EXPECT_CALL(move_list_slots, request_move_list_back());
     QMetaObject::invokeMethod(move_list_back_button, "clicked");
@@ -81,19 +82,19 @@ TEST_F(Multi_Move_List_Qml_Test, controls)
 
 TEST_F(Multi_Move_List_Qml_Test, lots_of_moves)
 {
-    add_sequence(1, 0, 100);
+    add_sequence(1, 100);
     current_move(&mlq, 50);
     EXPECT_EQ(103, move_list_root_buttons->childItems().length()); // controls + trash icon + eye icon + 100 move buttons
-    add_sequence(101, 101, 100);
+    add_sequence(101, 100);
     EXPECT_EQ(53, move_list_root_buttons->childItems().length()); // only 50 move buttons left
     current_move(&mlq, 50);
-    add_sequence(201, 201, 100);
+    add_sequence(201, 100);
     EXPECT_EQ(53, move_list_root_buttons->childItems().length()); // still 50 move buttons left
     current_move(&mlq, 50);
-    add_sequence(301, 0, 100); // continue after move 50: ... -> 48 -> 49 -> 50 -> 301 -> 302 -> 303 -> ...
-    EXPECT_EQ(153, move_list_root_buttons->childItems().length());
+    add_sequence(301, 100);
+    EXPECT_EQ(53, move_list_root_buttons->childItems().length());
     current_move(&mlq, 100);
-    add_sequence(401, 0, 100); // continue after move 100: ... -> 98 -> 99 -> 100 -> 401 -> 402 -> 403 -> ...
+    add_sequence(401, 100); // continue after move 100: ... -> 98 -> 99 -> 100 -> 401 -> 402 -> 403 -> ...
     EXPECT_EQ(152, (QQmlProperty(move_list_root_entry1->childItems().at(1), "buttons").read().value<QQuickItem*>())->childItems().length()); // 51 - 500
 
     /* content:
@@ -121,13 +122,13 @@ TEST_F(Multi_Move_List_Qml_Test, lots_of_moves)
 
 TEST_F(Multi_Move_List_Qml_Test, delete_and_cut_off)
 {
-    add_sequence(1, 0, 100);
+    add_sequence(1, 100);
     current_move(&mlq, 50);
-    add_sequence(101, 101, 100);
+    add_sequence(101, 100);
     current_move(&mlq, 150);
-    add_sequence(201, 201, 100);
+    add_sequence(201, 100);
     current_move(&mlq, 250);
-    add_sequence(301, 301, 100);
+    add_sequence(301, 100);
 
    /*
     * +---+   +---+   +---+          +---+   +---+
@@ -219,7 +220,7 @@ TEST_F(Multi_Move_List_Qml_Test, delete_and_cut_off)
 
 TEST_F(Multi_Move_List_Qml_Test, change_color)
 {
-    add_sequence(1, 0, 30);
+    add_sequence(1, 30);
     for (int i = 3; i < 28; i += 2) {
         EXPECT_EQ("#111111", QQmlProperty(move_list_root_buttons->childItems()[i], "color").read().toString().toStdString());
         EXPECT_EQ("#222222", QQmlProperty(move_list_root_buttons->childItems()[i + 1], "color").read().toString().toStdString());
@@ -238,7 +239,7 @@ TEST_F(Multi_Move_List_Qml_Test, change_color)
 
 TEST_F(Multi_Move_List_Qml_Test, change_need_confirm)
 {
-    add_sequence(1, 0, 30);
+    add_sequence(1, 30);
     EXPECT_EQ(false, QQmlProperty(move_list_control, "confirm").read().toBool());
     need_confirm(&mlq, true);
     EXPECT_EQ(true, QQmlProperty(move_list_control, "confirm").read().toBool());
@@ -255,4 +256,34 @@ TEST_F(Multi_Move_List_Qml_Test, import_export)
     QQmlProperty(move_list_root_entry1, "choose_move_list_file_existing").write(false);
     QMetaObject::invokeMethod(move_list_root_entry1, "chosen_move_list_path", Q_ARG(QVariant, QVariant(QUrl("file:///export/path"))));
     processEvents();
+}
+
+TEST_F(Multi_Move_List_Qml_Test, cut_off_via_button_press)
+{
+    add_sequence(1, 100);
+    EXPECT_EQ(103, move_list_root_buttons->childItems().length());
+    current_move(&mlq, 50);
+    add_sequence(101, 1000);
+    EXPECT_EQ(53, move_list_root_buttons->childItems().length());
+    auto entries_from_101 = move_list_root_entry1->childItems().at(2);
+    EXPECT_EQ(1002, QQmlProperty(entries_from_101, "buttons").read().value<QQuickItem*>()->childItems().length());
+    EXPECT_CALL(move_list_slots, request_delete_branch(101));
+    QMetaObject::invokeMethod(QQmlProperty(entries_from_101, "buttons").read().value<QQuickItem*>()->childItems().at(0), "confirmed");
+    cut_off(&mlq, 101);
+    processEvents();
+    EXPECT_EQ(103, move_list_root_buttons->childItems().length());
+}
+
+TEST_F(Multi_Move_List_Qml_Test, no_branch_necessary)
+{
+    add_sequence(1, 100);
+    EXPECT_EQ(103, move_list_root_buttons->childItems().length()); // controls + trash icon + eye icon + 100 move buttons
+    add_sequence(201, 100);
+    EXPECT_EQ(203, move_list_root_buttons->childItems().length()); // Although branch_start_id is 201, there's no need to create a branch, since it would be the only one
+
+    /* content:
+     * +---+   +---+   +---+          +---+   +---+   +---+   +---+   +---+          +---+   +---+   +---+
+     * |  0+-->+  1+-->+  2+-->...+-->+ 99+-->+100|-->+201+-->+202+-->+203+-->...+-->+298+-->+299|-->+300|
+     * +---+   +---+   +---+          +---+   +---+   +---+   +---+   +---+          +---+   +---+   +---+
+     */
 }

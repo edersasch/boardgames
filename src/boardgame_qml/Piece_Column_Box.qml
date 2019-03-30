@@ -10,11 +10,26 @@ Rectangle {
     radius: 10
     border.width: 1
     Layout.fillHeight: true
-    Layout.preferredWidth: (can_hide) ? 0 : height / fields.model * size_factor
+    Layout.preferredWidth: 0
 
-    Behavior on Layout.preferredWidth {
-        NumberAnimation { easing.type: Easing.OutBack; duration: 200 }
-    }
+    states: [
+        State {
+            when: can_hide === false
+            PropertyChanges {
+                target: box
+                Layout.preferredWidth: height / fields.model * size_factor
+            }
+        }
+    ]
+    transitions: [
+        Transition {
+            NumberAnimation {
+                properties: "Layout.preferredWidth"
+                easing.type: Easing.OutBack
+                duration: 200
+            }
+        }
+    ]
 
     ColumnLayout {
         anchors.fill: parent

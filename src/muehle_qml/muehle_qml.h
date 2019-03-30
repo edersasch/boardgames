@@ -30,11 +30,11 @@ public:
     Muehle_Qml(QQmlEngine* engine, QQuickItem* parentItem);
 
     // Boardgame_Ui functions
-    friend void draw(Muehle_Qml* mui);
+    friend void draw(Muehle_Qml* mui) { (void)mui; } // muehle has no draw
     friend void win(Muehle_Qml* mui, const std::string& player);
     friend void drawer_can_hide(Muehle_Qml* ui, const std::string& player_id, const bool can_hide) { ui->board_property(player_id + "_drawer_can_hide").write(can_hide); }
     friend void prison_can_hide(Muehle_Qml* ui, const std::string& player_id, const bool can_hide) { ui->board_property(player_id + "_prison_can_hide").write(can_hide); }
-    friend void lock_piece(Muehle_Qml* ui, const boardgame::Piece_Number pieceId) { QQmlProperty(ui->pieces.at(static_cast<std::size_t>(pieceId.v)).get(), "state").write("lock"); }
+    friend void lock_piece(Muehle_Qml* ui, const boardgame::Piece_Number pieceId) { QQmlProperty(ui->pieces.at(static_cast<std::size_t>(pieceId.v)).get(), "state").write(""); }
     friend void selectable(Muehle_Qml* ui, const boardgame::Piece_Number pieceId) { QQmlProperty(ui->pieces.at(static_cast<std::size_t>(pieceId.v)).get(), "state").write("selectable"); }
     friend void removable(Muehle_Qml* ui, const boardgame::Piece_Number pieceId) { QQmlProperty(ui->pieces.at(static_cast<std::size_t>(pieceId.v)).get(), "state").write("removable"); }
     friend void lock_field(Muehle_Qml* ui, const boardgame::Field_Number fieldId) { QQmlProperty(ui->fields.at(static_cast<std::size_t>(fieldId.v)).get(), "state").write(""); }
@@ -67,11 +67,13 @@ private slots:
     void black_color_changed(QString new_black_color);
     void use_main_field();
     void use_alternative_field();
+    void show_help();
 private:
     QQmlProperty board_property(const std::string& property_name) { return QQmlProperty(board.get(), QString(property_name.c_str())); }
     QQuickItem* board_item(const std::string& item_name) { return board_property(item_name).read().value<QQuickItem*>(); }
     void read_settings();
     void write_settings();
+    void end_program();
     void wait_for_engine_move(std::future<bool>&& efu);
     void color_change(const std::string& color_property_name, const QString& player_active_property_name, const QString& new_color,  boardgame::Piece_Number first_piece, boardgame::Field_Number first_prison_field);
     muehle::Muehle_State muehle_state;

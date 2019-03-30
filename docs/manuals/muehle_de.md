@@ -1,6 +1,8 @@
-# Mühle Anleitung
+# Mühle
 
-Aus [Wikipedia](https://de.wikipedia.org/wiki/M%C3%BChle_(Spiel)#Spielablauf), Version vom 29. Juli 2018:
+[v0.1.0](https://github.com/edersasch/boardgames) (2019-04-16) von [Alexander Eder](https://bitbucket.org/alexander_eder/aewiki/)
+
+Spielregeln aus [Wikipedia](https://de.wikipedia.org/wiki/M%C3%BChle_(Spiel)#Spielablauf), Version vom 29. Juli 2018:
 
 > Das Spiel läuft in drei Phasen ab:
 >
@@ -26,7 +28,7 @@ Aus [Wikipedia](https://de.wikipedia.org/wiki/M%C3%BChle_(Spiel)#Spielablauf), V
 Die offiziellen Regeln: <http://www.muehlespiel.eu/images/pdf/WMD_Spielregeln.pdf>
 
 
-# Merkmale des Programms
+# Merkmale des Spiels
 
 * Je nach Fenster- oder Bildschirmausrichtung wird eine horizontale bzw. vertikale Darstellung verwendet.
 * Das Spiel ist auch bei kleinen Fenstern bzw. Bildschirmen bedienbar.
@@ -66,6 +68,8 @@ müssen von Anfang an [bestätigt](#gewählte-aktion-bestätigen--abbrechen) wer
 
 [Computer Gegner](#computer-gegner) sind nach Start des Spiels nicht aktiv.
 
+Hat ein Spieler gewonnen, beginnt die Farbe seiner Spielsteine zu pulsieren.
+
 
 ## Einen Zug ausführen
 
@@ -84,7 +88,7 @@ Klickt man einen solchen Stein an, wandert er vom Spielfeld ins Gefängnis.
 
 ### Neues Spiel
 
-![refresh](../data/refresh.svg)
+![refresh](../../data/refresh.svg)<br>
 
 Die Spielsteine des ersten Spielers landen in der horizontalen Darstellung auf
 ihren Startfeldern links vom Spielfeld. In der vertikalen Darstellung sind
@@ -98,62 +102,64 @@ eines neues Spiels geleert wird. Ein eventuell aktiver
 
 ### Computer Gegner
 
-![engine](../data/engine.svg)
+![engine](../../data/engine.svg)<br>
 
 Für jeden Spieler existiert je ein Knopf mit der dazugehörigen Farbe. Ein
 aktivierter Computer Gegner, erkennbar an einem grünen Rahmen um den Knopf,
-lässt den Computer den nächsten Zug für die entsprechende Farbe berechnen,
-währenddessen der Rahmen leicht pulsiert. Das Aktivieren beider Knöpfe ist
-möglich und lässt den Computer die Partie alleine weiterspielen. Deaktivieren
-eines Knopfes, während der Computer gerade für diese Seite rechnet, führt zum
-Abbruch der Berechnung und der sofortigen Ausführung des bis dahin besten
-gefundenen Zuges. Betreten des [Aufbau Modus](#aufbau-modus) oder auswählen
-eines Zuges aus der [Züge Liste](#züge-liste) deaktiviert Computer Gegner.
-Umgekehrt wird beim Aktivieren eines Computer Gegners der
-[Aufbau Modus](#aufbau-modus) beendet. Ein eventuell aktiver Computer
-Gegner für den ersten Spieler (linker bzw. oberer der beiden Knöpfe) wird
-deaktiviert, wenn ein [neues Spiel](#neues-spiel) begonnen wird.
+lässt den Computer den nächsten Zug für die entsprechende Farbe berechnen.
+Während der Berechnung pulsiert die Farbe des Knopfes. Das Aktivieren beider
+Knöpfe lässt den Computer die Partie alleine weiterspielen. Deaktivieren eines
+Knopfes, während der Computer gerade für diese Seite rechnet, führt zum Abbruch
+der Berechnung und der sofortigen Ausführung des bis dahin besten gefundenen
+Zuges. Betreten des [Aufbau Modus](#aufbau-modus) oder Auswählen eines Zuges
+aus der [Züge Liste](#züge-liste) deaktiviert Computer Gegner. Umgekehrt wird
+beim Aktivieren eines Computer Gegners der [Aufbau Modus](#aufbau-modus)
+beendet. Ein eventuell aktiver Computer Gegner für den ersten Spieler (linker
+bzw. oberer der beiden Knöpfe) wird deaktiviert, wenn ein
+[neues Spiel](#neues-spiel) begonnen wird.
 
 
 ### Ein- und Ausblenden der Züge Liste
 
-![list](../data/list.svg)
+![list](../../data/list.svg)<br>
 
 Steuert die Sichtbarkeit der [Züge Liste](#züge-liste)
 
 
 ### Aufbau Modus
 
-![setup](../data/setup.svg)
+![setup](../../data/setup.svg)<br>
 
 Im Aufbau Modus kann jeder Spielstein jeder Farbe ausgewählt werden und auf
-jedes mögliche freie Feld mit Ausnahme der Gefängnis Felder der anderen Farbe
-bewegt werden. Bei veränderter Züge Liste ist eine
-[Bestätigung](#gewählte-aktion-bestätigen--abbrechen) nötig, da die Liste durch Betreten
-des Aufbau Modus geleert wird. Starten des Aufbau Modus deaktiviert eventuell
-aktive [Computer Gegner](#computer-gegner). Im Aufbau Modus werden keine
-Spielregeln geprüft. Dadurch sind Stellungen möglich, die in einem regulären
-Spiel nicht erreicht werden können. Achten Sie daher genau auf das, was Sie
-tun. Der Aufbau Modus bleibt aktiv, bis er durch einen weiteren Druck auf den
-Knopf beendet wird oder ein [Computer Gegner](#computer-gegner) aktiviert wird.
-Der Spieler der zuletzt ausgewählten Spielsteinfarbe ist dann am Zug. Durch
-Starten eines [neuen Spiels](#neues-spiel) wird der Aufbau Modus ebenfalls
-beendet.
+jedes mögliche freie Feld mit Ausnahme der Start- und Gefängnisfelder der
+anderen Farbe bewegt werden. Bei veränderter Züge Liste ist eine
+[Bestätigung](#gewählte-aktion-bestätigen--abbrechen) nötig, da die Liste durch
+Betreten des Aufbau Modus geleert wird. Starten des Aufbau Modus deaktiviert
+[Computer Gegner](#computer-gegner). Im Aufbau Modus werden keine Spielregeln
+geprüft. Dadurch sind Stellungen möglich, die in einem regulären Spiel nicht
+erreicht werden können. Achten Sie daher genau auf das, was Sie tun. Der Aufbau
+Modus endet bei einem weiteren Druck auf den Knopf oder durch Aktivieren eines
+[Computer Gegners](#computer-gegner). Bei Start eines
+[neuen Spiels](#neues-spiel) oder [Import](#import-einer-züge-liste) einer Züge
+Liste ist eine [Bestätigung](#gewählte-aktion-bestätigen--abbrechen) nötig,
+bevor der Aufbau Modus verlassen wird, da die aufgebaute Stellung durch diese
+Aktionen verloren geht. Der Spieler der zuletzt ausgewählten Spielsteinfarbe
+ist dann am Zug.
 
 
 ### Ein- und Ausblenden der Einstellungen
 
-![settings](../data/settings.svg)
+![settings](../../data/settings.svg)<br>
 
 Steuert die Sichtbarkeit der oben angezeigten [Einstellungen](#einstellungen).
 
 
 ### Gewählte Aktion bestätigen / abbrechen
 
-![cancel](../data/cancel.svg)
+![cancel](../../data/cancel.svg)<br>
 
-Wurde die Züge Liste verändert, ist für die Aktionen [Neues
-Spiel](#neues-spiel), [Aufbau Modus](#aufbau-modus) und
+Wurde die Züge Liste verändert, ist für die Aktionen
+[Neues Spiel](#neues-spiel), [Aufbau Modus](#aufbau-modus) und
 [Import](#import-einer-züge-liste) eine Bestätigung nötig. Für das
 [Löschen einer Variante](#variante-löschen) ist immer eine Bestätigung nötig.
 Der gerade gedrückte Knopf wird, je nach Anordnung seiner Nachbarknöpfe, nach
@@ -165,10 +171,18 @@ seiner normalen Farbe wieder auf seinen angestammten Platz, ohne eine Aktion
 auszulösen.
 
 
+### Anleitung anzeigen
+
+![help](../../data/help.svg)<br>
+
+Ein Druck auf den Knopf zeigt diese Anleitung an. Tritt dabei ein Problem auf,
+wird oberhalb des Spielfeldes eine Versionsinformation gezeigt, bis der Knopf
+erneut betätigt wird.
+
+
 ## Züge Liste
 
 * Normales Spiel fügt Knöpfe zur Liste hinzu. Der zuletzt hinzugefügte Knopf ist automatisch ausgewählt.
-* Die Beschriftung der Knöpfe entspricht der [WMD-Notation](http://muehlespieler.de/x_uebungen/index.php?page=begriffe_notation)
 * Auswählen eines gelisteten Zuges bringt die Spielsteine in die dazugehörige Stellung. Eventuell aktive [Computer Gegner](#computer-gegner) werden deaktiviert.
 * Wird ein Zug getätigt, obwohl an der ausgewählten Stelle bereits ein oder mehrere Züge folgen, entsteht eine Variante, falls die resultierende Stellung sich von allen Folgezügen unterscheidet. Ansonsten wird der bereits existierende Zug ausgewählt.
 * Varianten werden in einer zur übergeordneten Variante leicht eingerückten neuen Zeile angezeigt.
@@ -176,13 +190,19 @@ auszulösen.
 * Ist nach einem Löschvorgang nur noch eine Variante übrig, werden die Züge zur übergeordneten Variante hinzugefügt.
 * Die Liste kann [importiert](#import-einer-züge-liste) und [exportiert](#export-der-züge-liste) werden.
 
+Die Beschriftung der Knöpfe entspricht der [WMD-Notation](http://muehlespieler.de/x_uebungen/index.php?page=begriffe_notation):
+In der Setzphase steht im Knopf lediglich das Zielfeld, z.B. `B4`. In der Zug-
+und Endphase zeigt der Text das Start- und Zielfeld durch einen Bindestrich
+getrennt, z.B. `D1-D2`. Wird ein Stein geschlagen, endet die Beschriftung mit
+einem `x` und dem Feld, von dem der Stein genommen wurde, z.B. in der Setzphase
+`A1 xD2` oder in der Zug- bzw. Endphase `F4-F6 xD7`.
 
 ### Bedienknöpfe an der Züge Liste
 
 
 #### Ausgangsstellung
 
-![home](../data/home.svg)
+![home](../../data/home.svg)<br>
 
 Die Spielsteine kehren auf ihre Startfelder bzw. auf die im
 [Aufbau Modus](#aufbau-modus) gesetzten Felder zurück. Eventuell aktive
@@ -191,7 +211,7 @@ Die Spielsteine kehren auf ihre Startfelder bzw. auf die im
 
 #### Rückwärts / Vorwärts
 
-![back](../data/back.svg) ![forward](../data/forward.svg)
+![back](../../data/back.svg) ![forward](../../data/forward.svg)
 
 Züge werden vor und zurück geblättert, ohne die gerade ausgewählte Variante
 zu verlieren, selbst wenn eine übergeordnete Variante betreten und wieder
@@ -201,16 +221,17 @@ deaktiviert.
 
 #### Import einer Züge Liste
 
-![import](../data/import.svg)
+![import](../../data/import.svg)<br>
 
 Eine in einem Datei Auswahl Dialog gewählte Züge Liste wird importiert. Bei
-veränderter Züge Liste ist eine [Bestätigung](#gewählte-aktion-bestätigen--abbrechen)
-nötig, da die bestehende Liste durch einen Import verloren geht.
+veränderter Züge Liste oder aktivem [Aufbau Modus](#aufbau-modus) ist eine
+[Bestätigung](#gewählte-aktion-bestätigen--abbrechen) nötig, da die bestehende
+Liste bzw. aufgebaute Stellung durch einen Import verloren geht.
 
 
 #### Export der Züge Liste
 
-![export](../data/export.svg)
+![export](../../data/export.svg)<br>
 
 Die Züge Liste wird als in einem Datei Auswahl Dialog gewählte Datei
 exportiert.
@@ -221,7 +242,7 @@ exportiert.
 
 #### Variante löschen
 
-![delete](../data/delete.svg)
+![delete](../../data/delete.svg)<br>
 
 Vor Ausführung des Löschvorgangs ist eine
 [Bestätigung](#gewählte-aktion-bestätigen--abbrechen) nötig. Beim Löschen der Variante mit
@@ -231,7 +252,7 @@ aktiv.
 
 #### Folgezüge ein- und ausblenden
 
-![show](../data/show.svg) ![hide](../data/hide.svg)
+![show](../../data/show.svg) ![hide](../../data/hide.svg)
 
 Ein Auge ist bei Varianten mit mehr als einem Zug sichtbar. Ein Druck auf das
 offene Auge verbirgt die Züge. Der Knopf erhält daraufhin das Bild des
@@ -245,7 +266,7 @@ wieder auf dem Knopf.
 
 ### Computer Gegner Einstellungen
 
-![engine](../data/engine.svg) ![depth](../data/depth.svg)
+![engine](../../data/engine.svg) ![depth](../../data/depth.svg)
 
 Hier kann mit Hilfe der Plus- und Minustasten die Rechentiefe des Computer
 Gegners eingestellt werden. Je größer die Zahl ist, desto besser spielt der
@@ -255,7 +276,7 @@ zufriedenstellend schnell Antwort, kann bei Tiefe 13 die Wartezeit unakzeptabel
 lang sein. Die Rechenzeit hängt vom verwendeten Computer und der aktuellen
 Spielstellung ab.
 
-![engine](../data/engine.svg) ![time](../data/time.svg)
+![engine](../../data/engine.svg) ![time](../../data/time.svg)
 
 Die Plus- und Minustasten stellen die maximale Rechenzeit in Sekunden ein,
 erkennbar am "s" hinter der Zahl im Kästchen. Wie gut der Zug ist, den der

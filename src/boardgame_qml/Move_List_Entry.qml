@@ -8,7 +8,6 @@ Column {
     property alias buttons: buttons
     property alias maxChildWidth: buttons.maxChildWidth
 
-    signal adding(int ycoord)
     signal request_delete_branch(int move_id)
     signal move_buttons_visible(var is_visible)
 
@@ -16,11 +15,11 @@ Column {
         show_moves_button.checked = is_visible;
     }
 
-    onParentChanged: {
-        width = Qt.binding(function() { return parent ? parent.width : 0; });
+    function scroll_to(y_offset) {
+        parent.scroll_to(y_offset + y);
     }
 
-    width: parent ? parent.width : 0
+    width: parent ? (parent.width - (parent.leftPadding ? parent.leftPadding : 0)) : 0
     spacing: 3
     leftPadding: 5
 
@@ -42,15 +41,10 @@ Column {
             }
         }
 
-        width: parent.width
+        width: col.width - col.leftPadding
 
         add: Transition {
             NumberAnimation { properties: "opacity"; from: 0; to: 1 }
-            onRunningChanged: {
-                if (running === true) {
-                    col.adding(ViewTransition.destination.y)
-                }
-            }
         }
 
         move: Transition {

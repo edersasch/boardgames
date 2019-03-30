@@ -11,11 +11,10 @@ if(CMAKE_VERSION VERSION_LESS 3.11)
 
     include(DownloadProject)
     download_project(PROJ                googletest
-		     GIT_REPOSITORY      https://github.com/google/googletest.git
-		     GIT_TAG             release-1.8.1
-		     UPDATE_DISCONNECTED 1
-		     QUIET
-    )
+        URL https://github.com/google/googletest/archive/release-1.8.1.zip
+        UPDATE_DISCONNECTED 1
+        QUIET
+        )
 
     # CMake warning suppression will not be needed in version 1.9
     set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS 1 CACHE BOOL "")
@@ -24,8 +23,8 @@ if(CMAKE_VERSION VERSION_LESS 3.11)
 else()
     include(FetchContent)
     FetchContent_Declare(googletest
-        GIT_REPOSITORY      https://github.com/google/googletest.git
-        GIT_TAG             release-1.8.1)
+        URL https://github.com/google/googletest/archive/release-1.8.1.zip
+        )
     FetchContent_GetProperties(googletest)
     if(NOT googletest_POPULATED)
         FetchContent_Populate(googletest)

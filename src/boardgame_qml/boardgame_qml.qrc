@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>Confirm_Button.qml</file>
+        <file>Engine_Button.qml</file>
         <file>Engine_Settings.qml</file>
         <file>Field.qml</file>
         <file>HSL_Sliders.qml</file>

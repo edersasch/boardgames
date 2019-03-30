@@ -67,7 +67,7 @@ void Muehle_State_Test::phase1_place_piece(boardgame::Piece_Number pn, boardgame
             check_all_free_become_occupiable(boardgame::Piece_Number{muehle::first_black_piece.v + mNextInBlackDrawer}, to);
             EXPECT_CALL(mUi, selectable(mNextInBlackDrawer + muehle::first_black_piece.v));
             EXPECT_CALL(mUi, highlight(muehle::first_black_drawer_field.v + mNextInBlackDrawer));
-            EXPECT_CALL(mlUi, add_move(testing::_, testing::_, testing::_, testing::_));
+            EXPECT_CALL(mlUi, add_move(testing::_, testing::_, testing::_));
             EXPECT_CALL(mlUi, current_move(testing::_));
         }
         EXPECT_CALL(mUi, set_field(muehle::first_white_piece.v + mNextInWhiteDrawer, muehle::first_board_field.v + to.v));
@@ -77,7 +77,7 @@ void Muehle_State_Test::phase1_place_piece(boardgame::Piece_Number pn, boardgame
             check_all_free_become_occupiable(boardgame::Piece_Number{muehle::first_white_piece.v + mNextInWhiteDrawer}, to);
             EXPECT_CALL(mUi, selectable(mNextInWhiteDrawer + muehle::first_white_piece.v));
             EXPECT_CALL(mUi, highlight(muehle::first_white_drawer_field.v + mNextInWhiteDrawer));
-            EXPECT_CALL(mlUi, add_move(testing::_, testing::_, testing::_, testing::_));
+            EXPECT_CALL(mlUi, add_move(testing::_, testing::_, testing::_));
             EXPECT_CALL(mlUi, current_move(testing::_));
         }
         EXPECT_CALL(mUi, set_field(muehle::first_black_piece.v + mNextInBlackDrawer, muehle::first_board_field.v + to.v));
@@ -137,6 +137,9 @@ TEST_F(Muehle_State_Test, testEnterLeaveSetupMode)
     EXPECT_CALL(mUi, setup_mode_active(true));
     EXPECT_CALL(mUi, engine_active(muehle::white_id, false));
     EXPECT_CALL(mUi, engine_active(muehle::black_id, false));
+    EXPECT_CALL(mlUi, initial_constellation(0));
+    EXPECT_CALL(mlUi, current_move(0));
+    EXPECT_CALL(mlUi, need_confirm(true));
     mM.request_setup_mode_active(true);
     mM.request_select_piece(boardgame::Piece_Number{0});
     for (int i = 1; i < muehle::number_of_pieces_per_player.v - 2; i += 1) {

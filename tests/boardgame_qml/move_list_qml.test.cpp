@@ -41,42 +41,41 @@ Move_List_Qml_Test::Move_List_Qml_Test()
     processEvents();
 }
 
-std::vector<QQuickItem*> Move_List_Qml_Test::add_sequence(int move_id, int branch_start_id, int number_of_moves, int current_move_id)
+std::vector<QQuickItem*> Move_List_Qml_Test::add_sequence(int current_move_id, int move_id, int number_of_moves, int expected_number_of_childItems)
 {
+    mlq.current_move(current_move_id);
     auto end = move_id + number_of_moves;
-    auto entries = mlq.add_move(move_id, branch_start_id, std::to_string(move_id));
-    if (move_id == branch_start_id) {
-        auto parentbuttons = QQmlProperty(entries.at(0)->parentItem(), "buttons").read().value<QQuickItem*>();
-        if (entries.size() > 1) {
-            EXPECT_EQ(2, entries.size());
-            EXPECT_EQ(parentbuttons, QQmlProperty(entries.at(1)->parentItem(), "buttons").read().value<QQuickItem*>());
-        } else {
-            for (auto button : parentbuttons->childItems()) {
-                EXPECT_TRUE(QQmlProperty(button, "move_id").read().value<int>() <= current_move_id);
-            }
-        }
-    } else {
+    auto entries = mlq.add_move(move_id, std::to_string(move_id));
+    if (expected_number_of_childItems == 0) {
         EXPECT_TRUE(entries.empty());
+    } else {
+        auto parentbuttons = QQmlProperty(entries.at(0)->parentItem(), "buttons").read().value<QQuickItem*>();
+        EXPECT_EQ(expected_number_of_childItems, entries.at(0)->parentItem()->childItems().size());
+        for (auto button : parentbuttons->childItems()) {
+            EXPECT_TRUE(QQmlProperty(button, "move_id").read().value<int>() <= current_move_id);
+        }
+        for (unsigned i = 1; i < entries.size(); i += 1) {
+            EXPECT_EQ(parentbuttons, QQmlProperty(entries.at(i)->parentItem(), "buttons").read().value<QQuickItem*>());
+        }
     }
     move_id += 1;
     for (; move_id < end; move_id += 1) {
-        auto noentries = mlq.add_move(move_id, branch_start_id, std::to_string(move_id));
+        auto noentries = mlq.add_move(move_id, std::to_string(move_id));
         EXPECT_TRUE(noentries.empty());
     }
     return entries;
 }
 
-
 TEST_F(Move_List_Qml_Test, controls)
 {
-    auto entries = mlq.add_move(1, 0, "01");
+    auto entries = mlq.add_move(1, "01");
     EXPECT_EQ(0, entries.size());
     EXPECT_EQ(4, move_list_root_buttons->childItems().length());
     EXPECT_FALSE(QQmlProperty(move_list_root_buttons->childItems().at(1), "visible").read().toBool());
     EXPECT_CALL(move_list_slots, request_set_current_move_and_branch_start_id(0));
     QMetaObject::invokeMethod(move_list_back_to_start_button, "clicked");
     mlq.current_move(0);
-    entries = mlq.add_move(2, 2, "02");
+    entries = mlq.add_move(2, "02");
     EXPECT_EQ(2, entries.size());
     EXPECT_EQ(move_list_root_entry, entries.at(0)->parentItem());
     EXPECT_EQ(move_list_root_entry, entries.at(1)->parentItem());
@@ -91,25 +90,21 @@ TEST_F(Move_List_Qml_Test, controls)
 
 TEST_F(Move_List_Qml_Test, lots_of_moves)
 {
-    add_sequence(1, 0, 100);
-    mlq.current_move(50);
+    add_sequence(0, 1, 100, 0);
     EXPECT_EQ(103, move_list_root_buttons->childItems().length()); // controls + trash icon + eye icon + 100 move buttons
-    auto entries = add_sequence(101, 101, 100);
+    auto entries = add_sequence(50, 101, 100, 3);
     EXPECT_EQ(move_list_root_entry, entries.at(0)->parentItem());
     EXPECT_EQ(move_list_root_entry, entries.at(1)->parentItem());
     EXPECT_EQ(53, move_list_root_buttons->childItems().length()); // only 50 move buttons left
     EXPECT_EQ(52, (QQmlProperty(entries.at(0), "buttons").read().value<QQuickItem*>())->childItems().length()); // 50 move buttons reparented
     EXPECT_EQ(102, (QQmlProperty(entries.at(1), "buttons").read().value<QQuickItem*>())->childItems().length());
-    mlq.current_move(50);
-    entries = add_sequence(201, 201, 100, 50); // only one entry returned, because 50 is already the last childItem of move_list_root_buttons
+    entries = add_sequence(50, 201, 100, 4); // only one entry returned, because 50 is already the last childItem of move_list_root_buttons
     EXPECT_EQ(move_list_root_entry, entries.at(0)->parentItem());
     EXPECT_EQ(53, move_list_root_buttons->childItems().length()); // still 50 move buttons left
     EXPECT_EQ(102, (QQmlProperty(entries.at(0), "buttons").read().value<QQuickItem*>())->childItems().length());
-    mlq.current_move(50);
-    add_sequence(301, 0, 100); // continue after move 50: ... -> 48 -> 49 -> 50 -> 301 -> 302 -> 303 -> ...
-    EXPECT_EQ(153, move_list_root_buttons->childItems().length());
-    mlq.current_move(100);
-    entries = add_sequence(401, 0, 100); // continue after move 100: ... -> 98 -> 99 -> 100 -> 401 -> 402 -> 403 -> ...
+    add_sequence(50, 301, 100, 5);
+    EXPECT_EQ(53, move_list_root_buttons->childItems().length());
+    entries = add_sequence(100, 401, 100, 0); // continue after move 100: ... -> 98 -> 99 -> 100 -> 401 -> 402 -> 403 -> ...
     EXPECT_EQ(152, (QQmlProperty(move_list_root_entry->childItems().at(1), "buttons").read().value<QQuickItem*>())->childItems().length()); // 51 - 500
 
     /* content:
@@ -134,8 +129,7 @@ TEST_F(Move_List_Qml_Test, lots_of_moves)
      *                                                +---+   +---+   +---+          +---+   +---+   +---+
      */
 
-    mlq.current_move(25);
-    entries = add_sequence(501, 501, 100, 25);
+    entries = add_sequence(25, 501, 100, 3);
     EXPECT_EQ(28, move_list_root_buttons->childItems().length());
 
     /* content:
@@ -172,13 +166,10 @@ TEST_F(Move_List_Qml_Test, lots_of_moves)
 
 TEST_F(Move_List_Qml_Test, delete_and_cut_off)
 {
-    add_sequence(1, 0, 100);
-    mlq.current_move(50);
-    add_sequence(101, 101, 100, 50);
-    mlq.current_move(150);
-    add_sequence(201, 201, 100, 150);
-    mlq.current_move(250);
-    add_sequence(301, 301, 100, 250);
+    add_sequence(0, 1, 100, 0);
+    add_sequence(50, 101, 100, 3);
+    add_sequence(150, 201, 100, 3);
+    add_sequence(250, 301, 100, 3);
 
    /*
     * +---+   +---+   +---+          +---+   +---+

@@ -3,23 +3,24 @@
 #include <QQmlEngine>
 #include <QGuiApplication>
 #include <QTimer>
+#include <QProcess>
 
 #include <thread>
 
-#include <iostream>
+#include <unistd.h>
 
 namespace muehle_qml
 {
 
-void draw(Muehle_Qml* ui)
-{
-    (void)ui;
-}
-
 void win(Muehle_Qml* ui, const std::string& player)
 {
-    (void)ui;
-    std::cerr << "winner " << player << "\n";
+    auto first_piece = muehle::first_white_piece;
+    if (player == muehle::black_id) {
+        first_piece = muehle::first_black_piece;
+    }
+    for (int i = first_piece.v; i < first_piece.v + muehle::number_of_pieces_per_player.v; i += 1) {
+        QQmlProperty(ui->pieces.at(i).get(), "state").write("win");
+    }
 }
 
 void occupiable(Muehle_Qml* ui, const boardgame::Field_Number fieldId, const boardgame::Piece_Number pieceId)
@@ -48,7 +49,7 @@ Muehle_Qml::Muehle_Qml(QQmlEngine* engine, QQuickItem* parentItem)
     auto fillPieces = [this](const std::string& color, int offset = 0) {
         for (int i = 0; i < muehle::number_of_pieces_per_player.v; i += 1) {
             pieces.emplace_back(qobject_cast<QQuickItem*>(piece_component.create()));
-            QQmlProperty(pieces.back().get(), "color").write(color.c_str());
+            QQmlProperty(pieces.back().get(), "next_color").write(color.c_str());
             QQmlProperty(pieces.back().get(), "piece_id").write(i + offset);
             QQmlProperty(pieces.back().get(), "state").write("lock");
             connect(pieces.back().get(), SIGNAL(removed(int)), this, SLOT(removed(int)));
@@ -93,7 +94,8 @@ Muehle_Qml::Muehle_Qml(QQmlEngine* engine, QQuickItem* parentItem)
     connect(control.get(), SIGNAL(engine_time_in_s(int)), this, SLOT(engine_time_in_s(int)));
     connect(control.get(), SIGNAL(white_color_changed(QString)), this, SLOT(white_color_changed(QString)));
     connect(control.get(), SIGNAL(black_color_changed(QString)), this, SLOT(black_color_changed(QString)));
-    connect(qApp, &QGuiApplication::lastWindowClosed, this, &Muehle_Qml::write_settings);
+    connect(control.get(), SIGNAL(show_help()), this, SLOT(show_help()));
+    connect(qApp, &QGuiApplication::lastWindowClosed, this, &Muehle_Qml::end_program);
     fillPieces(board_property("white_color").read().toString().toStdString());
     fillPieces(board_property("black_color").read().toString().toStdString(), muehle::first_black_piece.v);
     fillFields("board_fields", muehle::first_board_field.v, {1, 2, 4, 5, 7, 9, 11, 13, 14, 15, 19, 20, 24, 28, 29, 33, 34, 35, 37, 39, 41, 43, 44, 46, 47});
@@ -172,6 +174,18 @@ void Muehle_Qml::use_alternative_field()
     }
 }
 
+void Muehle_Qml::show_help()
+{
+    auto pf = qApp->platformName();
+    auto docpath = qApp->applicationDirPath() + "/../share/doc/boardgames/muehle_de.html";
+    if (!access(qPrintable(docpath), R_OK)) {
+        QProcess::startDetached("xdg-open", QStringList(docpath));
+    } else {
+        QQmlProperty(control.get(), "info_visible").write(!QQmlProperty(control.get(), "info_visible").read().toBool());
+        std::cerr << qPrintable(pf) << '\n' << qPrintable(qApp->applicationDirPath()) << '\n';
+    }
+}
+
 // private
 
 void Muehle_Qml::read_settings()
@@ -187,13 +201,13 @@ void Muehle_Qml::read_settings()
     settings.endGroup();
 
     settings.beginGroup("Engine");
-    auto et = settings.value("Engine/engine_time_in_s", 4).toInt();
-    auto ed = settings.value("Engine/engine_depth", 5).toInt();
+    auto et = settings.value("engine_time_in_s", 4).toInt();
+    auto ed = settings.value("engine_depth", 5).toInt();
     QQmlProperty(control.get(), "current_engine_time_in_s").write(et);
     QQmlProperty(control.get(), "current_engine_depth").write(ed);
     engine_time_in_s(et);
     engine_depth(ed);
-    engine_mode = settings.value("Control/engine_mode", engine_mode_depth).toString();
+    engine_mode = settings.value("engine_mode", engine_mode_depth).toString();
     if (engine_mode != engine_mode_depth &&
             engine_mode != engine_mode_time) {
         engine_mode = engine_mode_depth;
@@ -231,6 +245,13 @@ void Muehle_Qml::write_settings()
     settings.endGroup();
 }
 
+void Muehle_Qml::end_program()
+{
+    write_settings();
+    request_black_engine_active(false);
+    request_white_engine_active(false);
+}
+
 void Muehle_Qml::wait_for_engine_move(std::future<bool>&& efu)
 {
     if (!efu.valid()) {
@@ -261,8 +282,7 @@ void Muehle_Qml::color_change(const std::string& color_property_name, const QStr
 {
     auto old_color = board_property(color_property_name).read().toString();
     for (int i = first_piece.v; i < first_piece.v + muehle::number_of_pieces_per_player.v; i += 1) {
-        QQmlProperty(pieces.at(i).get(), "color").write(new_color);
-
+        QQmlProperty(pieces.at(i).get(), "next_color").write(new_color);
     }
     if (QQmlProperty(control.get(), player_active_property_name).read().toBool() == true) {
         for (int i = muehle::first_board_field.v; i < muehle::first_board_field.v + muehle::number_of_board_fields.v; i += 1) {

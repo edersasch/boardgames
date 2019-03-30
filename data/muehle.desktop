@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Muehle
+Comment=A classical baordgame, also known as nine men's morris
+Comment[de]=Ein klassisches Brettspiel
+Exec=muehle_qml
+Icon=engine
+Type=Application
+Categories=Game;
+Keywords=muehle;morris;boardgame;

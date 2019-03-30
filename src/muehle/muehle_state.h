@@ -111,6 +111,7 @@ private:
     void reconstruct(const Muehle_Constellation& constellation);
     void set_player_on_hint(const std::vector<int>& hint);
     void modified_if_not_start_constellation();
+    void new_move_list();
     const boardgame::Piecegroup<decltype(current_constellation.cbegin())> white_pieces { make_piecegroup(current_constellation, muehle::first_white_piece, muehle::number_of_pieces_per_player) };
     const boardgame::Piecegroup<decltype(current_constellation.cbegin())> black_pieces { make_piecegroup(current_constellation, muehle::first_black_piece, muehle::number_of_pieces_per_player) };
     const boardgame::Fieldgroup<decltype(all_fields.cbegin())> game_board { make_fieldgroup(all_fields, muehle::first_board_field, muehle::number_of_board_fields) };
@@ -130,6 +131,7 @@ private:
     bool restart {false};
     std::string import_string {};
     bool import_string_is_path {true};
+    bool game_over {false};
 };
 
 }
