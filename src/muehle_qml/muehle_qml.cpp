@@ -1,4 +1,5 @@
 #include "muehle_qml/muehle_qml.h"
+#include "boardgame/version.h"
 
 #include <QQmlEngine>
 #include <QGuiApplication>
@@ -132,7 +133,7 @@ Muehle_Qml::Muehle_Qml(QQmlEngine* engine, QQuickItem* parentItem)
     connect(this, &Muehle_Qml::force_engine_move, this, [this]() {
         muehle_state.force_engine_move();
     });
-
+    QQmlProperty(control.get(), "release_info").write(QString(release_info().c_str()));
     QTimer::singleShot(0, this, &Muehle_Qml::read_settings);
 }
 
@@ -176,13 +177,13 @@ void Muehle_Qml::use_alternative_field()
 
 void Muehle_Qml::show_help()
 {
-    auto pf = qApp->platformName();
     auto docpath = qApp->applicationDirPath() + "/../share/doc/boardgames/muehle_de.html";
     if (!access(qPrintable(docpath), R_OK)) {
         QProcess::startDetached("xdg-open", QStringList(docpath));
     } else {
         QQmlProperty(control.get(), "info_visible").write(!QQmlProperty(control.get(), "info_visible").read().toBool());
-        std::cerr << qPrintable(pf) << '\n' << qPrintable(qApp->applicationDirPath()) << '\n';
+        std::cerr << qPrintable(qApp->platformName()) << '\n' << qPrintable(qApp->applicationDirPath()) << '\n';
+        std::cerr << release_info() <<'\n';
     }
 }
 
@@ -293,6 +294,13 @@ void Muehle_Qml::color_change(const std::string& color_property_name, const QStr
         }
     }
     move_lists.change_move_color(old_color, new_color);
+}
+
+std::string Muehle_Qml::release_info()
+{
+    std::string ri = std::to_string(boardgame::major_version) + "." + std::to_string(boardgame::minor_version) + "." + std::to_string(boardgame::patch_version);
+    ri += " / " + std::to_string(boardgame::release_year) + "-" + std::to_string(boardgame::release_month) + "-" + std::to_string(boardgame::release_day);
+    return ri;
 }
 
 }

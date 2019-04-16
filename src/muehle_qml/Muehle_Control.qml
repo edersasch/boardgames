@@ -24,6 +24,7 @@ RowLayout {
     property bool white_player_active: false
     property bool black_player_active: false
     property bool confirm: false
+    property string release_info: "0.0.0"
     readonly property bool hor_orientation: width >= height
     signal horizontal
     signal vertical
@@ -273,7 +274,7 @@ RowLayout {
             Text {
                 id: infotext
 
-                text: "Muehle v0.1.0 (2019-04-16) / Alexander Eder";
+                text: "Muehle " + release_info + " / Alexander Eder";
                 anchors.centerIn: parent
             }
         }

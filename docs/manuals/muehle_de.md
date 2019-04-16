@@ -1,7 +1,5 @@
 # Mühle
 
-[v0.1.0](https://github.com/edersasch/boardgames) (2019-04-16) von [Alexander Eder](https://bitbucket.org/alexander_eder/aewiki/)
-
 Spielregeln aus [Wikipedia](https://de.wikipedia.org/wiki/M%C3%BChle_(Spiel)#Spielablauf), Version vom 29. Juli 2018:
 
 > Das Spiel läuft in drei Phasen ab:

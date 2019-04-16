@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10.0)
-project(boardgames)
+project(boardgames VERSION 0.1.1)
 
 option(BOARDGAMES_BUILD_TESTS "Build unit tests" ON)
 option(BOARDGAMES_COVERAGE_REPORT "Compile with coverage instrumentation" OFF)
@@ -8,6 +8,18 @@ option(BOARDGAMES_USE_EXTERNAL_JSON "Use an external JSON library" OFF)
 add_compile_options(
     -Wall -Wextra -Werror -Wshadow
 )
+
+set(PROJECT_RELEASE_YEAR 2019)
+set(PROJECT_RELEASE_MONTH 99)
+set(PROJECT_RELEASE_DAY 99)
+configure_file (
+    "${PROJECT_SOURCE_DIR}/src/boardgame/version.h.in"
+    "${PROJECT_BINARY_DIR}/include/boardgame/version.h"
+    )
+configure_file (
+    "${PROJECT_SOURCE_DIR}/docs/manuals/version_footer.md.in"
+    "${PROJECT_BINARY_DIR}/docs/manuals/version_footer.md"
+    )
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
@@ -65,7 +77,7 @@ endif()
 find_program(PANDOC pandoc)
 if(NOT PANDOC STREQUAL "PANDOC-NOTFOUND")
     add_custom_target(manuals ALL
-        ${PANDOC} -o ${CMAKE_BINARY_DIR}/muehle_de.html -s --self-contained -c ../../data/pandoc.css muehle_de.md
+        ${PANDOC} -o ${CMAKE_BINARY_DIR}/muehle_de.html -s --self-contained -c ${CMAKE_SOURCE_DIR}/data/pandoc.css ${CMAKE_SOURCE_DIR}/docs/manuals/muehle_de.md ${CMAKE_BINARY_DIR}/docs/manuals/version_footer.md
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/docs/manuals
         COMMENT "Generate HTML manuals with pandoc" VERBATIM
     )
@@ -73,6 +85,7 @@ if(NOT PANDOC STREQUAL "PANDOC-NOTFOUND")
 endif()
 
 include_directories(src)
+include_directories(${PROJECT_BINARY_DIR}/include)
 add_subdirectory(src)
 
 if(BOARDGAMES_BUILD_TESTS AND BUILD_TESTING)
