@@ -130,7 +130,7 @@ bool Move_List<T>::process_json(nlohmann::json&& j)
 {
     try {
         move_list_entries = j.get<std::map<int, Move_List_Entry<T>>>();
-    } catch (const nlohmann::json::exception ex) {
+    } catch (const nlohmann::json::exception&) {
         return false;
     }
     next_id = 0;
@@ -222,7 +222,7 @@ Move_List<T, U>::Move_List(U move_list_ui, std::string (*commit_msg_provider)(st
         } else {
             j = nlohmann::json::parse(import);
         }
-    } catch (const nlohmann::json::exception ex) {
+    } catch (const nlohmann::json::exception&) {
         j.clear();
     }
     if (!j.empty()) {

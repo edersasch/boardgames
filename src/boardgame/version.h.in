@@ -1,0 +1,15 @@
+#ifndef SRC_BOARDGAME_VERSION
+#define SRC_BOARDGAME_VERSION
+
+namespace boardgame {
+
+constexpr int major_version {@PROJECT_VERSION_MAJOR@};
+constexpr int minor_version {@PROJECT_VERSION_MINOR@};
+constexpr int patch_version {@PROJECT_VERSION_PATCH@};
+constexpr int release_year  {@PROJECT_RELEASE_YEAR@};
+constexpr int release_month {@PROJECT_RELEASE_MONTH@};
+constexpr int release_day   {@PROJECT_RELEASE_DAY@};
+
+}
+
+#endif // SRC_BOARDGAME_VERSION

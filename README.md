@@ -1,3 +1,6 @@
+[![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/edersasch/boardgames.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/edersasch/boardgames/context:cpp)
+
+
 # Boardgames
 
 * C++ 17 framework with piece / field association, move list, engine and UI
