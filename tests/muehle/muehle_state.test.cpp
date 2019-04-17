@@ -38,6 +38,10 @@ void Muehle_State_Test::check_new_game()
     EXPECT_CALL(mUi, setup_mode_active(false));
     EXPECT_CALL(mUi, engine_active(muehle::white_id, false));
     EXPECT_CALL(mUi, need_confirm(false));
+    EXPECT_CALL(mUi, movecount(0));
+    EXPECT_CALL(mUi, time_accounting_correct(true));
+    EXPECT_CALL(mUi, player_time(muehle::white_id, std::chrono::milliseconds(0)));
+    EXPECT_CALL(mUi, player_time(muehle::black_id, std::chrono::milliseconds(0)));
 }
 
 void Muehle_State_Test::check_all_free_become_locked()
@@ -59,7 +63,7 @@ void Muehle_State_Test::check_all_free_become_occupiable(boardgame::Piece_Number
     }
 }
 
-void Muehle_State_Test::phase1_place_piece(boardgame::Piece_Number pn, boardgame::Field_Number to, bool closes_muehle)
+void Muehle_State_Test::phase1_place_piece(boardgame::Piece_Number pn, boardgame::Field_Number to, bool closes_muehle, int count)
 {
     check_all_free_become_locked();
     if (pn.v < 9) {
@@ -69,6 +73,7 @@ void Muehle_State_Test::phase1_place_piece(boardgame::Piece_Number pn, boardgame
             EXPECT_CALL(mUi, highlight(muehle::first_black_drawer_field.v + mNextInBlackDrawer));
             EXPECT_CALL(mlUi, add_move(testing::_, testing::_, testing::_));
             EXPECT_CALL(mlUi, current_move(testing::_));
+            EXPECT_CALL(mUi, movecount(count));
         }
         EXPECT_CALL(mUi, set_field(muehle::first_white_piece.v + mNextInWhiteDrawer, muehle::first_board_field.v + to.v));
         mNextInWhiteDrawer += 1;
@@ -79,6 +84,7 @@ void Muehle_State_Test::phase1_place_piece(boardgame::Piece_Number pn, boardgame
             EXPECT_CALL(mUi, highlight(muehle::first_white_drawer_field.v + mNextInWhiteDrawer));
             EXPECT_CALL(mlUi, add_move(testing::_, testing::_, testing::_));
             EXPECT_CALL(mlUi, current_move(testing::_));
+            EXPECT_CALL(mUi, movecount(count));
         }
         EXPECT_CALL(mUi, set_field(muehle::first_black_piece.v + mNextInBlackDrawer, muehle::first_board_field.v + to.v));
         mNextInBlackDrawer += 1;
@@ -100,17 +106,17 @@ TEST_F(Muehle_State_Test, testPhase1)
     EXPECT_CALL(mUi, lock_field(24));
     EXPECT_CALL(mUi, need_confirm(true));
     EXPECT_CALL(mlUi, need_confirm(true));
-    phase1_place_piece(boardgame::Piece_Number{0}, boardgame::Field_Number{5});
+    phase1_place_piece(boardgame::Piece_Number{0}, boardgame::Field_Number{5}, false, 1);
     EXPECT_CALL(mUi, lock_field(33));
-    phase1_place_piece(boardgame::Piece_Number{9}, boardgame::Field_Number{9});
+    phase1_place_piece(boardgame::Piece_Number{9}, boardgame::Field_Number{9}, false, 1);
     EXPECT_CALL(mUi, lock_field(25));
-    phase1_place_piece(boardgame::Piece_Number{1}, boardgame::Field_Number{13});
+    phase1_place_piece(boardgame::Piece_Number{1}, boardgame::Field_Number{13}, false, 2);
     EXPECT_CALL(mUi, lock_field(34));
-    phase1_place_piece(boardgame::Piece_Number{10}, boardgame::Field_Number{10});
+    phase1_place_piece(boardgame::Piece_Number{10}, boardgame::Field_Number{10}, false, 2);
     EXPECT_CALL(mUi, removable(9));
     EXPECT_CALL(mUi, removable(10));
     EXPECT_CALL(mUi, lock_field(26));
-    phase1_place_piece(boardgame::Piece_Number{2}, boardgame::Field_Number{20}, true);
+    phase1_place_piece(boardgame::Piece_Number{2}, boardgame::Field_Number{20}, true, 3);
 }
 
 TEST_F(Muehle_State_Test, testEnterLeaveSetupMode)
@@ -140,6 +146,7 @@ TEST_F(Muehle_State_Test, testEnterLeaveSetupMode)
     EXPECT_CALL(mlUi, initial_constellation(0));
     EXPECT_CALL(mlUi, current_move(0));
     EXPECT_CALL(mlUi, need_confirm(true));
+    EXPECT_CALL(mUi, time_accounting_correct(false));
     mM.request_setup_mode_active(true);
     mM.request_select_piece(boardgame::Piece_Number{0});
     for (int i = 1; i < muehle::number_of_pieces_per_player.v - 2; i += 1) {

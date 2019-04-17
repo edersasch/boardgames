@@ -122,6 +122,7 @@ under a [BSD 3-Clause License](https://tiddlywiki.com/#License): added
 * depth.svg ([$:/core/images/line-width](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fline-width))
 * export.svg ([$:/core/images/unfold-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Funfold-button))
 * forward.svg ([$:/core/images/right-arrow](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fright-arrow))
+* info.svg ([$:/core/images/info-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Finfo-button))
 * help.svg ([$:/core/images/help](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fhelp))
 * hide.svg ([$:/core/images/preview-closed](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fpreview-closed))
 * home.svg ([$:/core/images/home-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fhome-button))
@@ -132,6 +133,7 @@ under a [BSD 3-Clause License](https://tiddlywiki.com/#License): added
 * settings.svg ([$:/core/images/options-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Foptions-button))
 * show.svg ([$:/core/images/preview-open](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fpreview-open))
 * time.svg ([$:/core/images/timestamp-on](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Ftimestamp-on))
+* warning.svg ([$:/core/images/warning](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fwarning))
 
 Icon taken from [openclipart](https://openclipart.com) is licensed under
 [Creative Commons Zero 1.0 Public Domain License](https://openclipart.org/share):

@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <string>
+#include <chrono>
 
 /** \brief Game and UI independent code
  */
@@ -40,6 +41,10 @@ namespace boardgame
  *   * \ref engine_active
  *   * \ref active_player
  *   * \ref need_confirm
+ * * Game info:
+ *   * \ref movecount
+ *   * \ref time_warp
+ *   * \ref player_time
  *
  * No inheritance required according to <https://sean-parent.stlab.cc/papers-and-presentations/#better-code-runtime-polymorphism>
  */
@@ -164,6 +169,28 @@ public:
      */
     friend void need_confirm(const Boardgame_Ui& ui, const bool is_needed) { ui.bc->nc(is_needed); }
 
+    /** \brief Set number of already played moves
+     *
+     * \param ui User interface instance
+     * \param count The number of already played moves
+     */
+    friend void movecount(const Boardgame_Ui& ui, const int count) { ui.bc->mc(count); }
+
+    /** \brief Correctness of time accounting
+     *
+     * \param ui User interface instance
+     * \param is_correct If true, the time accounting is correct
+     */
+    friend void time_accounting_correct(const Boardgame_Ui& ui, const bool is_correct) { ui.bc->tac(is_correct); }
+
+    /** \brief Set overall playing time for a player
+     *
+     * \param ui User interface instance
+     * \param player_id Identification string of the player
+     * \param time_in_ms Time value in milliseconds
+     */
+    friend void player_time(const Boardgame_Ui& ui, const std::string player_id, const std::chrono::milliseconds time_in_ms) { ui.bc->pt(player_id, time_in_ms); }
+
 private:
     struct Boardgame_Ui_Concept
     {
@@ -183,6 +210,9 @@ private:
         virtual void ea(const std::string& pi, const bool ia) const = 0;
         virtual void ap(const std::string& pi) const = 0;
         virtual void nc(const bool in) const = 0;
+        virtual void mc(const int c) const = 0;
+        virtual void tac(const bool ic) const = 0;
+        virtual void pt(const std::string& pi, const std::chrono::milliseconds t) const = 0;
     };
     template <typename T>
     struct Boardgame_Ui_Model : Boardgame_Ui_Concept
@@ -203,6 +233,9 @@ private:
         void ea(const std::string& pi, const bool ia) const override { engine_active(bm, pi, ia); }
         void ap(const std::string& pi) const override { active_player(bm, pi); }
         void nc(const bool in) const override { need_confirm(bm, in); }
+        void mc(const int c) const override { movecount(bm, c); }
+        void tac(const bool ic) const override { time_accounting_correct(bm, ic); }
+        void pt(const std::string& pi, const std::chrono::milliseconds t) const override { player_time(bm, pi, t); }
         T bm;
     };
     std::shared_ptr<const Boardgame_Ui_Concept> bc;

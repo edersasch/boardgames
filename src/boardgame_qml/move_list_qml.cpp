@@ -160,7 +160,9 @@ void Move_List_Qml::add_move_button(const int move_id, const std::string& descri
     auto button = qobject_cast<QQuickItem*>(move_button.create());
     QQmlProperty(button, "text").write(description.c_str());
     QQmlProperty(button, "move_id").write(move_id);
-    QObject::connect(button, SIGNAL(request_set_move_id(int)), this, SIGNAL(request_set_current_move_and_branch_start_id(int)));
+    connect(button, SIGNAL(request_set_move_id(int)), this, SIGNAL(request_set_current_move_and_branch_start_id(int)));
+    connect(root_entry, SIGNAL(heightChanged()), button, SLOT(scroll_to()));
+    connect(root_entry->parent(), SIGNAL(heightChanged()), button, SLOT(scroll_to()));
     move_buttons[move_id] = std::unique_ptr<QQuickItem>(button);
 }
 

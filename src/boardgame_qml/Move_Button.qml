@@ -7,8 +7,7 @@ ToolButton {
     property int move_id: -1
     property color color
     property bool highlight: false
-    readonly property int pp_width: parent ? (parent.parent ? parent.parent.width : 0) : 0
-    readonly property int pp_y: parent ? (parent.parent ? parent.parent.y : 0) : 0
+    readonly property int p_width: parent ? parent.width : 0
 
     signal request_set_move_id(int m_id)
 
@@ -20,10 +19,8 @@ ToolButton {
 
     onColorChanged: contentItem.color = color.hslLightness < 0.5 ? "white" : "black"
     onClicked: request_set_move_id(move_id)
-    onYChanged: scroll_to()
     onHighlightChanged: scroll_to()
-    onPp_widthChanged: scroll_to()
-    onPp_yChanged: scroll_to()
+    onP_widthChanged: scroll_to()
 
     background: Rectangle {
         id: bg

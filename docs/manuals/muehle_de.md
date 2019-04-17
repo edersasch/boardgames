@@ -145,11 +145,52 @@ Aktionen verloren geht. Der Spieler der zuletzt ausgewählten Spielsteinfarbe
 ist dann am Zug.
 
 
+### Ein- und Ausblenden von Spielinformationen
+
+![gameinfo](../../data/info.svg)<br>
+
+Am oberen Rand werden folgende Informationen angezeigt:
+
+
+#### Die Anzahl der bis zur aktuellen Stellung getätigten Züge
+
+Ein Zug besteht aus den zwei Halbzügen des ersten und zweiten Spielers. Die
+Zahl wechselt bei abwechselndem Spiel also nur nach jeder zweiten Aktion. Ein
+Doppelkreuz `#` ist der Zugnummer vorangestellt. Die Beschriftung `# 12` z.B.
+zeigt an, dass bereits zwölf Züge gespielt wurden.
+
+
+#### Aktuell verbrauchte Zeit pro Spieler
+
+In jeweils einer farblich passenden Box pro Spieler wird die verbrauchte Zeit
+in Sekunden angezeigt. Solange abwechselnd gezogen wird, sagt die Zeit aus, wer
+wie lange überlegt hat, um zur aktuellen Stellung zu gelangen. Diese
+Aussagekraft geht verloren, wenn in der [Züge Liste](#züge-liste) eine frühere
+Stellung ausgewählt wird oder der [Aufbau Modus](#aufbau-modus) betreten wird.
+Ist bei Start des Spiels nicht die Grundstellung aufgebaut, hat die Zeitanzeige
+ebenfalls keine spieltechnische Bedeutung. Deshalb wird in diesen Fällen ein
+Warnhinweis ![warning](../../data/warning.svg) vor den Uhren angezeigt.
+
+Durch Beginn eines [neuen Spiels](#neues-spiel) beginnt die Zeit für beide
+Spieler wieder bei `0:00` und ein eventuell sichtbarer Warnhinweis
+verschwindet.
+
+
 ### Ein- und Ausblenden der Einstellungen
 
 ![settings](../../data/settings.svg)<br>
 
-Steuert die Sichtbarkeit der oben angezeigten [Einstellungen](#einstellungen).
+Steuert die Sichtbarkeit der am oberen Rand angezeigten
+[Einstellungen](#einstellungen).
+
+
+### Anleitung anzeigen
+
+![help](../../data/help.svg)<br>
+
+Ein Druck auf den Knopf zeigt diese Anleitung an. Tritt dabei ein Problem auf,
+wird oberhalb des Spielfeldes eine Versionsinformation gezeigt, bis der Knopf
+erneut betätigt wird.
 
 
 ### Gewählte Aktion bestätigen / abbrechen
@@ -167,15 +208,6 @@ Aktion muss der verschobene Knopf erneut gedrückt werden. Betätigen des
 "Abbrechen" Knopfes oder dreisekündiges Warten rücken den Bedienknopf mit
 seiner normalen Farbe wieder auf seinen angestammten Platz, ohne eine Aktion
 auszulösen.
-
-
-### Anleitung anzeigen
-
-![help](../../data/help.svg)<br>
-
-Ein Druck auf den Knopf zeigt diese Anleitung an. Tritt dabei ein Problem auf,
-wird oberhalb des Spielfeldes eine Versionsinformation gezeigt, bis der Knopf
-erneut betätigt wird.
 
 
 ## Züge Liste

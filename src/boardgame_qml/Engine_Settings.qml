@@ -26,6 +26,8 @@ Rectangle {
 
         ColumnLayout {
             RowLayout {
+                id: depth_layout
+
                 RadioButton {
                     id: depth_button
 
@@ -40,9 +42,19 @@ Rectangle {
                 Image {
                     source: "qrc:/depth.svg"
                 }
+
+                MouseArea {
+                    x: depth_button.x + depth_button.width
+                    y: depth_button.y
+                    width: depth_layout.width - depth_button.width
+                    height: depth_layout.height
+                    onClicked: depth_button.checked = true
+                }
             }
 
             RowLayout {
+                id: time_layout
+
                 RadioButton {
                     id: time_button
 
@@ -56,6 +68,14 @@ Rectangle {
 
                 Image {
                     source: "qrc:/time.svg"
+                }
+
+                MouseArea {
+                    x: time_button.x + time_button.width
+                    y: time_button.y
+                    width: time_layout.width - time_button.width
+                    height: time_layout.height
+                    onClicked: time_button.checked = true
                 }
             }
         }

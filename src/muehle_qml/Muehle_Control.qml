@@ -18,12 +18,16 @@ RowLayout {
     property alias black_color: black_color_select.color
     property alias move_list_visible: move_list_v_button.checked
     property alias setup_mode_active: v_setup.checked
-    property alias info_visible: info.visible
+    property alias no_help_available_visible: no_help_available.visible
     property bool white_engine_active: false
     property bool black_engine_active: false
     property bool white_player_active: false
     property bool black_player_active: false
     property bool confirm: false
+    property bool time_accounting_correct: true
+    property int movecount: 0
+    property string white_time: "0:00"
+    property string black_time: "0:00"
     property string release_info: "0.0.0"
     readonly property bool hor_orientation: width >= height
     signal horizontal
@@ -108,6 +112,13 @@ RowLayout {
         }
 
         ToolButton {
+            id: info_v_button
+            flat: true
+            checkable: true
+            icon.source: "qrc:/info.svg"
+        }
+
+        ToolButton {
             id: settings_v_button
             flat: true
             checkable: true
@@ -185,6 +196,15 @@ RowLayout {
             }
 
             ToolButton {
+                id: info_h_button
+                flat: true
+                checkable: true
+                icon.source: "qrc:/info.svg"
+                checked: info_v_button.checked
+                onCheckedChanged: info_v_button.checked = checked
+            }
+
+            ToolButton {
                 id: settings_h_button
                 flat: true
                 checkable: true
@@ -209,16 +229,28 @@ RowLayout {
             id: settings_flickable
 
             Layout.fillWidth: true
-            implicitHeight: settings_v_button.checked ? engine_settings.height + 10 : 0
-            contentHeight: contentItem.childrenRect.height
+            implicitHeight: settings_v_button.checked ? contentHeight : 0
+            contentHeight: contentItem.childrenRect.height + topMargin + bottomMargin
             clip: true
-            boundsBehavior: Flickable.OvershootBounds
-            ScrollBar.vertical: ScrollBar {}
+            leftMargin: 10
+            rightMargin: 10
+            topMargin: 10
+            bottomMargin: 10
 
             Behavior on implicitHeight { NumberAnimation { easing.type: Easing.OutBack; duration: 200 } }
 
             Flow {
                 width: parent.width
+                spacing: 10
+
+                RowLayout {
+                    Image {
+                        Layout.topMargin: 30
+                        Layout.leftMargin: 16
+                        Layout.rightMargin: 16
+                        source: "qrc:/settings.svg"
+                    }
+                }
 
                 Engine_Settings {
                     id: engine_settings
@@ -266,7 +298,7 @@ RowLayout {
         }
 
         Rectangle {
-            id: info
+            id: no_help_available
 
             visible: false
             implicitHeight: visible ? infotext.implicitHeight * 2 : 0
@@ -277,6 +309,87 @@ RowLayout {
                 text: "Muehle " + release_info + " / Alexander Eder";
                 anchors.centerIn: parent
             }
+        }
+
+        Flickable {
+            id: game_info_flickable
+
+            Layout.fillWidth: true
+            implicitHeight: info_v_button.checked ? contentHeight : 0
+            contentHeight: contentItem.childrenRect.height + topMargin + bottomMargin
+            clip: true
+            leftMargin: 10
+            rightMargin: 10
+            topMargin: 10
+            bottomMargin: 10
+
+            Behavior on implicitHeight { NumberAnimation { easing.type: Easing.OutBack; duration: 200 } }
+
+            Flow {
+                width: parent.width
+                spacing: 10
+
+                RowLayout {
+                    Image {
+                        Layout.margins: 16
+                        source: "qrc:/info.svg"
+                    }
+                }
+
+                Label {
+                    padding: 20
+                    text: "# " + movecount
+                    background: Rectangle {
+                        radius: 5
+                        border.color: "black"
+                        border.width: 1
+                    }
+                }
+
+                Rectangle {
+                    width: childrenRect.width
+                    height: childrenRect.height
+                    radius: 5
+                    border.color: "black"
+                    border.width: 1
+
+                    RowLayout {
+                        Image {
+                            visible: !time_accounting_correct
+                            source: "qrc:/warning.svg"
+                            Layout.margins: 10
+                        }
+
+                        Label {
+                            text: white_time
+                            color: root.white_color.hslLightness > 0.5 ? "black" : "white"
+                            padding: 10
+                            Layout.margins: 10
+                            background: Rectangle {
+                                color: root.white_color
+                                border.color: "black"
+                                border.width: 1
+                                radius: 5
+                            }
+                        }
+
+                        Label {
+                            text: black_time
+                            color: root.black_color.hslLightness > 0.5 ? "black" : "white"
+                            padding: 10
+                            Layout.margins: 10
+                            background: Rectangle {
+                                color: root.black_color
+                                border.color: "black"
+                                border.width: 1
+                                radius: 5
+                            }
+                        }
+                    }
+                }
+            }
+
+            Behavior on implicitHeight { NumberAnimation { easing.type: Easing.OutBack; duration: 200 } }
         }
 
         Muehle_Board {

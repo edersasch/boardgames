@@ -26,7 +26,10 @@ public:
     MOCK_METHOD2(set_field, void(int, int));
     MOCK_METHOD1(setup_mode_active, void(bool));
     MOCK_METHOD2(engine_active, void(const std::string&, bool));
-    MOCK_METHOD1(need_confirm, void(bool));
+    MOCK_METHOD1(need_confirm, void(const bool));
+    MOCK_METHOD1(movecount, void(const int));
+    MOCK_METHOD1(time_accounting_correct, void(const bool));
+    MOCK_METHOD2(player_time, void(const std::string&, const std::chrono::milliseconds));
 };
 
 class Move_List_Ui_Mock
@@ -56,7 +59,7 @@ protected:
     void check_new_game();
     void check_all_free_become_locked();
     void check_all_free_become_occupiable(boardgame::Piece_Number pn, boardgame::Field_Number except = boardgame::Field_Number{INT_MAX});
-    void phase1_place_piece(boardgame::Piece_Number pn, boardgame::Field_Number to, bool closes_muehle = false);
+    void phase1_place_piece(boardgame::Piece_Number pn, boardgame::Field_Number to, bool closes_muehle, int count);
     ::testing::StrictMock<Muehle_Ui_Mock> mUi {};
     ::testing::StrictMock<Move_List_Ui_Mock> mlUi {};
     ::testing::StrictMock<Main_Loop_Mock> ml {};
@@ -88,6 +91,9 @@ void setup_mode_active(::testing::StrictMock<Muehle_Ui_Mock>* mui, const bool is
 void engine_active(::testing::StrictMock<Muehle_Ui_Mock>* mui, const std::string& player_id, const bool is_active) { mui->engine_active(player_id, is_active); }
 void active_player(::testing::StrictMock<Muehle_Ui_Mock>* mui, const std::string& player_id) { (void)mui; (void)player_id; }
 void need_confirm(::testing::StrictMock<Muehle_Ui_Mock>* mui, const bool in) { mui->need_confirm(in); }
+void movecount(::testing::StrictMock<Muehle_Ui_Mock>* mui, const int count) { mui->movecount(count); }
+void time_accounting_correct(::testing::StrictMock<Muehle_Ui_Mock>* mui, const bool is_correct) { mui->time_accounting_correct(is_correct); }
+void player_time(::testing::StrictMock<Muehle_Ui_Mock>* mui, const std::string& player_id, const std::chrono::milliseconds time_in_ms) { mui->player_time(player_id, time_in_ms); }
 
 void engine_future(::testing::StrictMock<Main_Loop_Mock>* ml, std::future<bool>&& efu) { ml->engine_future(std::move(efu)); }
 void set_main_loop_engine_time(::testing::StrictMock<Main_Loop_Mock>* ml, std::chrono::seconds time_in_s) { ml->set_main_loop_engine_time(time_in_s); }

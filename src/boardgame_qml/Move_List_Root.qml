@@ -6,13 +6,13 @@ Flickable {
     id: root
 
     property alias entries: entries
-    property int next_ContentY: 0
 
-    function scroll_to() {
-        var y_offset = next_ContentY;
+    function scroll_to(y_offset) {
         if (y_offset >= 0) {
-            if (y_offset > contentY + height - control.height) {
-                y_offset -= list_overlay.height
+            if (contentHeight < height) {
+                contentY = 0;
+            } else if (y_offset > contentY + height - control.height) {
+                y_offset -= list_overlay.height;
                 if (y_offset > (contentHeight - height)) {
                     y_offset = contentHeight - height;
                 }
@@ -24,10 +24,6 @@ Flickable {
             }
         }
     }
-
-    onNext_ContentYChanged: scroll_to()
-    onContentHeightChanged: scroll_to()
-    onHeightChanged: scroll_to()
 
     contentHeight: entries.childrenRect.height
     clip: true
@@ -46,7 +42,7 @@ Flickable {
         signal chosen_move_list_path(var file_url)
 
         function scroll_to(y_offset) {
-            root.next_ContentY = y_offset;
+            root.scroll_to(y_offset);
         }
 
         leftPadding: 0
@@ -135,5 +131,5 @@ Flickable {
         ]
     }
 
-    Behavior on contentY { NumberAnimation { easing.type: Easing.OutBack } }
+    Behavior on contentY { SmoothedAnimation { duration: 500 } }
 }
