@@ -7,6 +7,7 @@
 #include <vector>
 #include <map>
 #include <fstream>
+#include <functional>
 
 namespace boardgame {
 
@@ -187,6 +188,7 @@ public:
     std::string get_move_list_string();
     void set_modified();
     bool is_modified() { return modified; }
+    int count_predecessors_if(std::function<bool(std::vector<int>)> test);
 
 private:
     Move_List(U move_list_ui, std::string (*commit_msg_provider)(std::vector<std::array<typename T::value_type, 2>>));
@@ -321,6 +323,20 @@ void Move_List<T, U>::set_modified()
         modified = true;
         need_confirm(ui, true);
     }
+}
+
+template <typename T, typename U>
+int Move_List<T, U>::count_predecessors_if(std::function<bool(std::vector<int>)> test)
+{
+    int curr = current_move_id;
+    int result = 0;
+    while(curr != detail::Move_List<T>::initial_id) {
+        if (test(move_list.hint(curr))) {
+            result += 1;
+        }
+        curr = move_list.prev(curr);
+    }
+    return result;
 }
 
 // private

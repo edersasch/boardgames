@@ -6,20 +6,28 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## 0.1.1 "Hans" - 2019-99-99
 
-Main focus was fixing findings and internal restructuring.
-The project is now checked by [lgtm.com](https://lgtm.com/projects/g/edersasch/boardgames/).
+Game info can be viewed. The project is now checked by
+[lgtm.com](https://lgtm.com/projects/g/edersasch/boardgames/).
 
-The release is named after two persons: my uncle and my mother's friend.
+The release is named after two persons: my uncle, who passed away in 2009 and
+and my mother's friend, whose journey ended in 2006.
+
+
+### Added
+
+- game info: number of moves, time per player
 
 
 ### Changed
 
 - put version info in toplevel CMakeLists.txt
+- clicking engine settings icons selects engine mode
 
 
 ### Fixed
 
 - lgtm.com alerts for 7f1ad0e
+- move list scrolling to highlighted button
 
 
 ## 0.1.0 "Klaus" - 2019-04-16

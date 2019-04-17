@@ -3,7 +3,6 @@
 
 #include <QQmlEngine>
 #include <QGuiApplication>
-#include <QTimer>
 #include <QProcess>
 
 #include <thread>
@@ -29,7 +28,7 @@ void occupiable(Muehle_Qml* ui, const boardgame::Field_Number fieldId, const boa
     QQmlProperty(ui->fields.at(static_cast<std::size_t>(fieldId.v)).get(), "state").write("occupiable");
     QQmlProperty(ui->fields.at(static_cast<std::size_t>(fieldId.v)).get(), "hint_color").write(
                 pieceId.v < muehle::first_black_piece.v ? ui->board_property("white_color").read().toString() :
-                                                        ui->board_property("black_color").read().toString());
+                                                          ui->board_property("black_color").read().toString());
 }
 
 void active_player(const Muehle_Qml* ui, const std::string& player_id)
@@ -37,6 +36,23 @@ void active_player(const Muehle_Qml* ui, const std::string& player_id)
     QQmlProperty(ui->control.get(), "white_player_active").write(player_id == muehle::white_id);
     QQmlProperty(ui->control.get(), "black_player_active").write(player_id == muehle::black_id);
 }
+
+void player_time(const Muehle_Qml* ui, const std::string& player_id, const std::chrono::milliseconds time_in_ms)
+{
+    auto s_count = std::chrono::round<std::chrono::seconds>(time_in_ms).count();
+    QString seconds = QString::number(s_count % 60);
+    if (seconds.size() == 1) {
+        seconds = "0" + seconds;
+    }
+    if (player_id == muehle::white_id) {
+        QQmlProperty(ui->control.get(), "white_time").write(QString::number(s_count / 60) + ":" + seconds);
+    } else {
+        if (player_id == muehle::black_id) {
+            QQmlProperty(ui->control.get(), "black_time").write(QString::number(s_count / 60) + ":" + seconds);
+        }
+    }
+}
+
 
 Muehle_Qml::Muehle_Qml(QQmlEngine* engine, QQuickItem* parentItem)
     : muehle_state(boardgame::Boardgame_Ui(this), boardgame::Move_List_Ui(&move_lists), boardgame::Main_Loop(this))
@@ -134,6 +150,10 @@ Muehle_Qml::Muehle_Qml(QQmlEngine* engine, QQuickItem* parentItem)
         muehle_state.force_engine_move();
     });
     QQmlProperty(control.get(), "release_info").write(QString(release_info().c_str()));
+    connect(&one_second_ticker, &QTimer::timeout, this, [this] {
+        muehle_state.tick_1s();
+    });
+    one_second_ticker.start(1000);
     QTimer::singleShot(0, this, &Muehle_Qml::read_settings);
 }
 
@@ -181,7 +201,7 @@ void Muehle_Qml::show_help()
     if (!access(qPrintable(docpath), R_OK)) {
         QProcess::startDetached("xdg-open", QStringList(docpath));
     } else {
-        QQmlProperty(control.get(), "info_visible").write(!QQmlProperty(control.get(), "info_visible").read().toBool());
+        QQmlProperty(control.get(), "no_help_available_visible").write(!QQmlProperty(control.get(), "no_help_available_visible").read().toBool());
         std::cerr << qPrintable(qApp->platformName()) << '\n' << qPrintable(qApp->applicationDirPath()) << '\n';
         std::cerr << release_info() <<'\n';
     }

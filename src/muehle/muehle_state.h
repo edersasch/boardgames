@@ -48,7 +48,7 @@ namespace muehle
 class Muehle_State
 {
 public:
-    Muehle_State(boardgame::Boardgame_Ui bui, boardgame::Move_List_Ui mlu, boardgame::Main_Loop ml) : boardgame_ui(std::move(bui)), move_list_ui(std::move(mlu)), main_loop(std::move(ml)) {}
+    Muehle_State(boardgame::Boardgame_Ui bui, boardgame::Move_List_Ui mlu, boardgame::Main_Loop ml);
     void new_game();
     void request_setup_mode_active(bool is_active);
     void piece_removed(const boardgame::Piece_Number pn);
@@ -69,6 +69,7 @@ public:
     void set_engine_time(std::chrono::seconds time_in_s);
     void engine_move(bool is_valid);
     void force_engine_move();
+    void tick_1s();
 private:
     muehle::Muehle_Constellation current_constellation;
     muehle::Muehle_Key current_key;
@@ -85,6 +86,7 @@ private:
         const boardgame::Fieldgroup<decltype(all_fields.cbegin())>& prison_group;
         std::string id;
         bool engine_active;
+        std::chrono::milliseconds active_time {0};
     };
     boardgame::Field_Number piece_to_field(const boardgame::Piece_Number pn) { return current_constellation.at(pn.v); }
     boardgame::Piece_Number field_to_piece(const boardgame::Field_Number fn) { return boardgame::Piece_Number{all_fields.at(fn.v)}; }
@@ -92,7 +94,7 @@ private:
     void start_move();
     void swap_players();
     void set_field_helper(const boardgame::Piece_Number pn, const boardgame::Field_Number fn);
-    void update_game();
+    void update_game(bool do_time_warp = false);
     void set_selected_piece(const boardgame::Piece_Number pn);
     void clear_selectable_pieces();
     void set_selectable_pieces(const std::vector<int>& pns);
@@ -112,6 +114,7 @@ private:
     void set_player_on_hint(const std::vector<int>& hint);
     void modified_if_not_start_constellation();
     void new_move_list();
+    int count_moves();
     const boardgame::Piecegroup<decltype(current_constellation.cbegin())> white_pieces { make_piecegroup(current_constellation, muehle::first_white_piece, muehle::number_of_pieces_per_player) };
     const boardgame::Piecegroup<decltype(current_constellation.cbegin())> black_pieces { make_piecegroup(current_constellation, muehle::first_black_piece, muehle::number_of_pieces_per_player) };
     const boardgame::Fieldgroup<decltype(all_fields.cbegin())> game_board { make_fieldgroup(all_fields, muehle::first_board_field, muehle::number_of_board_fields) };
@@ -121,8 +124,8 @@ private:
     const boardgame::Fieldgroup<decltype(all_fields.cbegin())> black_prison { make_fieldgroup(all_fields, muehle::first_black_prison_field, muehle::number_of_prison_fields) };
     Player white_player {white_pieces, white_drawer, white_prison, white_id, false};
     Player black_player {black_pieces, black_drawer, black_prison, black_id, false};
-    const Player* current_player {&white_player};
-    const Player* opponent_player {&black_player};
+    Player* current_player {&white_player};
+    Player* opponent_player {&black_player};
     boardgame::Piece_Number selected_piece {};
     std::vector<boardgame::Piece_Number> selectable_pieces {};
     std::vector<boardgame::Field_Number> m_occupiable_fields {};
@@ -132,6 +135,7 @@ private:
     std::string import_string {};
     bool import_string_is_path {true};
     bool game_over {false};
+    std::chrono::time_point<std::chrono::steady_clock> last_time_accounting;
 };
 
 }

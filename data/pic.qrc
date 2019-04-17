@@ -7,6 +7,7 @@
         <file>engine.svg</file>
         <file>export.svg</file>
         <file>forward.svg</file>
+        <file>info.svg</file>
         <file>help.svg</file>
         <file>hide.svg</file>
         <file>home.svg</file>
@@ -17,5 +18,6 @@
         <file>settings.svg</file>
         <file>show.svg</file>
         <file>time.svg</file>
+        <file>warning.svg</file>
     </qresource>
 </RCC>

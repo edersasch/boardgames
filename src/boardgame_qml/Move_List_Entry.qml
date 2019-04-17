@@ -16,7 +16,9 @@ Column {
     }
 
     function scroll_to(y_offset) {
-        parent.scroll_to(y_offset + y);
+        if (parent) {
+            parent.scroll_to(y_offset + y);
+        }
     }
 
     width: parent ? (parent.width - (parent.leftPadding ? parent.leftPadding : 0)) : 0

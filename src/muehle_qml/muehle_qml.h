@@ -11,6 +11,7 @@
 #include <QQuickItem>
 #include <QQmlProperty>
 #include <QSettings>
+#include <QTimer>
 
 #include <memory>
 #include <vector>
@@ -45,6 +46,9 @@ public:
     friend void engine_active(const Muehle_Qml* ui, const std::string& player_id, const bool is_active) { QQmlProperty(ui->control.get(), (player_id + "_engine_active").c_str()).write(is_active); }
     friend void active_player(const Muehle_Qml* ui, const std::string& player_id);
     friend void need_confirm(Muehle_Qml* ui, const bool is_needed) { QQmlProperty(ui->control.get(), "confirm").write(is_needed); }
+    friend void movecount(Muehle_Qml* ui, const int count) { QQmlProperty(ui->control.get(), "movecount").write(count); }
+    friend void time_accounting_correct(Muehle_Qml* ui, const bool is_correct) { QQmlProperty(ui->control.get(), "time_accounting_correct").write(is_correct); }
+    friend void player_time(const Muehle_Qml* ui, const std::string& player_id, const std::chrono::milliseconds time_in_ms);
 
     // Main_Loop functions
     friend void engine_future(Muehle_Qml* ml, std::future<bool>&& efu) { ml->wait_for_engine_move(std::move(efu)); }
@@ -92,6 +96,7 @@ private:
     static constexpr char engine_mode_time[] = "engine_mode_time";
     static constexpr char engine_mode_depth[] = "engine_mode_depth";
     QString engine_mode;
+    QTimer one_second_ticker {};
 };
 
 }
