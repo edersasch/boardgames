@@ -18,6 +18,7 @@ RowLayout {
     property alias black_color: black_color_select.color
     property alias move_list_visible: move_list_v_button.checked
     property alias setup_mode_active: v_setup.checked
+    property alias game_info_visible: info_v_button.checked
     property alias no_help_available_visible: no_help_available.visible
     property bool white_engine_active: false
     property bool black_engine_active: false
@@ -28,6 +29,11 @@ RowLayout {
     property int movecount: 0
     property string white_time: "0:00"
     property string black_time: "0:00"
+    property string engine_forecast1: ""
+    property string engine_forecast2: ""
+    property string engine_forecast3: ""
+    property int engine_score: 0
+    property int reached_depth: 0
     property string release_info: "0.0.0"
     readonly property bool hor_orientation: width >= height
     signal horizontal
@@ -336,20 +342,15 @@ RowLayout {
                     }
                 }
 
-                Label {
+                Framed_Label {
                     padding: 20
                     text: "# " + movecount
-                    background: Rectangle {
-                        radius: 5
-                        border.color: "black"
-                        border.width: 1
-                    }
                 }
 
                 Rectangle {
                     width: childrenRect.width
                     height: childrenRect.height
-                    radius: 5
+                    radius: 10
                     border.color: "black"
                     border.width: 1
 
@@ -360,30 +361,65 @@ RowLayout {
                             Layout.margins: 10
                         }
 
-                        Label {
+                        Framed_Label {
                             text: white_time
                             color: root.white_color.hslLightness > 0.5 ? "black" : "white"
-                            padding: 10
                             Layout.margins: 10
-                            background: Rectangle {
-                                color: root.white_color
-                                border.color: "black"
-                                border.width: 1
-                                radius: 5
-                            }
+                            bg.color: root.white_color
                         }
 
-                        Label {
+                        Framed_Label {
                             text: black_time
                             color: root.black_color.hslLightness > 0.5 ? "black" : "white"
-                            padding: 10
                             Layout.margins: 10
-                            background: Rectangle {
-                                color: root.black_color
-                                border.color: "black"
-                                border.width: 1
-                                radius: 5
-                            }
+                            bg.color: root.black_color
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: childrenRect.width
+                    visible: root.engine_forecast1.length && ((white_player_active && white_engine_active) || (black_player_active && black_engine_active))
+                    height: childrenRect.height
+                    radius: 10
+                    border.color: "black"
+                    border.width: 1
+
+                    RowLayout {
+                        Image {
+                            source: "qrc:/engine.svg"
+                            Layout.margins: 10
+                        }
+                        Framed_Label {
+                            text: "+ " + root.engine_score * (root.engine_score >= 0 ? 1 : -1)
+                            color: bg.color.hslLightness > 0.5 ? "black" : "white"
+                            Layout.margins: 10
+                            bg.color: root.engine_score >= 0 ? (white_player_active ? white_color : black_color) : (white_player_active ? black_color : white_color)
+                        }
+                        Image {
+                            source: "qrc:/depth.svg"
+                            Layout.margins: 10
+                        }
+                        Text {
+                            text: root.reached_depth
+                        }
+                        Framed_Label {
+                            text: root.engine_forecast1
+                            color: bg.color.hslLightness > 0.5 ? "black" : "white"
+                            Layout.margins: 10
+                            bg.color: white_player_active ? white_color : black_color
+                        }
+                        Framed_Label {
+                            text: root.engine_forecast2
+                            color: bg.color.hslLightness > 0.5 ? "black" : "white"
+                            Layout.margins: 10
+                            bg.color: white_player_active ? black_color : white_color
+                        }
+                        Framed_Label {
+                            text: root.engine_forecast3
+                            color: bg.color.hslLightness > 0.5 ? "black" : "white"
+                            Layout.margins: 10
+                            bg.color: white_player_active ? white_color : black_color
                         }
                     }
                 }

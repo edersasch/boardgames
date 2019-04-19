@@ -259,6 +259,7 @@ std::pair<std::vector<int>, Muehle_Key> occupy(Muehle_Key key, const int from, c
                     }
                 }
             }
+        } else {
             key.flip(54);
         }
     }
@@ -288,8 +289,8 @@ const std::vector<int>& free_adjacent_fields(const Muehle_Key& key, const std::s
 
 std::string diff_text(boardgame::Field_Number_Diff fndiff)
 {
-    std::string commitmsg = "--"; // used in case the player was not able to move
-    if (!fndiff.empty()) { // example "21-22 x18" means: moved from field 21 to field 22, removed piece from field 18
+    std::string commitmsg = "--"; // used in case the player was not able to move -> cannot happen, means game over in muehle
+    if (!fndiff.empty()) { // example "F2-F4 xB2" means: moved from field F2 to field F4, removed piece from field B2
         std::string from;
         std::string to;
         std::string removed;
@@ -320,7 +321,7 @@ const std::vector<Muehle_Key> Engine_Helper::successor_constellations(const Mueh
                 successors.push_back(successor);
             } else {
                 for (const auto prisoner : removable) {
-                    successors.push_back(to_prison(switch_player(successor), prisoner).flip(54));
+                    successors.push_back(to_prison(successor, prisoner));
                 }
             }
         }

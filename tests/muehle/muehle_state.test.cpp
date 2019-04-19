@@ -146,7 +146,6 @@ TEST_F(Muehle_State_Test, testEnterLeaveSetupMode)
     EXPECT_CALL(mlUi, initial_constellation(0));
     EXPECT_CALL(mlUi, current_move(0));
     EXPECT_CALL(mlUi, need_confirm(true));
-    EXPECT_CALL(mUi, time_accounting_correct(false));
     mM.request_setup_mode_active(true);
     mM.request_select_piece(boardgame::Piece_Number{0});
     for (int i = 1; i < muehle::number_of_pieces_per_player.v - 2; i += 1) {

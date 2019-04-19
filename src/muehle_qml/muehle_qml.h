@@ -49,6 +49,7 @@ public:
     friend void movecount(Muehle_Qml* ui, const int count) { QQmlProperty(ui->control.get(), "movecount").write(count); }
     friend void time_accounting_correct(Muehle_Qml* ui, const bool is_correct) { QQmlProperty(ui->control.get(), "time_accounting_correct").write(is_correct); }
     friend void player_time(const Muehle_Qml* ui, const std::string& player_id, const std::chrono::milliseconds time_in_ms);
+    friend void engine_forecast(const Muehle_Qml* ui, const int score, const int depth, const std::vector<std::string>& descriptions);
 
     // Main_Loop functions
     friend void engine_future(Muehle_Qml* ml, std::future<bool>&& efu) { ml->wait_for_engine_move(std::move(efu)); }

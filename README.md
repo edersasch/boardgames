@@ -5,6 +5,7 @@
 
 * C++ 17 framework with piece / field association, move list, engine and UI
 * Mühle (German name for nine Men's Morris or Mill)
+* Availabe under [MIT license](LICENSE)
 
 
 ## Framework UI Independent
@@ -97,7 +98,7 @@ tests.
 CMake file `AddGoogleTest.cmake` adapted from
 <https://github.com/CLIUtils/cmake/blob/4e52e4d0bc2e9fd27171926d0b5d9f396dd8637c/AddGoogleTest.cmake>
 is licensed under a
-[BSD 3-Clause License](https://github.com/CLIUtils/cmake/blob/master/LICENSE):
+[BSD 3-Clause License](https://github.com/CLIUtils/cmake/blob/master/LICENSE) ([local copy](docs/LICENSE_CLIUtils_cmake)):
 use URL instead of GIT
 
 CMake file `CodeCoverage.cmake` adapted from
@@ -110,10 +111,10 @@ CMake files
 [DownloadProject.CMakeLists.cmake.in](https://github.com/Crascit/DownloadProject/blob/8adf96570b583fd1c280bed8f43a9a0528670cf4/DownloadProject.CMakeLists.cmake.in)
 and [DownloadProject.cmake](https://github.com/Crascit/DownloadProject/blob/26983dd7883acbabf6fd98968429f9af44186baf/DownloadProject.cmake)
 are licensed under
-[MIT License](https://github.com/Crascit/DownloadProject/blob/master/LICENSE).
+[MIT License](https://github.com/Crascit/DownloadProject/blob/master/LICENSE) ([local copy](docs/LICENSE_Crascit_DownloadProject)).
 
 Icons adapted from [tiddlywiki](https://tiddlywiki.com) 5.1.17 are licensed
-under a [BSD 3-Clause License](https://tiddlywiki.com/#License): added
+under a [BSD 3-Clause License](https://tiddlywiki.com/#License) ([local copy](docs/LICENSE_tiddlywiki)): added
 `version="1.1" xmlns="http://www.w3.org/2000/svg"` to svg tag
 
 * back.svg ([$:/core/images/left-arrow](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fleft-arrow))

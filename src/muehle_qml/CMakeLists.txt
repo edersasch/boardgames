@@ -8,7 +8,7 @@ target_link_libraries(${PROJECT_NAME}
     boardgame
     boardgame_qml
     muehle
-    pthread
+    ${CMAKE_THREAD_LIBS_INIT}
 )
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(FILES ${CMAKE_SOURCE_DIR}/data/muehle.desktop DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)

@@ -5,20 +5,12 @@ option(BOARDGAMES_BUILD_TESTS "Build unit tests" ON)
 option(BOARDGAMES_COVERAGE_REPORT "Compile with coverage instrumentation" OFF)
 option(BOARDGAMES_USE_EXTERNAL_JSON "Use an external JSON library" OFF)
 
-add_compile_options(
-    -Wall -Wextra -Werror -Wshadow
-)
-
 set(PROJECT_RELEASE_YEAR 2019)
 set(PROJECT_RELEASE_MONTH 99)
 set(PROJECT_RELEASE_DAY 99)
 configure_file (
-    "${PROJECT_SOURCE_DIR}/src/boardgame/version.h.in"
-    "${PROJECT_BINARY_DIR}/include/boardgame/version.h"
-    )
-configure_file (
-    "${PROJECT_SOURCE_DIR}/docs/manuals/version_footer.md.in"
-    "${PROJECT_BINARY_DIR}/docs/manuals/version_footer.md"
+    "${CMAKE_SOURCE_DIR}/src/boardgame/version.h.in"
+    "${CMAKE_BINARY_DIR}/include/boardgame/version.h"
     )
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
@@ -28,33 +20,31 @@ if(BOARDGAMES_BUILD_TESTS)
     include(CTest)
 endif()
 
-set(PROCESSOR_COUNT 1)
 include(ProcessorCount)
-ProcessorCount(N)
-if(NOT N EQUAL 0)
-    set(PROCESSOR_COUNT ${N})
+ProcessorCount(PROCESSOR_COUNT)
+if(NOT PROCESSOR_COUNT)
+    set(PROCESSOR_COUNT 1)
 endif()
 
 if(BOARDGAMES_COVERAGE_REPORT)
     include(CodeCoverage)
     APPEND_COVERAGE_COMPILER_FLAGS()
-    set(COVERAGE_LCOV_INCLUDES '${CMAKE_CURRENT_SOURCE_DIR}/src/*')
+    set(COVERAGE_LCOV_INCLUDES '${CMAKE_SOURCE_DIR}/src/*')
     SETUP_TARGET_FOR_COVERAGE_LCOV(
         NAME
         coverage_report
         EXECUTABLE
         ctest -j ${PROCESSOR_COUNT}
-    )
+        )
 endif()
 
 set(DOXYGEN_EXCLUDE_PATTERNS "*/*.md")
 include(FindDoxygen)
-find_package(Doxygen)
 if(DOXYGEN_FOUND)
     doxygen_add_docs(
         apidoc
-        ${PROJECT_SOURCE_DIR}
-    )
+        ${CMAKE_SOURCE_DIR}
+        )
 endif()
 
 if(BOARDGAMES_USE_EXTERNAL_JSON)
@@ -66,23 +56,46 @@ else()
         URL_HASH            SHA256=bfec46fc0cee01c509cf064d2254517e7fa80d1e7647fea37cf81d97c5682bdc
         UPDATE_DISCONNECTED 1
         QUIET
-    )
+        )
     include_directories(${nlohmann_json_SOURCE_DIR})
 endif()
 
-if(UNIX AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    include(GNUInstallDirs)
-endif()
+include(GNUInstallDirs)
 
 find_program(PANDOC pandoc)
-if(NOT PANDOC STREQUAL "PANDOC-NOTFOUND")
+if(PANDOC)
+    configure_file (
+        "${CMAKE_SOURCE_DIR}/docs/manuals/version_footer.md.in"
+        "${CMAKE_BINARY_DIR}/docs/manuals/version_footer.md"
+        )
+    # see https://cmake.org/pipermail/cmake/2011-June/044651.html
+    # and https://stackoverflow.com/questions/38293535/generic-rule-from-makefile-to-cmake
+    file(GLOB MANUALS_MD ${CMAKE_SOURCE_DIR}/docs/manuals/*.md)
+    set(MANUALS_HTML)
+    foreach(f IN LISTS MANUALS_MD)
+        if(NOT IS_ABSOLUTE "${f}")
+            set(f "${CMAKE_CURRENT_SOURCE_DIR}/${f}")
+        endif()
+        get_filename_component(fn "${f}" NAME_WE)
+        set(o "${CMAKE_CURRENT_BINARY_DIR}/${fn}.html")
+        add_custom_command(OUTPUT "${o}"
+            COMMAND ${PANDOC} -o "${o}" -s --self-contained -c ${CMAKE_SOURCE_DIR}/data/pandoc.css "${f}" ${CMAKE_BINARY_DIR}/docs/manuals/version_footer.md
+            DEPENDS "${f}"
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/docs/manuals
+            COMMENT "Generating ${o}"
+            VERBATIM
+            )
+        list(APPEND MANUALS_HTML "${o}")
+        install(FILES "${o}" DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/doc/boardgames)
+    endforeach()
     add_custom_target(manuals ALL
-        ${PANDOC} -o ${CMAKE_BINARY_DIR}/muehle_de.html -s --self-contained -c ${CMAKE_SOURCE_DIR}/data/pandoc.css ${CMAKE_SOURCE_DIR}/docs/manuals/muehle_de.md ${CMAKE_BINARY_DIR}/docs/manuals/version_footer.md
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/docs/manuals
-        COMMENT "Generate HTML manuals with pandoc" VERBATIM
-    )
-    install(FILES ${CMAKE_BINARY_DIR}/muehle_de.html DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/doc/boardgames)
+        DEPENDS "${MANUALS_HTML}"
+        COMMENT "Generated HTML manuals with pandoc"
+        VERBATIM
+        )
 endif()
+
+include(FindThreads)
 
 include_directories(src)
 include_directories(${PROJECT_BINARY_DIR}/include)

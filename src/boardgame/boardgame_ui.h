@@ -43,8 +43,9 @@ namespace boardgame
  *   * \ref need_confirm
  * * Game info:
  *   * \ref movecount
- *   * \ref time_warp
+ *   * \ref time_accounting_correct
  *   * \ref player_time
+ *   * \ref engine_forecast
  *
  * No inheritance required according to <https://sean-parent.stlab.cc/papers-and-presentations/#better-code-runtime-polymorphism>
  */
@@ -191,6 +192,15 @@ public:
      */
     friend void player_time(const Boardgame_Ui& ui, const std::string player_id, const std::chrono::milliseconds time_in_ms) { ui.bc->pt(player_id, time_in_ms); }
 
+    /** \brief Strings of engine's best found moves
+     *
+     * \param ui User interface instance
+     * \param score The score of the engine's best found next move
+     * \param depth How deep did the engine compute up to now
+     * \param descripitons Text per move in the same format as in a move button
+     */
+    friend void engine_forecast(const Boardgame_Ui& ui, const int score, const int depth, const std::vector<std::string>& descriptions) { ui.bc->ef(score, depth, descriptions); }
+
 private:
     struct Boardgame_Ui_Concept
     {
@@ -213,6 +223,7 @@ private:
         virtual void mc(const int c) const = 0;
         virtual void tac(const bool ic) const = 0;
         virtual void pt(const std::string& pi, const std::chrono::milliseconds t) const = 0;
+        virtual void ef(const int s, const int dp, const std::vector<std::string>& d) const = 0;
     };
     template <typename T>
     struct Boardgame_Ui_Model : Boardgame_Ui_Concept
@@ -236,6 +247,7 @@ private:
         void mc(const int c) const override { movecount(bm, c); }
         void tac(const bool ic) const override { time_accounting_correct(bm, ic); }
         void pt(const std::string& pi, const std::chrono::milliseconds t) const override { player_time(bm, pi, t); }
+        void ef(const int s, const int dp, const std::vector<std::string>& d) const override { engine_forecast(bm, s, dp, d); }
         T bm;
     };
     std::shared_ptr<const Boardgame_Ui_Concept> bc;
