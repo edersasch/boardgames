@@ -52,7 +52,8 @@ Beim Starten des Spiels werden folgende Zustände wiederhergestellt:
 
 * [Züge Liste](#züge-liste), deren [Sichtbarkeit](#ein--und-ausblenden-der-züge-liste) und letzte Stellung
 * [Aufbau Modus](#aufbau-modus)
-* [Computer Gegner Einstellungen](#computer-gegner-einstellungen)
+* [Sichtbarkeit der Spielinformationen](#ein--und-ausblenden-von-spielinformationen) ([Zeit pro Spieler](#aktuell-verbrauchte-zeit-pro-spieler) beginnt bei `0:00`.)
+* [Computer Gegner Einstellungen](#computer-gegner-einstellungen) ([Computer Gegner](#computer-gegner) sind aus.)
 * [Farben](#schieberegler-für-farbeinstellung)
 
 Sind die Spielsteine nicht in Ausgangsstellung, gilt die Züge Liste als
@@ -62,9 +63,8 @@ verändert und die Aktionen
 * [Aufbau Modus](#aufbau-modus)
 * [Import einer Züge Liste](#import-einer-züge-liste)
 
-müssen von Anfang an [bestätigt](#gewählte-aktion-bestätigen--abbrechen) werden.
-
-[Computer Gegner](#computer-gegner) sind nach Start des Spiels nicht aktiv.
+müssen von Anfang an [bestätigt](#gewählte-aktion-bestätigen--abbrechen)
+werden.
 
 Hat ein Spieler gewonnen, beginnt die Farbe seiner Spielsteine zu pulsieren.
 
@@ -163,17 +163,46 @@ zeigt an, dass bereits zwölf Züge gespielt wurden.
 #### Aktuell verbrauchte Zeit pro Spieler
 
 In jeweils einer farblich passenden Box pro Spieler wird die verbrauchte Zeit
-in Sekunden angezeigt. Solange abwechselnd gezogen wird, sagt die Zeit aus, wer
-wie lange überlegt hat, um zur aktuellen Stellung zu gelangen. Diese
-Aussagekraft geht verloren, wenn in der [Züge Liste](#züge-liste) eine frühere
-Stellung ausgewählt wird oder der [Aufbau Modus](#aufbau-modus) betreten wird.
-Ist bei Start des Spiels nicht die Grundstellung aufgebaut, hat die Zeitanzeige
-ebenfalls keine spieltechnische Bedeutung. Deshalb wird in diesen Fällen ein
-Warnhinweis ![warning](../../data/warning.svg) vor den Uhren angezeigt.
+in Sekunden angezeigt. Solange abwechselnd wie in einer Turniersituation
+gezogen wird, sagt die Zeit aus, wer wie lange überlegt hat, um zur aktuellen
+Stellung zu gelangen. Diese spieltechnische Bedeutung der Zeitanzeige geht in
+folgenden Fällen verloren, was durch einen Warnhinweis
+![warning](../../data/warning.svg) vor den Uhren angezeigt wird:
 
-Durch Beginn eines [neuen Spiels](#neues-spiel) beginnt die Zeit für beide
-Spieler wieder bei `0:00` und ein eventuell sichtbarer Warnhinweis
+* In der [Züge Liste](#züge-liste) wird eine frühere Stellung ausgewählt.
+* Der [Aufbau Modus](#aufbau-modus) wird betreten.
+* Das Spiel startet nicht in der Grundstellung. Die Zeit pro Spieler beginnt trotzdem bei `0:00`.
+
+Durch Beginn eines [neuen Spiels](#neues-spiel) wird die Zeit für beide
+Spieler auf `0:00` gesetzt und ein eventuell sichtbarer Warnhinweis
 verschwindet.
+
+
+#### Vorschau der Computer Gegner Berechnung
+
+Wenn der Computer Gegner aktiv wird, erscheint nach spätestens einer Sekunde
+hinter der Box mit der Zeit noch eine Box mit Einblicken in die Berechnung.
+Rechts neben dem Computer Gegner Icon ![engine](../../data/engine.svg) folgt
+ein Kästchen mit der Bewertung der aktuellen Stellung:
+
+* Die Hintergrundfarbe entspricht der des besser bewerteten Spielers.
+* Der Text ist ein Pluszeichen und die Bewertung als Zahl.
+
+Die Bewertung ergibt sich aus folgenden Kriterien:
+
+* Pro Spielstein mehr im Spiel als der Gegner: +100
+* Pro möglichem Zielfeld für die eigenen Spielsteine mehr als der Gegner: +5
+
+`+230` z.B. ist eine sehr gute Bewertung: Der aktuelle Spieler hat zwei Steine
+und sechs Zielfelder mehr als der Gegner.
+
+Dann folgt das Symbol für die Rechentiefe ![depth](../../data/depth.svg) und
+die erreichte Tiefe als Zahl dahinter. Die letzte Information sind drei Felder
+mit jeweils einem Zug in der passenden Spielerfarbe:
+
+* Der beste nächste Zug, den der Computer bis jetzt gefunden hat
+* Die Antwort des Gegners darauf
+* Die Antwort darauf vom aktuellen Spieler
 
 
 ### Ein- und Ausblenden der Einstellungen

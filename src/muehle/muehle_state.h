@@ -94,7 +94,7 @@ private:
     void start_move();
     void swap_players();
     void set_field_helper(const boardgame::Piece_Number pn, const boardgame::Field_Number fn);
-    void update_game(bool do_time_warp = false);
+    void update_game();
     void set_selected_piece(const boardgame::Piece_Number pn);
     void clear_selectable_pieces();
     void set_selectable_pieces(const std::vector<int>& pns);
@@ -110,9 +110,11 @@ private:
     void check_hide_drawer();
     void check_show_prison();
     boardgame::Field_Number_Diff diff_key(Muehle_Key key);
+    boardgame::Field_Number_Diff diff_keys(Muehle_Key oldk, Muehle_Key newk);
     void reconstruct(const Muehle_Constellation& constellation);
     void set_player_on_hint(const std::vector<int>& hint);
     void modified_if_not_start_constellation();
+    void clear_accounting();
     void new_move_list();
     int count_moves();
     const boardgame::Piecegroup<decltype(current_constellation.cbegin())> white_pieces { make_piecegroup(current_constellation, muehle::first_white_piece, muehle::number_of_pieces_per_player) };
@@ -135,6 +137,7 @@ private:
     std::string import_string {};
     bool import_string_is_path {true};
     bool game_over {false};
+    bool linear_game {true};
     std::chrono::time_point<std::chrono::steady_clock> last_time_accounting;
 };
 

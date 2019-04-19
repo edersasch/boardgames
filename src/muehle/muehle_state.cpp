@@ -31,12 +31,6 @@ void Muehle_State::new_game()
         }
         setup_mode = true;
         leave_setup_mode();
-        white_player.active_time = std::chrono::milliseconds(0);
-        black_player.active_time = std::chrono::milliseconds(0);
-        last_time_accounting = std::chrono::steady_clock::now();
-        time_accounting_correct(boardgame_ui, true);
-        player_time(boardgame_ui, white_player.id, white_player.active_time);
-        player_time(boardgame_ui, black_player.id, black_player.active_time);
     }
 }
 
@@ -122,23 +116,24 @@ void Muehle_State::request_engine_active(const std::string& player_id, bool is_a
 
 void Muehle_State::request_set_current_move_and_branch_start_id(const int move_id)
 {
-    bool time_accounting_still_correct = move_id == move_list->get_current_move_id();
+    linear_game = (move_id == move_list->get_current_move_id() && linear_game);
     if (!setup_mode && move_list->set_current_move_and_branch_start_id(move_id)) {
-        update_game(time_accounting_still_correct);
+        update_game();
     }
 }
 
 void Muehle_State::request_set_current_move_and_branch_start_id(const int move_id, const int branch_start_id)
 {
-    bool time_accounting_still_correct = move_id == move_list->get_current_move_id();
+    linear_game = (move_id == move_list->get_current_move_id() && linear_game);
     if (move_list->set_current_move_and_branch_start_id(move_id, branch_start_id)) {
-        update_game(time_accounting_still_correct);
+        update_game();
     }
 }
 
 void Muehle_State::request_cut_off(const int move_id)
 {
     if (move_list->cut_off(move_id)) {
+        linear_game = false;
         update_game();
     }
 }
@@ -146,6 +141,7 @@ void Muehle_State::request_cut_off(const int move_id)
 void Muehle_State::request_move_list_forward()
 {
     if (move_list->move_list_forward()) {
+        linear_game = false;
         update_game();
     }
 }
@@ -153,6 +149,7 @@ void Muehle_State::request_move_list_forward()
 void Muehle_State::request_move_list_back()
 {
     if (move_list->move_list_back()) {
+        linear_game = false;
         update_game();
     }
 }
@@ -175,10 +172,11 @@ void Muehle_State::request_move_list_import(const std::string& import, bool is_p
         } else {
             request_set_current_move_and_branch_start_id(move_list->get_current_move_id());
             if (is_path) { // if imported from path, the constellation is stored somewhere, so no confirmation needed
-                need_confirm(boardgame_ui, move_list->is_modified());
+                clear_accounting();
             } else {
                 modified_if_not_start_constellation();
             }
+            need_confirm(boardgame_ui, move_list->is_modified());
         }
     }
 }
@@ -219,8 +217,10 @@ void Muehle_State::set_engine_time(std::chrono::seconds time_in_s)
 
 void Muehle_State::engine_move(bool is_valid)
 {
+    auto next_keys = engine.get_next();
+    engine_forecast(boardgame_ui, 0, 0, std::vector<std::string>()); // clear forecast to prevent showing wrong colors
     if (is_valid) {
-        for (auto d : diff_key(engine.get_next())) {
+        for (auto d : diff_key(next_keys.front())) {
             set_field_helper(field_to_piece(d.at(0)), d.at(1));
             if (is_in_group(d.at(1), game_board)) {
                 move_list_hint = field_to_piece(d.at(1)).v;
@@ -235,6 +235,7 @@ void Muehle_State::engine_move(bool is_valid)
         } else if (!import_string.empty()) {
             request_move_list_import(import_string, import_string_is_path);
         } else {
+            linear_game = false;
             update_game();
         }
     }
@@ -254,6 +255,15 @@ void Muehle_State::tick_1s()
         player_time(boardgame_ui, current_player->id, current_player->active_time);
     }
     last_time_accounting = new_last;
+    if (current_player->engine_active) {
+        std::vector<std::string> descriptions;
+        auto curr = current_key;
+        for (auto& n : engine.get_next()) {
+            descriptions.push_back(muehle::diff_text(diff_keys(curr, n)));
+            curr = n;
+        }
+        engine_forecast(boardgame_ui, engine.get_score(), engine.get_depth(), descriptions);
+    }
 }
 
 // private
@@ -264,8 +274,9 @@ void Muehle_State::start_move()
         active_player(boardgame_ui, "");
         return;
     }
-    auto key = make_key();
-    auto fosp = muehle::fields_of_selectable_pieces(key);
+    movecount(boardgame_ui, count_moves());
+    current_key = make_key();
+    auto fosp = muehle::fields_of_selectable_pieces(current_key);
     if (fosp.empty() ||
             boardgame::first_empty_field(current_player->prison_group) == boardgame::no_field) {
         game_over = true;
@@ -274,7 +285,6 @@ void Muehle_State::start_move()
         return;
     }
     active_player(boardgame_ui, current_player->id);
-    movecount(boardgame_ui, count_moves());
     if (!current_player->engine_active) {
         if (fosp.size() == 1) {
             if (fosp.front() == -1) {
@@ -284,14 +294,13 @@ void Muehle_State::start_move()
             set_occupiable_board_fields(fosp.front());
         } else {
             set_selectable_pieces(fosp);
-            if (muehle::game_phase(key) == 3) {
+            if (muehle::game_phase(current_key) == 3) {
                 set_selected_piece(first_piece(current_player == &white_player ? white_player.prison_group : black_player.prison_group)); // for correct occupiables color, piece ist not selectable
                 set_occupiable_empty_board_fields();
                 set_selected_piece(boardgame::no_piece);
             }
         }
     } else {
-        current_key = muehle::constellation_to_key(current_constellation, opponent_player == &white_player);
         engine_future(main_loop, std::async(std::launch::async, [this]() {
             return engine.start(current_key);
         }));
@@ -328,7 +337,7 @@ void Muehle_State::set_field_helper(const boardgame::Piece_Number pn, const boar
     }
 }
 
-void Muehle_State::update_game(bool do_time_warp)
+void Muehle_State::update_game()
 {
     if (!engine.is_running()) {
         request_engine_active(white_id, false);
@@ -337,7 +346,7 @@ void Muehle_State::update_game(bool do_time_warp)
         reconstruct(move_list->constellation());
         set_player_on_hint(move_list->hint());
         leave_setup_mode();
-        time_accounting_correct(boardgame_ui, do_time_warp);
+        time_accounting_correct(boardgame_ui, linear_game);
     } else {
         engine.discard();
     }
@@ -454,7 +463,6 @@ void Muehle_State::enter_setup_mode()
         drawer_can_hide(boardgame_ui, black_id, false);
         prison_can_hide(boardgame_ui, white_id, false);
         prison_can_hide(boardgame_ui, black_id, false);
-        time_accounting_correct(boardgame_ui, false);
     }
 }
 
@@ -467,6 +475,7 @@ void Muehle_State::leave_setup_mode()
         setup_mode_active(boardgame_ui, false);
         new_move_list();
         modified_if_not_start_constellation();
+        need_confirm(boardgame_ui, move_list->is_modified());
     }
     set_selected_piece(boardgame::no_piece);
     set_selectable_pieces({});
@@ -494,17 +503,31 @@ void Muehle_State::check_show_prison()
 
 boardgame::Field_Number_Diff Muehle_State::diff_key(Muehle_Key key)
 {
+    auto diffed = diff_keys(make_key(), key);
+    for (auto& el : diffed) {
+        if (el.at(0).v >= first_white_drawer_field.v) {
+            el.at(0) = piece_to_field(boardgame::first_piece(key.test(54) ? black_player.drawer_group : white_player.drawer_group));
+        }
+        if (el.at(1).v >= first_white_prison_field.v) {
+            el.at(1) = boardgame::first_empty_field(key.test(54) ? white_player.prison_group : black_player.prison_group);
+        }
+    }
+    return diffed;
+}
+
+/// returns fist drawer / prison field, not first occupied / empty
+boardgame::Field_Number_Diff Muehle_State::diff_keys(Muehle_Key oldk, Muehle_Key newk)
+{
     boardgame::Field_Number_Diff diffed;
-    auto single_diff = [this, &key, &diffed]() {
+    auto single_diff = [&oldk, &newk, &diffed]() {
         std::vector<int> single_from;
         std::vector<int> single_to;
-        std::vector<boardgame::Field_Number> fn = boardgame::positions_of_pieces_in_fieldgroup(key.test(54) ? white_player.piece_group : black_player.piece_group, game_board);
-        auto offset = board_offset(key);
+        auto offset = board_offset(oldk);
         for (int i = 0; i < number_of_board_fields.v; i += 1) {
-            if ((std::find(fn.begin(), fn.end(), boardgame::Field_Number{i}) != fn.end()) && !key.test(i + offset)) {
+            if (oldk.test(i + offset) && !newk.test(i + offset)) {
                 single_from.push_back(i);
             } else {
-                if (key.test(i + offset) && std::find(fn.begin(), fn.end(), boardgame::Field_Number{i}) == fn.end()) {
+                if (!oldk.test(i + offset) && newk.test(i + offset)) {
                     single_to.push_back(i);
                 }
             }
@@ -514,25 +537,24 @@ boardgame::Field_Number_Diff Muehle_State::diff_key(Muehle_Key key)
         for (; f != single_from.end() && t != single_to.end(); f += 1, t += 1) {
             diffed.push_back({boardgame::Field_Number{*f}, boardgame::Field_Number{*t}});
         }
-        int prison_transfer = number_of_pieces_in_fieldgroup(key.test(54) ? white_player.prison_group : black_player.prison_group) - prisoner_count(key);
-        auto next_free_prison_field = boardgame::first_empty_field(key.test(54) ? white_player.prison_group : black_player.prison_group);
+        int prison_transfer = prisoner_count(oldk) - prisoner_count(newk.test(54) == oldk.test(54) ? newk : muehle::Engine_Helper::switch_player(newk));
+        auto next_free_prison_field = oldk.test(54) ? muehle::first_white_prison_field : muehle::first_black_prison_field;
         while (f != single_from.end() && prison_transfer < 0) {
             auto field = boardgame::Field_Number{*f};
             diffed.push_back({field, next_free_prison_field});
             f += 1;
             prison_transfer += 1;
-            next_free_prison_field = boardgame::first_empty_field(boardgame::make_fieldgroup(all_fields, boardgame::Field_Number{next_free_prison_field.v + 1}, boardgame::Field_Range{number_of_prison_fields.v - (next_free_prison_field.v + 1)}));
         }
         while (t != single_to.end()) {
-            auto p = boardgame::first_piece(key.test(54) ? white_player.drawer_group : black_player.drawer_group);
-            diffed.push_back({piece_to_field(p), boardgame::Field_Number{*t}});
+            auto field = newk.test(54) ? muehle::first_white_drawer_field : muehle::first_black_drawer_field;
+            diffed.push_back({field, boardgame::Field_Number{*t}});
             t += 1;
         }
         // no check to move pieces out of prison or into drawer
     };
-    key.set(54);
+    oldk.set(54);
     single_diff();
-    key.reset(54);
+    oldk.reset(54);
     single_diff();
     return diffed;
 }
@@ -560,13 +582,27 @@ void Muehle_State::set_player_on_hint(const std::vector<int>& hint)
 
 void Muehle_State::modified_if_not_start_constellation()
 {
+    linear_game = true;
     if (!move_list->is_empty() ||
             boardgame::first_empty_field(white_player.drawer_group) != boardgame::no_field ||
             boardgame::first_empty_field(black_player.drawer_group) != boardgame::no_field
             ) {
         move_list->set_modified();
     }
-    need_confirm(boardgame_ui, move_list->is_modified());
+    if (move_list->is_modified()) {
+        linear_game = false;
+    }
+    clear_accounting();
+}
+
+void Muehle_State::clear_accounting()
+{
+    white_player.active_time = std::chrono::milliseconds(0);
+    black_player.active_time = std::chrono::milliseconds(0);
+    last_time_accounting = std::chrono::steady_clock::now();
+    time_accounting_correct(boardgame_ui, linear_game);
+    player_time(boardgame_ui, white_player.id, white_player.active_time);
+    player_time(boardgame_ui, black_player.id, black_player.active_time);
 }
 
 void Muehle_State::new_move_list()

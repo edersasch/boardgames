@@ -21,6 +21,8 @@ Column {
         }
     }
 
+    z: -1  // below Move_List_Control
+
     width: parent ? (parent.width - (parent.leftPadding ? parent.leftPadding : 0)) : 0
     spacing: 3
     leftPadding: 5

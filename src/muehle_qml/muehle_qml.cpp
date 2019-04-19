@@ -4,10 +4,12 @@
 #include <QQmlEngine>
 #include <QGuiApplication>
 #include <QProcess>
+#include <QFile>
 
 #include <thread>
 
-#include <unistd.h>
+#include <clocale>
+#include <cstring>
 
 namespace muehle_qml
 {
@@ -52,6 +54,28 @@ void player_time(const Muehle_Qml* ui, const std::string& player_id, const std::
         }
     }
 }
+
+void engine_forecast(const Muehle_Qml* ui, const int score, const int depth, const std::vector<std::string>& descriptions)
+{
+    QString ef1;
+    QString ef2;
+    QString ef3;
+    if (!descriptions.empty()) {
+        ef1 = descriptions[0].c_str();
+    }
+    QQmlProperty(ui->control.get(), "engine_forecast1").write(ef1);
+    if (descriptions.size() > 1) {
+        ef2 = descriptions[1].c_str();
+    }
+    QQmlProperty(ui->control.get(), "engine_forecast2").write(ef2);
+    if (descriptions.size() > 2) {
+        ef3 = descriptions[2].c_str();
+    }
+    QQmlProperty(ui->control.get(), "engine_forecast3").write(ef3);
+    QQmlProperty(ui->control.get(), "engine_score").write(score);
+    QQmlProperty(ui->control.get(), "reached_depth").write(depth);
+}
+
 
 
 Muehle_Qml::Muehle_Qml(QQmlEngine* engine, QQuickItem* parentItem)
@@ -197,8 +221,19 @@ void Muehle_Qml::use_alternative_field()
 
 void Muehle_Qml::show_help()
 {
-    auto docpath = qApp->applicationDirPath() + "/../share/doc/boardgames/muehle_de.html";
-    if (!access(qPrintable(docpath), R_OK)) {
+    QString locale_id = "en";
+    const char* curr_locale =  std::setlocale(0, nullptr);
+    if (curr_locale && strnlen(curr_locale, 2) == 2) {
+        std::string l_id(curr_locale, 2);
+        for (auto id : { "en", "de" }) {
+            if (l_id == id) {
+                locale_id = id;
+                break;
+            }
+        }
+    }
+    auto docpath = qApp->applicationDirPath() + "/../share/doc/boardgames/muehle_" + locale_id + ".html";
+	if (QFile::permissions(docpath) & QFileDevice::ReadUser) {
         QProcess::startDetached("xdg-open", QStringList(docpath));
     } else {
         QQmlProperty(control.get(), "no_help_available_visible").write(!QQmlProperty(control.get(), "no_help_available_visible").read().toBool());
@@ -219,6 +254,7 @@ void Muehle_Qml::read_settings()
     white_color_changed(wc);
     black_color_changed(bc);
     QQmlProperty(control.get(), "move_list_visible").write(settings.value("move_list_visible", false).toBool());
+    QQmlProperty(control.get(), "game_info_visible").write(settings.value("game_info_visible", false).toBool());
     settings.endGroup();
 
     settings.beginGroup("Engine");
@@ -250,6 +286,7 @@ void Muehle_Qml::write_settings()
     settings.setValue("white_color", QQmlProperty(control.get(), "white_color").read().toString());
     settings.setValue("black_color", QQmlProperty(control.get(), "black_color").read().toString());
     settings.setValue("move_list_visible", QQmlProperty(control.get(), "move_list_visible").read().toBool());
+    settings.setValue("game_info_visible", QQmlProperty(control.get(), "game_info_visible").read().toBool());
     settings.endGroup();
 
     settings.beginGroup("Engine");
