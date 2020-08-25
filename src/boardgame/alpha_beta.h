@@ -19,10 +19,10 @@ public:
         lose
     };
     bool start(const T key);
-    std::vector<T> get_next() { return next; }
-    int get_score() { return next_score; }
-    int get_depth() { return current_depth; }
-    bool is_running() { return running; }
+    std::vector<T> get_next() const { return next; }
+    int get_score() const { return next_score; }
+    int get_depth() const { return current_depth; }
+    bool is_running() const { return running; }
     void stop_running() { running = false; }
     void discard();
     void set_target_depth(int depth);
@@ -40,7 +40,6 @@ private:
     int target_depth {target_depth_default};
     int current_depth {0};
     int next_score {0};
-    std::vector<T> to_check;
     std::vector<T> next;
     No_Move_Policy no_move_policy {No_Move_Policy::lose};
     bool running {false};
@@ -125,15 +124,15 @@ int Alpha_Beta<T, U>::engine(const T key, const int depth, int alpha, const int 
             info.successors.erase(std::find(info.successors.begin(), info.successors.end(), n));
             info.successors.insert(info.successors.begin(), tmp);
             if (depth == current_depth && running) {
-                auto curr = key;
                 auto currdepth = depth;
                 next.clear();
-                while (!transposition_table[curr].successors.empty() && currdepth) {
-                    next.push_back(transposition_table[curr].successors.front());
-                    if (transposition_table.find(next.back()) == transposition_table.end()) {
+                auto successors = &transposition_table[key].successors;
+                while (!successors->empty() && currdepth) {
+                    next.push_back(successors->front());
+                    if (transposition_table.find(successors->front()) == transposition_table.end()) {
                         break;
                     } else {
-                        curr = next.back();
+                        successors = &transposition_table[successors->front()].successors;
                     }
                     currdepth -= 1;
                 }

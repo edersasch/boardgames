@@ -24,8 +24,13 @@ static constexpr boardgame::Field_Number first_white_prison_field  = first_black
 static constexpr boardgame::Field_Number first_black_prison_field  = first_white_prison_field + number_of_prison_fields;
 static constexpr int drawer_field = -1;
 static constexpr int prison_field = -2;
-static constexpr char white_id[] = "white";
-static constexpr char black_id[] = "black";
+static constexpr auto white_id = "white";
+static constexpr auto black_id = "black";
+
+constexpr int use_white_data_in_key = 54;
+constexpr int white_prison_in_key = 48;
+constexpr int black_prison_in_key = 51;
+constexpr int all_prisoners_in_key = 7;
 
 using Muehle_Constellation = std::array<boardgame::Field_Number, number_of_pieces.v>;
 using Key_Diff = std::vector<std::pair<int, int>>;
@@ -38,15 +43,15 @@ const std::vector<int>& free_fields(const Muehle_Key& key);
 const std::vector<int>& fields_of_selectable_pieces(const Muehle_Key& key);
 const std::vector<int>& occupiable_fields(const Muehle_Key& key, const int startfield_of_piece);
 bool closed_muehle(const Muehle_Key& key, const int field);
-unsigned long prisoner_count(const Muehle_Key& key);
+long prisoner_count(const Muehle_Key& key);
 std::pair<std::vector<int>, Muehle_Key> occupy(Muehle_Key key, const int from, const int to);
 bool can_slide(const Muehle_Key& key, const std::size_t field);
 const std::vector<int>& free_adjacent_fields(const Muehle_Key& key, const std::size_t field);
-std::string diff_text(boardgame::Field_Number_Diff fndiff);
+std::string diff_text(const boardgame::Field_Number_Diff& fndiff);
 
 struct Engine_Helper
 {
-    static const std::vector<Muehle_Key> successor_constellations(const Muehle_Key& key);
+    static std::vector<Muehle_Key> successor_constellations(const Muehle_Key& key);
     static int evaluate(const Muehle_Key& key, int engine_winning_score);
     static Muehle_Key switch_player(const Muehle_Key& key);
 };

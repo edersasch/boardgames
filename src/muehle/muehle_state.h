@@ -63,8 +63,8 @@ public:
     void request_move_list_import(const std::string& import, bool is_path = true);
     bool request_move_list_export(const std::string& path);
     std::string get_move_list_string();
-    int get_move_id() { return move_list->get_current_move_id(); }
-    int get_branch_start_id() { return move_list->get_current_branch_start_id(); }
+    int get_move_id() const { return move_list->get_current_move_id(); }
+    int get_branch_start_id() const { return move_list->get_current_branch_start_id(); }
     void set_engine_depth(int depth);
     void set_engine_time(std::chrono::seconds time_in_s);
     void engine_move(bool is_valid);
@@ -88,9 +88,9 @@ private:
         bool engine_active;
         std::chrono::milliseconds active_time {0};
     };
-    boardgame::Field_Number piece_to_field(const boardgame::Piece_Number pn) { return current_constellation.at(pn.v); }
-    boardgame::Piece_Number field_to_piece(const boardgame::Field_Number fn) { return boardgame::Piece_Number{all_fields.at(fn.v)}; }
-    muehle::Muehle_Key make_key() { return muehle::constellation_to_key(current_constellation, current_player == &white_player); }
+    boardgame::Field_Number piece_to_field(const boardgame::Piece_Number pn) const { return current_constellation.at(pn.v); }
+    boardgame::Piece_Number field_to_piece(const boardgame::Field_Number fn) const { return boardgame::Piece_Number{all_fields.at(fn.v)}; }
+    muehle::Muehle_Key make_key() const { return muehle::constellation_to_key(current_constellation, current_player == &white_player); }
     void start_move();
     void swap_players();
     void set_field_helper(const boardgame::Piece_Number pn, const boardgame::Field_Number fn);
@@ -107,16 +107,16 @@ private:
     void change_engine_active(Player* player, const bool is_active);
     void enter_setup_mode();
     void leave_setup_mode();
-    void check_hide_drawer();
-    void check_show_prison();
-    boardgame::Field_Number_Diff diff_key(Muehle_Key key);
-    boardgame::Field_Number_Diff diff_keys(Muehle_Key oldk, Muehle_Key newk);
+    void check_hide_drawer() const;
+    void check_show_prison() const;
+    boardgame::Field_Number_Diff diff_key(Muehle_Key key) const;
+    boardgame::Field_Number_Diff diff_keys(Muehle_Key oldk, Muehle_Key newk) const;
     void reconstruct(const Muehle_Constellation& constellation);
     void set_player_on_hint(const std::vector<int>& hint);
     void modified_if_not_start_constellation();
     void clear_accounting();
     void new_move_list();
-    int count_moves();
+    int count_moves() const;
     const boardgame::Piecegroup<decltype(current_constellation.cbegin())> white_pieces { make_piecegroup(current_constellation, muehle::first_white_piece, muehle::number_of_pieces_per_player) };
     const boardgame::Piecegroup<decltype(current_constellation.cbegin())> black_pieces { make_piecegroup(current_constellation, muehle::first_black_piece, muehle::number_of_pieces_per_player) };
     const boardgame::Fieldgroup<decltype(all_fields.cbegin())> game_board { make_fieldgroup(all_fields, muehle::first_board_field, muehle::number_of_board_fields) };
@@ -132,7 +132,7 @@ private:
     std::vector<boardgame::Piece_Number> selectable_pieces {};
     std::vector<boardgame::Field_Number> m_occupiable_fields {};
     bool setup_mode {false};
-    boardgame::Alpha_Beta<muehle::Muehle_Key, muehle::Engine_Helper> engine;
+    boardgame::Alpha_Beta<Muehle_Key, muehle::Engine_Helper> engine;
     bool restart {false};
     std::string import_string {};
     bool import_string_is_path {true};

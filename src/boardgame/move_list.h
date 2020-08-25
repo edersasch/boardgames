@@ -58,7 +58,7 @@ public:
     const std::vector<int>& branch_start_ids(const int move_id) const { return move_list_entries.at(move_id).branch_start_ids; }
     int prev(const int move_id) const { return move_list_entries.at(move_id).prev; }
     const std::vector<int>& next(const int move_id) const { return move_list_entries.at(move_id).next; }
-    nlohmann::json make_json();
+    nlohmann::json make_json() const;
 
     // modify move_list_entries
     std::pair<int, bool> commit(const T& constellation, int predecessor = invalid_id, const std::vector<int>& hint = {});
@@ -146,7 +146,7 @@ bool Move_List<T>::process_json(nlohmann::json&& j)
 }
 
 template <typename T>
-nlohmann::json Move_List<T>::make_json()
+nlohmann::json Move_List<T>::make_json() const
 {
     return nlohmann::json(move_list_entries);
 }
@@ -171,8 +171,8 @@ template <typename T, typename U>
 class Move_List
 {
 public:
-    Move_List(U move_list_ui, std::string (*commit_msg_provider)(std::vector<std::array<typename T::value_type, 2>>), const T& first_constellation, const std::vector<int>& hint);
-    Move_List(U move_list_ui, std::string (*commit_msg_provider)(std::vector<std::array<typename T::value_type, 2>>), const std::string& import, bool is_path);
+    Move_List(U move_list_ui, std::string (*commit_msg_provider)(const std::vector<std::array<typename T::value_type, 2>>&), const T& first_constellation, const std::vector<int>& hint);
+    Move_List(U move_list_ui, std::string (*commit_msg_provider)(const std::vector<std::array<typename T::value_type, 2>>&), const std::string& import, bool is_path);
     bool set_current_move_and_branch_start_id(const int move_id);
     bool set_current_move_and_branch_start_id(const int move_id, const int branch_start_id);
     int get_current_move_id() const { return current_move_id; }
@@ -184,14 +184,14 @@ public:
     const std::vector<int>& hint() const { return move_list.hint(current_move_id); }
     bool commit(const T& new_constellation, const std::vector<int>& hint = {});
     bool cut_off(const int move_id);
-    bool export_move_list(const std::string& path);
-    std::string get_move_list_string();
+    bool export_move_list(const std::string& path) const;
+    std::string get_move_list_string() const;
     void set_modified();
-    bool is_modified() { return modified; }
-    int count_predecessors_if(std::function<bool(std::vector<int>)> test);
+    bool is_modified() const { return modified; }
+    int count_predecessors_if(std::function<bool(std::vector<int>)> test) const;
 
 private:
-    Move_List(U move_list_ui, std::string (*commit_msg_provider)(std::vector<std::array<typename T::value_type, 2>>));
+    Move_List(U move_list_ui, std::string (*commit_msg_provider)(const std::vector<std::array<typename T::value_type, 2>>&));
     bool set_current_move_id(const int move_id);
     void delete_moves(const int move_id);
     void ui_replay(const int move_id);
@@ -200,12 +200,12 @@ private:
     U ui;
     int current_move_id {detail::Move_List<T>::invalid_id};
     int current_branch_start_id{detail::Move_List<T>::invalid_id};
-    std::string (*msg)(std::vector<std::array<typename T::value_type, 2>>);
+    std::string (*msg)(const std::vector<std::array<typename T::value_type, 2>>&);
     bool modified { false };
 };
 
 template <typename T, typename U>
-Move_List<T, U>::Move_List(U move_list_ui, std::string (*commit_msg_provider)(std::vector<std::array<typename T::value_type, 2>>), const T& first_constellation, const std::vector<int>& hint)
+Move_List<T, U>::Move_List(U move_list_ui, std::string (*commit_msg_provider)(const std::vector<std::array<typename T::value_type, 2>>&), const T& first_constellation, const std::vector<int>& hint)
     : Move_List(move_list_ui, commit_msg_provider)
 {
     move_list.commit(first_constellation, current_move_id, hint);
@@ -213,7 +213,7 @@ Move_List<T, U>::Move_List(U move_list_ui, std::string (*commit_msg_provider)(st
 }
 
 template <typename T, typename U>
-Move_List<T, U>::Move_List(U move_list_ui, std::string (*commit_msg_provider)(std::vector<std::array<typename T::value_type, 2>>), const std::string& import, bool is_path)
+Move_List<T, U>::Move_List(U move_list_ui, std::string (*commit_msg_provider)(const std::vector<std::array<typename T::value_type, 2>>&), const std::string& import, bool is_path)
     : Move_List(move_list_ui, commit_msg_provider)
 {
     nlohmann::json j;
@@ -303,7 +303,7 @@ bool Move_List<T, U>::cut_off(const int move_id)
 }
 
 template <typename T, typename U>
-bool Move_List<T, U>::export_move_list(const std::string& path)
+bool Move_List<T, U>::export_move_list(const std::string& path) const
 {
     std::ofstream out(path);
     out << get_move_list_string();
@@ -311,7 +311,7 @@ bool Move_List<T, U>::export_move_list(const std::string& path)
 }
 
 template <typename T, typename U>
-std::string Move_List<T, U>::get_move_list_string()
+std::string Move_List<T, U>::get_move_list_string() const
 {
     return move_list.make_json().dump();
 }
@@ -326,7 +326,7 @@ void Move_List<T, U>::set_modified()
 }
 
 template <typename T, typename U>
-int Move_List<T, U>::count_predecessors_if(std::function<bool(std::vector<int>)> test)
+int Move_List<T, U>::count_predecessors_if(std::function<bool(std::vector<int>)> test) const
 {
     int curr = current_move_id;
     int result = 0;
@@ -342,7 +342,7 @@ int Move_List<T, U>::count_predecessors_if(std::function<bool(std::vector<int>)>
 // private
 
 template <typename T, typename U>
-Move_List<T, U>::Move_List(U move_list_ui, std::string (*commit_msg_provider)(std::vector<std::array<typename T::value_type, 2>>))
+Move_List<T, U>::Move_List(U move_list_ui, std::string (*commit_msg_provider)(const std::vector<std::array<typename T::value_type, 2>>&))
     : ui(move_list_ui)
     , msg(commit_msg_provider)
 {

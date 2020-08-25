@@ -68,20 +68,20 @@ private slots:
     void occupy(int f_id) { muehle_state.request_occupy(boardgame::Field_Number{f_id}); }
     void engine_depth(int depth);
     void engine_time_in_s(int time_in_s);
-    void white_color_changed(QString new_white_color);
-    void black_color_changed(QString new_black_color);
+    void white_color_changed(const QString& new_white_color);
+    void black_color_changed(const QString& new_black_color);
     void use_main_field();
     void use_alternative_field();
-    void show_help();
+    void show_help() const;
 private:
-    QQmlProperty board_property(const std::string& property_name) { return QQmlProperty(board.get(), QString(property_name.c_str())); }
-    QQuickItem* board_item(const std::string& item_name) { return board_property(item_name).read().value<QQuickItem*>(); }
+    QQmlProperty board_property(const std::string& property_name) const { return QQmlProperty(board.get(), QString(property_name.c_str())); }
+    QQuickItem* board_item(const std::string& item_name) const { return board_property(item_name).read().value<QQuickItem*>(); }
     void read_settings();
     void write_settings();
     void end_program();
     void wait_for_engine_move(std::future<bool>&& efu);
     void color_change(const std::string& color_property_name, const QString& player_active_property_name, const QString& new_color,  boardgame::Piece_Number first_piece, boardgame::Field_Number first_prison_field);
-    std::string release_info();
+    std::string release_info() const;
     muehle::Muehle_State muehle_state;
     QQmlComponent control_component;
     std::unique_ptr<QQuickItem> control;
@@ -94,12 +94,12 @@ private:
     static constexpr std::chrono::seconds engine_time_default {9999};
     std::chrono::seconds engine_time {engine_time_default};
     QSettings settings;
-    static constexpr char engine_mode_time[] = "engine_mode_time";
-    static constexpr char engine_mode_depth[] = "engine_mode_depth";
+    static constexpr auto engine_mode_time = "engine_mode_time";
+    static constexpr auto engine_mode_depth = "engine_mode_depth";
     QString engine_mode;
     QTimer one_second_ticker {};
 };
 
 }
 
-#endif // SRC_MUEHLEQML_MUEHLEQML
+#endif // SRC_MUEHLE_QML_MUEHLE_QML

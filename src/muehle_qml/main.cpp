@@ -6,12 +6,14 @@
 
 int main(int argc, char *argv[])
 {
+    static constexpr int initial_window_width = 800;
+    static constexpr int initial_window_height = 600;
     QGuiApplication app(argc, argv);
-    app.setOrganizationName("Edersasch_Opensource");
-    app.setApplicationName("Muehle");
+    QGuiApplication::setOrganizationName("Edersasch_Opensource");
+    QGuiApplication::setApplicationName("Muehle");
 
     QSettings settings;
-    auto size = settings.value("MainWindow/size", QSize(800, 600)).toSize();
+    auto size = settings.value("MainWindow/size", QSize(initial_window_width, initial_window_height)).toSize();
     Q_INIT_RESOURCE(muehle);
     Q_INIT_RESOURCE(boardgame_qml);
     QQuickView v;

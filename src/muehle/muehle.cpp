@@ -95,9 +95,9 @@ std::vector<int> fields_of_selectable_pieces_store;
 std::vector<int> free_adjacent_fields_store;
 std::vector<muehle::Muehle_Key> successors;
 
-int prison_offset(const muehle::Muehle_Key& key)
+std::size_t prison_offset(const muehle::Muehle_Key& key)
 {
-    return key.test(54) ? 48 : 51;
+    return key.test(muehle::use_white_data_in_key) ? muehle::white_prison_in_key : muehle::black_prison_in_key;
 }
 
 /// @param field < number_of_board_fields
@@ -135,7 +135,7 @@ namespace muehle
 
 int board_offset(const muehle::Muehle_Key& key)
 {
-    return key.test(54) ? muehle::first_board_field.v : muehle::number_of_board_fields.v;
+    return key.test(use_white_data_in_key) ? muehle::first_board_field.v : muehle::number_of_board_fields.v;
 }
 
 Muehle_Key constellation_to_key(const Muehle_Constellation& constellation, const bool whites_turn)
@@ -153,22 +153,24 @@ Muehle_Key constellation_to_key(const Muehle_Constellation& constellation, const
             }
         }
     };
-    key[54] = true; // pretend white
+    key[use_white_data_in_key] = true; // pretend white
     fill_key(first_white_piece.v);
-    key[54] = false; // pretend black
+    key[use_white_data_in_key] = false; // pretend black
     fill_key(first_black_piece.v);
-    key[54] = whites_turn; // real value
+    key[use_white_data_in_key] = whites_turn; // real value
     return key;
 }
 
 int game_phase(const Muehle_Key& key)
 {
+    static constexpr long all_active = 0xffffff;
+    static constexpr int six_prisoners = 6;
     auto captured = prisoner_count(key);
-    if (captured == 6) {
+    if (captured == six_prisoners) {
         return 3;
     }
-    auto active = (key & (Muehle_Key(0xffffff) << board_offset(key))).count();
-    return captured + active == 9 ? 2 : 1;
+    auto active = (key & (Muehle_Key(all_active) << board_offset(key))).count();
+    return captured + active == number_of_pieces_per_player.v ? 2 : 1;
 }
 
 /// @return < number_of_board_fields
@@ -231,9 +233,9 @@ bool closed_muehle(const Muehle_Key& key, const int field)
     return muehle_on_fields(field, field - 1, field - 2);
 }
 
-unsigned long prisoner_count(const Muehle_Key& key)
+long prisoner_count(const Muehle_Key& key)
 {
-    return (key >> prison_offset(key)).to_ulong() & 7;
+    return static_cast<long>((key >> prison_offset(key)).to_ulong() & all_prisoners_in_key);
 }
 
 /// @return < number_of_board_fields
@@ -248,7 +250,7 @@ std::pair<std::vector<int>, Muehle_Key> occupy(Muehle_Key key, const int from, c
         }
         key.set(to + offset);
         if (closed_muehle(key, to)) {
-            key.flip(54);
+            key.flip(use_white_data_in_key);
             offset = board_offset(key);
             for (int i = 0; i < number_of_board_fields.v; i += 1) {
                 if (key.test(i + offset)) {
@@ -260,7 +262,7 @@ std::pair<std::vector<int>, Muehle_Key> occupy(Muehle_Key key, const int from, c
                 }
             }
         } else {
-            key.flip(54);
+            key.flip(use_white_data_in_key);
         }
     }
     return {fields_of_removable_pieces.empty() ? pieces_in_muehle : fields_of_removable_pieces, key};
@@ -287,7 +289,7 @@ const std::vector<int>& free_adjacent_fields(const Muehle_Key& key, const std::s
     return free_adjacent_fields_store;
 }
 
-std::string diff_text(boardgame::Field_Number_Diff fndiff)
+std::string diff_text(const boardgame::Field_Number_Diff& fndiff)
 {
     std::string commitmsg = "--"; // used in case the player was not able to move -> cannot happen, means game over in muehle
     if (!fndiff.empty()) { // example "F2-F4 xB2" means: moved from field F2 to field F4, removed piece from field B2
@@ -311,7 +313,7 @@ std::string diff_text(boardgame::Field_Number_Diff fndiff)
     return commitmsg;
 }
 
-const std::vector<Muehle_Key> Engine_Helper::successor_constellations(const Muehle_Key& key)
+std::vector<Muehle_Key> Engine_Helper::successor_constellations(const Muehle_Key& key)
 {
     successors.clear();
     for (const auto& selectable : fields_of_selectable_pieces(key)) {
@@ -331,6 +333,8 @@ const std::vector<Muehle_Key> Engine_Helper::successor_constellations(const Mueh
 
 int Engine_Helper::evaluate(const Muehle_Key& key, int engine_winning_score)
 {
+    static constexpr int free_field_factor = 5;
+    static constexpr int prisoner_factor = 100;
     auto evaluate_free_fields = [](Muehle_Key ffkey){
         int free_fields_score = 0;
         auto offset = board_offset(ffkey);
@@ -343,20 +347,20 @@ int Engine_Helper::evaluate(const Muehle_Key& key, int engine_winning_score)
     };
     auto prisoners = prisoner_count(key);
     auto other_prisoners = prisoner_count(switch_player(key));
-    if (prisoners == 7) {
+    if (prisoners == all_prisoners_in_key) {
         return -engine_winning_score;
     }
-    if (other_prisoners == 7) {
+    if (other_prisoners == all_prisoners_in_key) {
         return engine_winning_score;
     }
-    return evaluate_free_fields(key) * 5 -
-            evaluate_free_fields(switch_player(key)) * 5 +
-            ((other_prisoners - prisoners) * 100);
+    return static_cast<int>(evaluate_free_fields(key) * free_field_factor -
+            evaluate_free_fields(switch_player(key)) * free_field_factor +
+            ((other_prisoners - prisoners) * prisoner_factor));
 }
 
 Muehle_Key Engine_Helper::switch_player(const Muehle_Key& key)
 {
-    return Muehle_Key(key).flip(54);
+    return Muehle_Key(key).flip(use_white_data_in_key);
 }
 
 }

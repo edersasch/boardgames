@@ -375,10 +375,10 @@ void Muehle_State::clear_selectable_pieces()
     selectable_pieces.clear();
 }
 
-void Muehle_State::set_selectable_pieces(const std::vector<int>& fns)
+void Muehle_State::set_selectable_pieces(const std::vector<int>& pns)
 {
     clear_selectable_pieces();
-    for (auto field_of_selectable_piece : fns) {
+    for (auto field_of_selectable_piece : pns) {
         selectable_pieces.push_back(field_to_piece(boardgame::Field_Number{field_of_selectable_piece}));
         selectable(boardgame_ui, selectable_pieces.back());
     }
@@ -487,36 +487,36 @@ void Muehle_State::leave_setup_mode()
     start_move();
 }
 
-void Muehle_State::check_hide_drawer()
+void Muehle_State::check_hide_drawer() const
 {
     if (is_fieldgroup_empty(current_player->drawer_group)) {
         drawer_can_hide(boardgame_ui, current_player->id, true);
     }
 }
 
-void Muehle_State::check_show_prison()
+void Muehle_State::check_show_prison() const
 {
     if (!is_fieldgroup_empty(current_player->prison_group)) {
         prison_can_hide(boardgame_ui, current_player->id, false);
     }
 }
 
-boardgame::Field_Number_Diff Muehle_State::diff_key(Muehle_Key key)
+boardgame::Field_Number_Diff Muehle_State::diff_key(Muehle_Key key) const
 {
     auto diffed = diff_keys(make_key(), key);
     for (auto& el : diffed) {
         if (el.at(0).v >= first_white_drawer_field.v) {
-            el.at(0) = piece_to_field(boardgame::first_piece(key.test(54) ? black_player.drawer_group : white_player.drawer_group));
+            el.at(0) = piece_to_field(boardgame::first_piece(key.test(use_white_data_in_key) ? black_player.drawer_group : white_player.drawer_group));
         }
         if (el.at(1).v >= first_white_prison_field.v) {
-            el.at(1) = boardgame::first_empty_field(key.test(54) ? white_player.prison_group : black_player.prison_group);
+            el.at(1) = boardgame::first_empty_field(key.test(use_white_data_in_key) ? white_player.prison_group : black_player.prison_group);
         }
     }
     return diffed;
 }
 
 /// returns fist drawer / prison field, not first occupied / empty
-boardgame::Field_Number_Diff Muehle_State::diff_keys(Muehle_Key oldk, Muehle_Key newk)
+boardgame::Field_Number_Diff Muehle_State::diff_keys(Muehle_Key oldk, Muehle_Key newk) const
 {
     boardgame::Field_Number_Diff diffed;
     auto single_diff = [&oldk, &newk, &diffed]() {
@@ -537,8 +537,8 @@ boardgame::Field_Number_Diff Muehle_State::diff_keys(Muehle_Key oldk, Muehle_Key
         for (; f != single_from.end() && t != single_to.end(); f += 1, t += 1) {
             diffed.push_back({boardgame::Field_Number{*f}, boardgame::Field_Number{*t}});
         }
-        int prison_transfer = prisoner_count(oldk) - prisoner_count(newk.test(54) == oldk.test(54) ? newk : muehle::Engine_Helper::switch_player(newk));
-        auto next_free_prison_field = oldk.test(54) ? muehle::first_white_prison_field : muehle::first_black_prison_field;
+        long prison_transfer = prisoner_count(oldk) - (prisoner_count(newk.test(use_white_data_in_key) == oldk.test(use_white_data_in_key) ? newk : muehle::Engine_Helper::switch_player(newk)));
+        auto next_free_prison_field = oldk.test(use_white_data_in_key) ? muehle::first_white_prison_field : muehle::first_black_prison_field;
         while (f != single_from.end() && prison_transfer < 0) {
             auto field = boardgame::Field_Number{*f};
             diffed.push_back({field, next_free_prison_field});
@@ -546,15 +546,15 @@ boardgame::Field_Number_Diff Muehle_State::diff_keys(Muehle_Key oldk, Muehle_Key
             prison_transfer += 1;
         }
         while (t != single_to.end()) {
-            auto field = newk.test(54) ? muehle::first_white_drawer_field : muehle::first_black_drawer_field;
+            auto field = newk.test(use_white_data_in_key) ? muehle::first_white_drawer_field : muehle::first_black_drawer_field;
             diffed.push_back({field, boardgame::Field_Number{*t}});
             t += 1;
         }
         // no check to move pieces out of prison or into drawer
     };
-    oldk.set(54);
+    oldk.set(use_white_data_in_key);
     single_diff();
-    oldk.reset(54);
+    oldk.reset(use_white_data_in_key);
     single_diff();
     return diffed;
 }
@@ -611,7 +611,7 @@ void Muehle_State::new_move_list()
     std::vector<int>{current_player == &white_player ? muehle::first_black_piece.v : muehle::first_white_piece.v}); // initial position, hint is the potential piece that "moved"
 }
 
-int Muehle_State::count_moves()
+int Muehle_State::count_moves() const
 {
     return move_list->count_predecessors_if([](std::vector<int> hint) -> bool {
         return hint[0] < muehle::first_black_piece.v;

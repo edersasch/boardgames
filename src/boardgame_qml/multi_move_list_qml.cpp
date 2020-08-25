@@ -28,8 +28,8 @@ void add_move(Multi_Move_List_Qml* mui, const int move_id, const std::string& de
         all_cols.push_back(ml->add_move(move_id, description));
     }
     if (!all_cols.empty()) {
-        for (unsigned i = 0; i < all_cols[0].size(); i += 1) {
-            for (unsigned j = 1; j < all_cols.size(); j += 1) {
+        for (std::size_t i = 0; i < all_cols[0].size(); i += 1) {
+            for (std::size_t j = 1; j < all_cols.size(); j += 1) {
                 QObject::connect(all_cols[j][i], SIGNAL(move_buttons_visible(QVariant)), all_cols[j - 1][i], SLOT(trigger_move_buttons_visible(QVariant)));
                 QObject::connect(all_cols[j - 1][i], SIGNAL(move_buttons_visible(QVariant)), all_cols[j][i], SLOT(trigger_move_buttons_visible(QVariant)));
             }

@@ -5,7 +5,7 @@
 namespace
 {
 
-std::string diff_text(std::vector<std::array<int, 2>> d)
+std::string diff_text(const std::vector<std::array<int, 2>>& d)
 {
     return std::to_string(d.front().at(1));
 }

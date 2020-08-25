@@ -41,16 +41,17 @@ void active_player(const Muehle_Qml* ui, const std::string& player_id)
 
 void player_time(const Muehle_Qml* ui, const std::string& player_id, const std::chrono::milliseconds time_in_ms)
 {
+    static constexpr int seconds_per_minute = 60;
     auto s_count = std::chrono::round<std::chrono::seconds>(time_in_ms).count();
-    QString seconds = QString::number(s_count % 60);
+    QString seconds = QString::number(s_count % seconds_per_minute);
     if (seconds.size() == 1) {
         seconds = "0" + seconds;
     }
     if (player_id == muehle::white_id) {
-        QQmlProperty(ui->control.get(), "white_time").write(QString::number(s_count / 60) + ":" + seconds);
+        QQmlProperty(ui->control.get(), "white_time").write(QString::number(s_count / seconds_per_minute) + ":" + seconds);
     } else {
         if (player_id == muehle::black_id) {
-            QQmlProperty(ui->control.get(), "black_time").write(QString::number(s_count / 60) + ":" + seconds);
+            QQmlProperty(ui->control.get(), "black_time").write(QString::number(s_count / seconds_per_minute) + ":" + seconds);
         }
     }
 }
@@ -87,6 +88,7 @@ Muehle_Qml::Muehle_Qml(QQmlEngine* engine, QQuickItem* parentItem)
     , field_component(engine, QUrl(QStringLiteral("qrc:/Field.qml")))
     , move_lists(engine, {board_item("v_move_list"), board_item("h_move_list")}, "Boardgame Muehle", "bgmu")
 {
+    static constexpr int one_second_in_milliseconds = 1000;
     auto fillPieces = [this](const std::string& color, int offset = 0) {
         for (int i = 0; i < muehle::number_of_pieces_per_player.v; i += 1) {
             pieces.emplace_back(qobject_cast<QQuickItem*>(piece_component.create()));
@@ -97,8 +99,8 @@ Muehle_Qml::Muehle_Qml(QQmlEngine* engine, QQuickItem* parentItem)
             connect(pieces.back().get(), SIGNAL(selected(int)), this, SLOT(selected(int)));
         }
     };
-    auto fillFields = [this](const std::string& repeaterName, int offset, std::vector<int> skip = {}, const std::string altrepeaterName = {}) {
-        auto* repeater = board_item(repeaterName);
+    auto fillFields = [this](const std::string& repeaterName, int offset, std::vector<int> skip = {}, const std::string& altrepeaterName = {}) {
+        auto repeater = board_item(repeaterName);
         QQuickItem* altrepeater = nullptr;
         if (!altrepeaterName.empty()) {
             altrepeater = board_item(altrepeaterName);
@@ -136,9 +138,11 @@ Muehle_Qml::Muehle_Qml(QQmlEngine* engine, QQuickItem* parentItem)
     connect(control.get(), SIGNAL(white_color_changed(QString)), this, SLOT(white_color_changed(QString)));
     connect(control.get(), SIGNAL(black_color_changed(QString)), this, SLOT(black_color_changed(QString)));
     connect(control.get(), SIGNAL(show_help()), this, SLOT(show_help()));
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
     connect(qApp, &QGuiApplication::lastWindowClosed, this, &Muehle_Qml::end_program);
     fillPieces(board_property("white_color").read().toString().toStdString());
     fillPieces(board_property("black_color").read().toString().toStdString(), muehle::first_black_piece.v);
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     fillFields("board_fields", muehle::first_board_field.v, {1, 2, 4, 5, 7, 9, 11, 13, 14, 15, 19, 20, 24, 28, 29, 33, 34, 35, 37, 39, 41, 43, 44, 46, 47});
     fillFields("white_h_drawer_fields", muehle::first_white_drawer_field.v, {}, "white_v_drawer_fields");
     fillFields("black_h_drawer_fields", muehle::first_black_drawer_field.v, {}, "black_v_drawer_fields");
@@ -155,20 +159,20 @@ Muehle_Qml::Muehle_Qml(QQmlEngine* engine, QQuickItem* parentItem)
     connect(&move_lists, &boardgame_qml::Multi_Move_List_Qml::request_move_list_back, this, [this]() {
         muehle_state.request_move_list_back();
     });
-    connect(&move_lists, &boardgame_qml::Multi_Move_List_Qml::request_move_list_import, this, [this](std::string url) {
+    connect(&move_lists, &boardgame_qml::Multi_Move_List_Qml::request_move_list_import, this, [this](const std::string& url) {
         muehle_state.request_move_list_import(url);
     });
-    connect(&move_lists, &boardgame_qml::Multi_Move_List_Qml::request_move_list_export, this, [this](std::string url) {
+    connect(&move_lists, &boardgame_qml::Multi_Move_List_Qml::request_move_list_export, this, [this](const std::string& url) {
         muehle_state.request_move_list_export(url);
     });
     connect(&move_lists, &boardgame_qml::Multi_Move_List_Qml::request_delete_branch, this, [this](const int move_id) {
         muehle_state.request_cut_off(move_id);
     });
     connect(&move_lists, &boardgame_qml::Multi_Move_List_Qml::added_move, this, [this](const int move_id, const int piece_number) {
-        move_lists.set_move_color(move_id, board_property((piece_number >= muehle::first_black_piece.v) ? "black_color" : "white_color").read().toString().toStdString());
+        move_lists.set_move_color(move_id, board_property((piece_number >= muehle::first_black_piece.v) ? std::string("black_color") : std::string("white_color")).read().toString().toStdString());
     });
     connect(this, &Muehle_Qml::engine_move, this, [this](bool is_valid) {
-        muehle_state.engine_move(is_valid);;
+        muehle_state.engine_move(is_valid);
     });
     connect(this, &Muehle_Qml::force_engine_move, this, [this]() {
         muehle_state.force_engine_move();
@@ -177,7 +181,7 @@ Muehle_Qml::Muehle_Qml(QQmlEngine* engine, QQuickItem* parentItem)
     connect(&one_second_ticker, &QTimer::timeout, this, [this] {
         muehle_state.tick_1s();
     });
-    one_second_ticker.start(1000);
+    one_second_ticker.start(one_second_in_milliseconds);
     QTimer::singleShot(0, this, &Muehle_Qml::read_settings);
 }
 
@@ -195,12 +199,12 @@ void Muehle_Qml::engine_time_in_s(int time_in_s)
     engine_mode = engine_mode_time;
 }
 
-void Muehle_Qml::white_color_changed(QString new_white_color)
+void Muehle_Qml::white_color_changed(const QString& new_white_color)
 {
     color_change("white_color", "white_player_active", new_white_color, muehle::first_white_piece, muehle::first_white_prison_field);
 }
 
-void Muehle_Qml::black_color_changed(QString new_black_color)
+void Muehle_Qml::black_color_changed(const QString& new_black_color)
 {
     color_change("black_color", "black_player_active", new_black_color, muehle::first_black_piece, muehle::first_black_prison_field);
 }
@@ -219,7 +223,7 @@ void Muehle_Qml::use_alternative_field()
     }
 }
 
-void Muehle_Qml::show_help()
+void Muehle_Qml::show_help() const
 {
     QString locale_id = "en";
     const char* curr_locale =  std::setlocale(0, nullptr);
@@ -232,11 +236,13 @@ void Muehle_Qml::show_help()
             }
         }
     }
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
     auto docpath = qApp->applicationDirPath() + "/../share/doc/boardgames/muehle_" + locale_id + ".html";
-	if (QFile::permissions(docpath) & QFileDevice::ReadUser) {
+    if (QFile::permissions(docpath) & QFileDevice::ReadUser) {
         QProcess::startDetached("xdg-open", QStringList(docpath));
     } else {
         QQmlProperty(control.get(), "no_help_available_visible").write(!QQmlProperty(control.get(), "no_help_available_visible").read().toBool());
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
         std::cerr << qPrintable(qApp->platformName()) << '\n' << qPrintable(qApp->applicationDirPath()) << '\n';
         std::cerr << release_info() <<'\n';
     }
@@ -246,9 +252,17 @@ void Muehle_Qml::show_help()
 
 void Muehle_Qml::read_settings()
 {
+    static constexpr int whiteR = 0xff;
+    static constexpr int whiteG = 0xfe;
+    static constexpr int whiteB = 0xcc;
+    static constexpr int blackR = 0x66;
+    static constexpr int blackG = 0x33;
+    static constexpr int blackB = 0x33;
+    static constexpr int default_engine_time_in_s = 4;
+    static constexpr int default_engine_depth = 5;
     settings.beginGroup("Ui");
-    auto wc = settings.value("white_color", QColor("#fffecc")).toString();
-    auto bc = settings.value("black_color", QColor("#663333")).toString();
+    auto wc = settings.value("white_color", QColor(whiteR, whiteG, whiteB)).toString();
+    auto bc = settings.value("black_color", QColor(blackR, blackG, blackB)).toString();
     QQmlProperty(control.get(), "white_color").write(wc);
     QQmlProperty(control.get(), "black_color").write(bc);
     white_color_changed(wc);
@@ -258,8 +272,8 @@ void Muehle_Qml::read_settings()
     settings.endGroup();
 
     settings.beginGroup("Engine");
-    auto et = settings.value("engine_time_in_s", 4).toInt();
-    auto ed = settings.value("engine_depth", 5).toInt();
+    auto et = settings.value("engine_time_in_s", default_engine_time_in_s).toInt();
+    auto ed = settings.value("engine_depth", default_engine_depth).toInt();
     QQmlProperty(control.get(), "current_engine_time_in_s").write(et);
     QQmlProperty(control.get(), "current_engine_depth").write(ed);
     engine_time_in_s(et);
@@ -312,6 +326,7 @@ void Muehle_Qml::end_program()
 
 void Muehle_Qml::wait_for_engine_move(std::future<bool>&& efu)
 {
+    static constexpr int half_a_second_in_milliseconds = 500;
     if (!efu.valid()) {
         std::cerr << "no engine thread!\n";
         return;
@@ -322,7 +337,7 @@ void Muehle_Qml::wait_for_engine_move(std::future<bool>&& efu)
             emit engine_move(ef.get());
         } else if (status == std::future_status::timeout) {
             emit force_engine_move();
-            status = ef.wait_for(std::chrono::milliseconds(500));
+            status = ef.wait_for(std::chrono::milliseconds(half_a_second_in_milliseconds));
             if (status == std::future_status::ready) {
                 emit engine_move(ef.get());
             } else {
@@ -342,7 +357,7 @@ void Muehle_Qml::color_change(const std::string& color_property_name, const QStr
     for (int i = first_piece.v; i < first_piece.v + muehle::number_of_pieces_per_player.v; i += 1) {
         QQmlProperty(pieces.at(i).get(), "next_color").write(new_color);
     }
-    if (QQmlProperty(control.get(), player_active_property_name).read().toBool() == true) {
+    if (QQmlProperty(control.get(), player_active_property_name).read().toBool()) {
         for (int i = muehle::first_board_field.v; i < muehle::first_board_field.v + muehle::number_of_board_fields.v; i += 1) {
             QQmlProperty(fields.at(i).get(), "hint_color").write(new_color);
         }
@@ -353,7 +368,7 @@ void Muehle_Qml::color_change(const std::string& color_property_name, const QStr
     move_lists.change_move_color(old_color, new_color);
 }
 
-std::string Muehle_Qml::release_info()
+std::string Muehle_Qml::release_info() const
 {
     std::string ri = std::to_string(boardgame::major_version) + "." + std::to_string(boardgame::minor_version) + "." + std::to_string(boardgame::patch_version);
     ri += " / " + std::to_string(boardgame::release_year) + "-" + std::to_string(boardgame::release_month) + "-" + std::to_string(boardgame::release_day);

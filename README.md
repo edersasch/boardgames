@@ -5,7 +5,7 @@
 
 * C++ 17 framework with piece / field association, move list, engine and UI
 * Mühle (German name for nine Men's Morris or Mill)
-* Availabe under [MIT license](LICENSE)
+* Available under [MIT license](LICENSE)
 
 
 ## Framework UI Independent
@@ -23,7 +23,7 @@
 depends on Qt, see "Build Requirements" below
 
 * `Confirm_Button` widget
-* `Field` and `Piece`, `Piece_Column_Box`. `Piece_Row_Box`
+* `Field` and `Piece`, `Piece_Column_Box`, `Piece_Row_Box`
 * `multi_move_list`, `move_list` with `Move_Button`, `Move_List_Control`, `Move_List_Entry`, `Move_List_Root`
 
 
@@ -70,7 +70,7 @@ Contains graphics files and a valgrind memcheck suppression file [memcheck.supp]
 
 ## `docs/`
 
-[Changelog.md](docs/Changelog.md) and UML diagrams
+Manuals, [Changelog.md](docs/Changelog.md) and UML diagrams
 
 
 ## `src/`
