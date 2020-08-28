@@ -48,12 +48,17 @@ std::pair<std::vector<int>, Muehle_Key> occupy(Muehle_Key key, const int from, c
 bool can_slide(const Muehle_Key& key, const std::size_t field);
 const std::vector<int>& free_adjacent_fields(const Muehle_Key& key, const std::size_t field);
 std::string diff_text(const boardgame::Field_Number_Diff& fndiff);
+Muehle_Key switch_player(const Muehle_Key& key);
+
+struct Muehle_Key_Hash
+{
+    std::size_t operator()(const Muehle_Key& key) const { return key.to_ulong(); }
+};
 
 struct Engine_Helper
 {
     static std::vector<Muehle_Key> successor_constellations(const Muehle_Key& key);
     static int evaluate(const Muehle_Key& key, int engine_winning_score);
-    static Muehle_Key switch_player(const Muehle_Key& key);
 };
 
 }

@@ -537,7 +537,7 @@ boardgame::Field_Number_Diff Muehle_State::diff_keys(Muehle_Key oldk, Muehle_Key
         for (; f != single_from.end() && t != single_to.end(); f += 1, t += 1) {
             diffed.push_back({boardgame::Field_Number{*f}, boardgame::Field_Number{*t}});
         }
-        long prison_transfer = prisoner_count(oldk) - (prisoner_count(newk.test(use_white_data_in_key) == oldk.test(use_white_data_in_key) ? newk : muehle::Engine_Helper::switch_player(newk)));
+        long prison_transfer = prisoner_count(oldk) - (prisoner_count(newk.test(use_white_data_in_key) == oldk.test(use_white_data_in_key) ? newk : muehle::switch_player(newk)));
         auto next_free_prison_field = oldk.test(use_white_data_in_key) ? muehle::first_white_prison_field : muehle::first_black_prison_field;
         while (f != single_from.end() && prison_transfer < 0) {
             auto field = boardgame::Field_Number{*f};

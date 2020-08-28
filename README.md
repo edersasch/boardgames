@@ -13,7 +13,7 @@
 * Interface `boardgame_ui` for commands from the game to its user interface
 * Interface `move_list_ui` for commands from the provided `move_list` implementation to its user interface
 * Interface `main_loop` to delegate tasks to the utilized main loop implementation
-* Engine implementation `alpha_beta`
+* Engine implementation `alpha_beta` (depends on martinus/robin-hood-hashing, see "Build Requirements" below)
 * Move list implementation `move_list`, supporting variants and json import / export (depends on nlohmann/json, see "Build Requirements" below)
 * Piece and field functions `pieces_n_fields` that help manage associations; defines strong types to prevent mixing up field and piece ids
 
@@ -46,7 +46,8 @@ depends on Qt, see "Build Requirements" below
 * C++ 17 toolchain (e.g. [gcc](https://gcc.gnu.org/) >= 7.3.0)
 * [CMake](https://cmake.org) >= 3.10.0
 * [Qt](https://qt.io) >= 5.11.0 with Qml
-* [nlohmann/json](https://github.com/nlohmann/json/) >= 3.4.0, downloaded automatically if option `BOARDGAMES_USE_EXTERNAL_JSON` is `OFF`
+* [nlohmann/json](https://github.com/nlohmann/json/) >= 3.4.0, downloaded automatically if option `BOARDGAMES_USE_EXTERNAL_JSON` is `OFF` (license: [MIT](https://github.com/nlohmann/json/blob/v3.4.0/LICENSE.MIT))
+* [martinus/robin-hood-hashing](https://github.com/martinus/robin-hood-hashing) >= 3.8.0, downloaded automatically if option `BOARDGAMES_USE_EXTERNAL_ROBIN_HOOD_HASH` is `OFF` (license: [MIT](https://github.com/martinus/robin-hood-hashing/blob/3.8.0/LICENSE))
 
 
 # Optional Tools

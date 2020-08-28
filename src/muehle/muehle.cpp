@@ -313,6 +313,11 @@ std::string diff_text(const boardgame::Field_Number_Diff& fndiff)
     return commitmsg;
 }
 
+Muehle_Key switch_player(const Muehle_Key& key)
+{
+    return Muehle_Key(key).flip(use_white_data_in_key);
+}
+
 std::vector<Muehle_Key> Engine_Helper::successor_constellations(const Muehle_Key& key)
 {
     successors.clear();
@@ -335,7 +340,7 @@ int Engine_Helper::evaluate(const Muehle_Key& key, int engine_winning_score)
 {
     static constexpr int free_field_factor = 5;
     static constexpr int prisoner_factor = 100;
-    auto evaluate_free_fields = [](Muehle_Key ffkey){
+    auto evaluate_free_fields = [](const Muehle_Key& ffkey){
         int free_fields_score = 0;
         auto offset = board_offset(ffkey);
         for (unsigned f = 0; f < number_of_board_fields.v; f += 1) {
@@ -356,11 +361,6 @@ int Engine_Helper::evaluate(const Muehle_Key& key, int engine_winning_score)
     return static_cast<int>(evaluate_free_fields(key) * free_field_factor -
             evaluate_free_fields(switch_player(key)) * free_field_factor +
             ((other_prisoners - prisoners) * prisoner_factor));
-}
-
-Muehle_Key Engine_Helper::switch_player(const Muehle_Key& key)
-{
-    return Muehle_Key(key).flip(use_white_data_in_key);
 }
 
 }

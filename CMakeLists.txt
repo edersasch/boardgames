@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.10.0)
 project(boardgames VERSION 0.1.1)
 
-option(BOARDGAMES_BUILD_TESTS "Build unit tests" ON)
+option(BOARDGAMES_BUILD_TESTS "Build unit tests, downloads google test" ON)
 option(BOARDGAMES_COVERAGE_REPORT "Compile with coverage instrumentation" OFF)
-option(BOARDGAMES_USE_EXTERNAL_JSON "Use an external JSON library" OFF)
+option(BOARDGAMES_USE_EXTERNAL_JSON "Use external nlohmann json library, download otherwise" OFF)
+option(BOARDGAMES_USE_EXTERNAL_ROBIN_HOOD_HASH "Use external robin_hood hash table, download otherwise" OFF)
 
 set(PROJECT_RELEASE_YEAR 2019)
 set(PROJECT_RELEASE_MONTH 99)
@@ -58,6 +59,12 @@ else()
         QUIET
         )
     include_directories(${nlohmann_json_SOURCE_DIR})
+endif()
+
+if(NOT BOARDGAMES_USE_EXTERNAL_ROBIN_HOOD_HASH)
+    FILE(DOWNLOAD https://raw.githubusercontent.com/martinus/robin-hood-hashing/3.8.0/src/include/robin_hood.h ${CMAKE_BINARY_DIR}/include/robin_hood.h
+        EXPECTED_HASH SHA256=e41737449eb54802acaa5d1927932122132918ce821eeffe8134d46c3e4cbd99
+        )
 endif()
 
 include(GNUInstallDirs)

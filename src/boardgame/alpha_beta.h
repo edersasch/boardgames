@@ -1,15 +1,18 @@
 #ifndef SRC_BOARDGAME_ALPHA_BETA
 #define SRC_BOARDGAME_ALPHA_BETA
 
+// https://martin.ankerl.com/2019/04/01/hashmap-benchmarks-05-conclusion/
+#include "robin_hood.h"
+
 #include <chrono>
-#include <iostream>
 #include <vector>
-#include <unordered_map>
 #include <algorithm>
+
+#include <iostream>
 
 namespace boardgame {
 
-template <typename T, typename U>
+template <typename Key, typename Game, typename Hash = robin_hood::hash<Key>>
 class Alpha_Beta
 {
 public:
@@ -18,8 +21,8 @@ public:
         draw,
         lose
     };
-    bool start(const T key);
-    std::vector<T> get_next() const { return next; }
+    bool start(const Key key);
+    std::vector<Key> get_next() const { return next; }
     int get_score() const { return next_score; }
     int get_depth() const { return current_depth; }
     bool is_running() const { return running; }
@@ -30,30 +33,30 @@ private:
     struct Key_Info
     {
         int score {-winning_score - 1};
-        std::vector<T> successors;
+        std::vector<Key> successors;
     };
-    void iterative_depth(const T key);
-    int engine(const T key, const int depth, int alpha, const int beta);
-    Key_Info& successor_constellations(const T key);
-    int evaluate(const T key);
+    void iterative_depth(const Key& key);
+    int engine(const Key& key, const int depth, int alpha, const int beta);
+    std::vector<Key> successor_constellations(const Key& key);
+    int evaluate(const Key& key);
     static constexpr int target_depth_default {9999};
     int target_depth {target_depth_default};
     int current_depth {0};
     int next_score {0};
-    std::vector<T> next;
+    std::vector<Key> next;
     No_Move_Policy no_move_policy {No_Move_Policy::lose};
     bool running {false};
     bool valid_move {true};
-    std::unordered_map<T, Key_Info> transposition_table;
+    robin_hood::unordered_map<Key, Key_Info, Hash> transposition_table;
 };
 
-template <typename T, typename U>
-bool Alpha_Beta<T, U>::start(const T key)
+template <typename Key, typename Game, typename Hash>
+bool Alpha_Beta<Key, Game, Hash>::start(const Key key)
 {
     if (running) {
         std::cerr << "alpha beta engine start, but running\n";
+        return false;
     }
-    //std::cerr << "4  1  87      0         0      3  0         0         0\n" << key << " before\n";
     running = true;
     iterative_depth(key);
     running = false;
@@ -63,8 +66,8 @@ bool Alpha_Beta<T, U>::start(const T key)
     return is_valid;
 }
 
-template <typename T, typename U>
-void Alpha_Beta<T, U>::discard()
+template <typename Key, typename Game, typename Hash>
+void Alpha_Beta<Key, Game, Hash>::discard()
 {
     if (running) {
         valid_move = false;
@@ -72,16 +75,16 @@ void Alpha_Beta<T, U>::discard()
     }
 }
 
-template <typename T, typename U>
-void Alpha_Beta<T, U>::set_target_depth(int depth)
+template <typename Key, typename Game, typename Hash>
+void Alpha_Beta<Key, Game, Hash>::set_target_depth(int depth)
 {
     target_depth = depth > 0 ? depth : target_depth_default;
 }
 
 // private
 
-template <typename T, typename U>
-void Alpha_Beta<T, U>::iterative_depth(const T key)
+template <typename Key, typename Game, typename Hash>
+void Alpha_Beta<Key, Game, Hash>::iterative_depth(const Key& key)
 {
     auto start_time = std::chrono::steady_clock::now();
     for (current_depth = 1; current_depth <= target_depth; current_depth += 1) {
@@ -95,14 +98,14 @@ void Alpha_Beta<T, U>::iterative_depth(const T key)
     std::cerr << current_depth << " depth " << transposition_table.size() << " tt " << tdiff.count() << "ms\n";
 }
 
-template <typename T, typename U>
-int Alpha_Beta<T, U>::engine(const T key, const int depth, int alpha, const int beta)
+template <typename Key, typename Game, typename Hash>
+int Alpha_Beta<Key, Game, Hash>::engine(const Key& key, const int depth, int alpha, const int beta)
 {
     if (depth == 0) {
         return evaluate(key);
     }
-    auto& info = successor_constellations(key);
-    if (info.successors.empty()) {
+    auto successors_copy = successor_constellations(key); // recursive engine() calls alter the transpositon table, so use a copy
+    if (successors_copy.empty()) {
         switch(no_move_policy) {
         case No_Move_Policy::lose:
             return -winning_score;
@@ -110,7 +113,7 @@ int Alpha_Beta<T, U>::engine(const T key, const int depth, int alpha, const int 
             return alpha;
         }
     }
-    for (const auto& n : info.successors) {
+    for (const auto& n : successors_copy) {
         if (!running) {
             break;
         }
@@ -120,57 +123,46 @@ int Alpha_Beta<T, U>::engine(const T key, const int depth, int alpha, const int 
             if (alpha >= beta) {
                 break;
             }
-            auto tmp = n;
-            info.successors.erase(std::find(info.successors.begin(), info.successors.end(), n));
-            info.successors.insert(info.successors.begin(), tmp);
+            auto successors = &(transposition_table[key].successors); // reorder the real successors
+            auto it = std::find(successors->begin(), successors->end(), n);
+            std::rotate(successors->begin(), it, it + 1);
             if (depth == current_depth && running) {
                 auto currdepth = depth;
                 next.clear();
-                auto successors = &transposition_table[key].successors;
                 while (!successors->empty() && currdepth) {
                     next.push_back(successors->front());
-                    if (transposition_table.find(successors->front()) == transposition_table.end()) {
+                    auto pos = transposition_table.find(successors->front());
+                    if (pos == transposition_table.end()) {
                         break;
                     } else {
-                        successors = &transposition_table[successors->front()].successors;
+                        successors = &(pos->second.successors);
                     }
                     currdepth -= 1;
                 }
-                //std::cerr << info.successors.front() << " next " << current_depth << " depth " << score << " score\n";
             }
         }
     }
     return alpha;
 }
 
-template <typename T, typename U>
-typename Alpha_Beta<T, U>::Key_Info& Alpha_Beta<T, U>::successor_constellations(const T key)
+template <typename Key, typename Game, typename Hash>
+std::vector<Key> Alpha_Beta<Key, Game, Hash>::successor_constellations(const Key& key)
 {
-    auto pos = transposition_table.find(key);
-    if (pos == transposition_table.end()) {
-        auto& info = transposition_table[key];
-        info.successors = U::successor_constellations(key);
-        return info;
+    auto& info = transposition_table[key];
+    if (info.successors.empty()) {
+        info.successors = Game::successor_constellations(key);
     }
-    if (pos->second.successors.empty()) {
-        pos->second.successors = U::successor_constellations(key);
-    }
-    return pos->second;
+    return info.successors;
 }
 
-template <typename T, typename U>
-int Alpha_Beta<T, U>::evaluate(const T key)
+template <typename Key, typename Game, typename Hash>
+int Alpha_Beta<Key, Game, Hash>::evaluate(const Key& key)
 {
-    auto pos = transposition_table.find(key);
-    if (pos == transposition_table.end()) {
-        auto& info = transposition_table[key];
-        info.score = U::evaluate(key, winning_score);
-        return info.score;
+    auto& info = transposition_table[key];
+    if (info.score < -winning_score) {
+        info.score = Game::evaluate(key, winning_score);
     }
-    if (pos->second.score < -winning_score) {
-        pos->second.score = U::evaluate(key, winning_score);
-    }
-    return pos->second.score;
+    return info.score;
 }
 
 }
