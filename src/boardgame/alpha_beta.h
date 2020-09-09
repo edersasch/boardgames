@@ -21,13 +21,12 @@ public:
         draw,
         lose
     };
-    bool start(const Key key);
+    void start(const Key key);
     std::vector<Key> get_next() const { return next; }
     int get_score() const { return next_score; }
     int get_depth() const { return current_depth; }
     bool is_running() const { return running; }
-    void stop_running() { running = false; }
-    void discard();
+    void stop_running() { stop_request = true; }
     void set_target_depth(int depth);
 private:
     struct Key_Info
@@ -46,33 +45,23 @@ private:
     std::vector<Key> next;
     No_Move_Policy no_move_policy {No_Move_Policy::lose};
     bool running {false};
-    bool valid_move {true};
+    bool stop_request {false};
     robin_hood::unordered_map<Key, Key_Info, Hash> transposition_table;
 };
 
 template <typename Key, typename Game, typename Hash>
-bool Alpha_Beta<Key, Game, Hash>::start(const Key key)
+void Alpha_Beta<Key, Game, Hash>::start(const Key key)
 {
     if (running) {
         std::cerr << "alpha beta engine start, but running\n";
-        return false;
+        return;
     }
     running = true;
+    stop_request = false;
     iterative_depth(key);
-    running = false;
     transposition_table.clear();
-    bool is_valid = valid_move;
-    valid_move = true;
-    return is_valid;
-}
-
-template <typename Key, typename Game, typename Hash>
-void Alpha_Beta<Key, Game, Hash>::discard()
-{
-    if (running) {
-        valid_move = false;
-        running = false;
-    }
+    stop_request = false;
+    running = false;
 }
 
 template <typename Key, typename Game, typename Hash>
@@ -89,7 +78,7 @@ void Alpha_Beta<Key, Game, Hash>::iterative_depth(const Key& key)
     auto start_time = std::chrono::steady_clock::now();
     for (current_depth = 1; current_depth <= target_depth; current_depth += 1) {
         next_score = engine(key, current_depth, -winning_score - 1, winning_score + 1);
-        if (!running || next_score == winning_score || next_score == -winning_score) {
+        if (stop_request || next_score == winning_score || next_score == -winning_score) {
             break;
         }
     }
@@ -114,7 +103,7 @@ int Alpha_Beta<Key, Game, Hash>::engine(const Key& key, const int depth, int alp
         }
     }
     for (const auto& n : successors_copy) {
-        if (!running) {
+        if (stop_request) {
             break;
         }
         auto score = -engine(n, depth - 1, -beta, -alpha);
@@ -126,7 +115,7 @@ int Alpha_Beta<Key, Game, Hash>::engine(const Key& key, const int depth, int alp
             auto successors = &(transposition_table[key].successors); // reorder the real successors
             auto it = std::find(successors->begin(), successors->end(), n);
             std::rotate(successors->begin(), it, it + 1);
-            if (depth == current_depth && running) {
+            if (depth == current_depth && !stop_request) {
                 auto currdepth = depth;
                 next.clear();
                 while (!successors->empty() && currdepth) {

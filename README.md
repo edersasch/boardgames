@@ -30,7 +30,7 @@ depends on Qt, see "Build Requirements" below
 ## Mühle UI Independent
 
 * `muehle` with constants, free functions and engine methods
-* `muehle_state` class
+* `muehle_state` class (depends on boost-ext/sml, see "Build Requirements" below)
 
 
 ## Mühle UI
@@ -48,6 +48,7 @@ depends on Qt, see "Build Requirements" below
 * [Qt](https://qt.io) >= 5.11.0 with Qml
 * [nlohmann/json](https://github.com/nlohmann/json/) >= 3.4.0, downloaded automatically if option `BOARDGAMES_USE_EXTERNAL_JSON` is `OFF` (license: [MIT](https://github.com/nlohmann/json/blob/v3.4.0/LICENSE.MIT))
 * [martinus/robin-hood-hashing](https://github.com/martinus/robin-hood-hashing) >= 3.8.0, downloaded automatically if option `BOARDGAMES_USE_EXTERNAL_ROBIN_HOOD_HASH` is `OFF` (license: [MIT](https://github.com/martinus/robin-hood-hashing/blob/3.8.0/LICENSE))
+* [boost-ext/sml](https://github.com/boost-ext/sml) >= 1.1.3, downloaded automatically if option `BOARDGAMES_USE_EXTERNAL_SML` is `OFF` (license: [Boost 1.0](http://www.boost.org/LICENSE_1_0.txt)
 
 
 # Optional Tools

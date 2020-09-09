@@ -1,14 +1,15 @@
 cmake_minimum_required(VERSION 3.10.0)
 project(boardgames VERSION 0.1.1)
 
-option(BOARDGAMES_BUILD_TESTS "Build unit tests, downloads google test" ON)
-option(BOARDGAMES_COVERAGE_REPORT "Compile with coverage instrumentation" OFF)
-option(BOARDGAMES_USE_EXTERNAL_JSON "Use external nlohmann json library, download otherwise" OFF)
-option(BOARDGAMES_USE_EXTERNAL_ROBIN_HOOD_HASH "Use external robin_hood hash table, download otherwise" OFF)
+option(BOARDGAMES_BUILD_TESTS                       "Build unit tests, downloads google test"                   ON)
+option(BOARDGAMES_COVERAGE_REPORT                   "Compile with coverage instrumentation"                     OFF)
+option(BOARDGAMES_USE_EXTERNAL_JSON                 "Use external nlohmann json library, download otherwise"    OFF)
+option(BOARDGAMES_USE_EXTERNAL_ROBIN_HOOD_HASH      "Use external robin_hood hash table, download otherwise"    OFF)
+option(BOARDGAMES_USE_EXTERNAL_SML                  "Use external boost-ext sml, downloads otherwise"           OFF)
 
-set(PROJECT_RELEASE_YEAR 2019)
-set(PROJECT_RELEASE_MONTH 99)
-set(PROJECT_RELEASE_DAY 99)
+set(PROJECT_RELEASE_YEAR    2020)
+set(PROJECT_RELEASE_MONTH   99)
+set(PROJECT_RELEASE_DAY     99)
 configure_file (
     "${CMAKE_SOURCE_DIR}/src/boardgame/version.h.in"
     "${CMAKE_BINARY_DIR}/include/boardgame/version.h"
@@ -64,6 +65,12 @@ endif()
 if(NOT BOARDGAMES_USE_EXTERNAL_ROBIN_HOOD_HASH)
     FILE(DOWNLOAD https://raw.githubusercontent.com/martinus/robin-hood-hashing/3.8.0/src/include/robin_hood.h ${CMAKE_BINARY_DIR}/include/robin_hood.h
         EXPECTED_HASH SHA256=e41737449eb54802acaa5d1927932122132918ce821eeffe8134d46c3e4cbd99
+        )
+endif()
+
+if(NOT BOARDGAMES_USE_EXTERNAL_SML)
+    FILE(DOWNLOAD https://raw.githubusercontent.com/boost-ext/sml/v1.1.3/include/boost/sml.hpp ${CMAKE_BINARY_DIR}/include/boost/sml.hpp
+        EXPECTED_HASH SHA256=5b0c6e8a6199f986d5c81728b0af030777792f12d5da73d1928d0c28e6071a8f
         )
 endif()
 

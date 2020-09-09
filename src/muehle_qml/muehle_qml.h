@@ -52,12 +52,12 @@ public:
     friend void engine_forecast(const Muehle_Qml* ui, const int score, const int depth, const std::vector<std::string>& descriptions);
 
     // Main_Loop functions
-    friend void engine_future(Muehle_Qml* ml, std::future<bool>&& efu) { ml->wait_for_engine_move(std::move(efu)); }
+    friend void engine_future(Muehle_Qml* ml, std::future<void>&& efu) { ml->wait_for_engine_move(std::move(efu)); }
     friend void set_main_loop_engine_time(Muehle_Qml* ml, std::chrono::seconds time_in_s) { ml->engine_time = time_in_s; }
 
 signals:
-    void engine_move(bool);
-    void force_engine_move();
+    void engine_move();
+    void stop_engine();
 private slots:
     void new_game() { muehle_state.new_game(); }
     void request_white_engine_active(bool is_active) { muehle_state.request_engine_active(muehle::white_id, is_active); }
@@ -79,7 +79,7 @@ private:
     void read_settings();
     void write_settings();
     void end_program();
-    void wait_for_engine_move(std::future<bool>&& efu);
+    void wait_for_engine_move(std::future<void>&& efu);
     void color_change(const std::string& color_property_name, const QString& player_active_property_name, const QString& new_color,  boardgame::Piece_Number first_piece, boardgame::Field_Number first_prison_field);
     std::string release_info() const;
     muehle::Muehle_State muehle_state;

@@ -45,6 +45,8 @@
 namespace muehle
 {
 
+class Fsm;
+
 class Muehle_State
 {
 public:
@@ -55,22 +57,23 @@ public:
     void request_select_piece(const boardgame::Piece_Number pn);
     void request_occupy(const boardgame::Field_Number fn);
     void request_engine_active(const std::string& player_id, bool is_active);
-    void request_set_current_move_and_branch_start_id(const int move_id);
-    void request_set_current_move_and_branch_start_id(const int move_id, const int branch_start_id);
+    void request_set_move_and_branch(const int move_id, const int branch_id = -1);
     void request_cut_off(const int move_id);
     void request_move_list_forward();
     void request_move_list_back();
     void request_move_list_import(const std::string& import, bool is_path = true);
-    bool request_move_list_export(const std::string& path);
-    std::string get_move_list_string();
+    bool request_move_list_export(const std::string& path) const;
+    std::string get_move_list_string() const;
     int get_move_id() const { return move_list->get_current_move_id(); }
     int get_branch_start_id() const { return move_list->get_current_branch_start_id(); }
     void set_engine_depth(int depth);
     void set_engine_time(std::chrono::seconds time_in_s);
-    void engine_move(bool is_valid);
-    void force_engine_move();
+    void engine_move();
+    void stop_engine(); // also fsm action
     void tick_1s();
+    bool is_engine_running() const { return engine.is_running(); }
 private:
+    friend Fsm;
     muehle::Muehle_Constellation current_constellation;
     muehle::Muehle_Key current_key;
     std::array<boardgame::Piece_Number, muehle::number_of_fields.v> all_fields {};
@@ -91,10 +94,7 @@ private:
     boardgame::Field_Number piece_to_field(const boardgame::Piece_Number pn) const { return current_constellation.at(pn.v); }
     boardgame::Piece_Number field_to_piece(const boardgame::Field_Number fn) const { return boardgame::Piece_Number{all_fields.at(fn.v)}; }
     muehle::Muehle_Key make_key() const { return muehle::constellation_to_key(current_constellation, current_player == &white_player); }
-    void start_move();
-    void swap_players();
     void set_field_helper(const boardgame::Piece_Number pn, const boardgame::Field_Number fn);
-    void update_game();
     void set_selected_piece(const boardgame::Piece_Number pn);
     void clear_selectable_pieces();
     void set_selectable_pieces(const std::vector<int>& pns);
@@ -104,17 +104,12 @@ private:
     void set_occupiable_board_fields(const int field_number);
     void set_occupiable_empty_board_fields();
     void set_occupiable_empty_fields();
-    void change_engine_active(Player* player, const bool is_active);
-    void enter_setup_mode();
-    void leave_setup_mode();
     void check_hide_drawer() const;
     void check_show_prison() const;
     boardgame::Field_Number_Diff diff_key(Muehle_Key key) const;
     boardgame::Field_Number_Diff diff_keys(Muehle_Key oldk, Muehle_Key newk) const;
-    void reconstruct(const Muehle_Constellation& constellation);
     void set_player_on_hint(const std::vector<int>& hint);
     void modified_if_not_start_constellation();
-    void clear_accounting();
     void new_move_list();
     int count_moves() const;
     const boardgame::Piecegroup<decltype(current_constellation.cbegin())> white_pieces { make_piecegroup(current_constellation, muehle::first_white_piece, muehle::number_of_pieces_per_player) };
@@ -131,14 +126,31 @@ private:
     boardgame::Piece_Number selected_piece {};
     std::vector<boardgame::Piece_Number> selectable_pieces {};
     std::vector<boardgame::Field_Number> m_occupiable_fields {};
-    bool setup_mode {false};
     boardgame::Alpha_Beta<Muehle_Key, Engine_Helper, Muehle_Key_Hash> engine;
     bool restart {false};
     std::string import_string {};
     bool import_string_is_path {true};
+    int move_id_to_set {-1};
+    int branch_id_to_set {-1};
     bool game_over {false};
-    bool linear_game {true};
     std::chrono::time_point<std::chrono::steady_clock> last_time_accounting;
+    Fsm* fsm;
+
+    // fsm actions
+    void start_new_game();
+    void enter_setup_mode();
+    void exit_setup_mode();
+    void select_game_piece(boardgame::Piece_Number pn);
+    void select_setup_piece(boardgame::Piece_Number pn);
+    void occupy_game(boardgame::Field_Number fn);
+    void occupy_setup(boardgame::Field_Number fn);
+    void remove_piece_and_finish_move(boardgame::Piece_Number pn);
+    void import_move_list();
+    void set_move_and_branch();
+    void set_selectable_game_pieces();
+    void finish_move();
+    void finish_engine_move();
+    void restore_last_constellation();
 };
 
 }

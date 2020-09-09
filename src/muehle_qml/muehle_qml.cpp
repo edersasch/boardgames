@@ -151,7 +151,7 @@ Muehle_Qml::Muehle_Qml(QQmlEngine* engine, QQuickItem* parentItem)
     connect(control.get(), SIGNAL(horizontal()), this, SLOT(use_main_field()));
     connect(control.get(), SIGNAL(vertical()), this, SLOT(use_alternative_field()));
     connect(&move_lists, &boardgame_qml::Multi_Move_List_Qml::request_set_current_move_and_branch_start_id, this, [this](const int move_id) {
-        muehle_state.request_set_current_move_and_branch_start_id(move_id);
+        muehle_state.request_set_move_and_branch(move_id);
     });
     connect(&move_lists, &boardgame_qml::Multi_Move_List_Qml::request_move_list_forward, this, [this]() {
         muehle_state.request_move_list_forward();
@@ -171,11 +171,11 @@ Muehle_Qml::Muehle_Qml(QQmlEngine* engine, QQuickItem* parentItem)
     connect(&move_lists, &boardgame_qml::Multi_Move_List_Qml::added_move, this, [this](const int move_id, const int piece_number) {
         move_lists.set_move_color(move_id, board_property((piece_number >= muehle::first_black_piece.v) ? std::string("black_color") : std::string("white_color")).read().toString().toStdString());
     });
-    connect(this, &Muehle_Qml::engine_move, this, [this](bool is_valid) {
-        muehle_state.engine_move(is_valid);
+    connect(this, &Muehle_Qml::engine_move, this, [this] {
+        muehle_state.engine_move();
     });
-    connect(this, &Muehle_Qml::force_engine_move, this, [this]() {
-        muehle_state.force_engine_move();
+    connect(this, &Muehle_Qml::stop_engine, this, [this] {
+        muehle_state.stop_engine();
     });
     QQmlProperty(control.get(), "release_info").write(QString(release_info().c_str()));
     connect(&one_second_ticker, &QTimer::timeout, this, [this] {
@@ -289,7 +289,7 @@ void Muehle_Qml::read_settings()
 
     settings.beginGroup("State");
     muehle_state.request_move_list_import(settings.value("move_list", "").toString().toStdString(), false);
-    muehle_state.request_set_current_move_and_branch_start_id(settings.value("move_id").toInt(), settings.value("branch_start_id").toInt());
+    muehle_state.request_set_move_and_branch(settings.value("move_id").toInt(), settings.value("branch_start_id").toInt());
     muehle_state.request_setup_mode_active(settings.value("setup_mode_active", false).toBool());
     settings.endGroup();
 }
@@ -319,31 +319,35 @@ void Muehle_Qml::write_settings()
 
 void Muehle_Qml::end_program()
 {
+    static constexpr int hundred_milliseconds = 100;
+    static constexpr int stop_tries = 20;
     write_settings();
-    request_black_engine_active(false);
-    request_white_engine_active(false);
+    muehle_state.stop_engine();
+    for (int i = 0; i < stop_tries && muehle_state.is_engine_running(); i += 1) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(hundred_milliseconds)); // huge transition table needs time to free mem
+    }
 }
 
-void Muehle_Qml::wait_for_engine_move(std::future<bool>&& efu)
+void Muehle_Qml::wait_for_engine_move(std::future<void>&& efu)
 {
     static constexpr int half_a_second_in_milliseconds = 500;
     if (!efu.valid()) {
         std::cerr << "no engine thread!\n";
         return;
     }
-    std::thread([this](std::future<bool>&& ef) {
+    std::thread([this](std::future<void>&& ef) {
         auto status = ef.wait_for(engine_time > std::chrono::seconds(0) ? engine_time : engine_time_default);
         if (status == std::future_status::ready) {
-            emit engine_move(ef.get());
+            emit engine_move();
         } else if (status == std::future_status::timeout) {
-            emit force_engine_move();
+            emit stop_engine();
             status = ef.wait_for(std::chrono::milliseconds(half_a_second_in_milliseconds));
             if (status == std::future_status::ready) {
-                emit engine_move(ef.get());
+                emit engine_move();
             } else {
                 std::cerr << "can't stop engine\n";
                 ef.wait();
-                emit engine_move(ef.get());
+                emit engine_move();
             }
         } else {
             std::cerr << "engine thread not running!\n";

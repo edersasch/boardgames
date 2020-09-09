@@ -4,7 +4,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## 0.1.1 "Hans" - 2019-99-99
+## 0.1.1 "Hans" - unreleased
 
 Game info can be viewed, engine is faster, but needs more RAM. The project is
 now checked by [lgtm.com](https://lgtm.com/projects/g/edersasch/boardgames/).
@@ -16,7 +16,7 @@ and my mother's friend, whose journey ended in 2006.
 ### Added
 
 - game info: number of moves, time per player, engine forecast
-- transposition table for engine: 65% speedup, needs about 300MB RAM
+- transposition table for engine using [martinus/robin-hood-hashing](https://github.com/martinus/robin-hood-hashing)
 - english manual, chosen according to system language
 
 
@@ -24,6 +24,7 @@ and my mother's friend, whose journey ended in 2006.
 
 - put version info in toplevel CMakeLists.txt, show in manual
 - clicking engine settings icons selects engine mode
+- Muehle_State uses [boost-ext/sml](https://github.com/boost-ext/sml) state machine framework
 
 
 ### Fixed

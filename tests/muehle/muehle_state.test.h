@@ -47,7 +47,7 @@ public:
 class Main_Loop_Mock
 {
 public:
-    MOCK_METHOD1(engine_future, void(std::future<bool>&& efu));
+    MOCK_METHOD1(engine_future, void(std::future<void>&& efu));
     MOCK_METHOD1(set_main_loop_engine_time, void(std::chrono::seconds time_in_s));
 };
 
@@ -97,7 +97,7 @@ void time_accounting_correct(::testing::StrictMock<Muehle_Ui_Mock>* mui, const b
 void player_time(::testing::StrictMock<Muehle_Ui_Mock>* mui, const std::string& player_id, const std::chrono::milliseconds time_in_ms) { mui->player_time(player_id, time_in_ms); }
 void engine_forecast(::testing::StrictMock<Muehle_Ui_Mock>* mui, const int score, const int depth, const std::vector<std::string>& descriptions) { mui->engine_forecast(score, depth, descriptions); }
 
-void engine_future(::testing::StrictMock<Main_Loop_Mock>* ml, std::future<bool>&& efu) { ml->engine_future(std::move(efu)); }
+void engine_future(::testing::StrictMock<Main_Loop_Mock>* ml, std::future<void>&& efu) { ml->engine_future(std::move(efu)); }
 void set_main_loop_engine_time(::testing::StrictMock<Main_Loop_Mock>* ml, std::chrono::seconds time_in_s) { ml->set_main_loop_engine_time(time_in_s); }
 
 # endif // TESTS_MUEHLE_MUEHLE_STATE_TEST

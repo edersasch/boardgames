@@ -10,7 +10,6 @@ init()
     sudo chroot "$DEBODIR" adduser xenialuser
     cd "$DEBODIR"/home/xenialuser || exit 1
     git clone ~/Dokumente/Alexander/boardgames
-    mkdir -p build-boardgames/AppDir
     mkdir -p bin
     wget -P bin https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
     wget -P bin https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage
@@ -18,7 +17,8 @@ init()
     chmod +x bin/linuxdeploy-plugin-qt-x86_64.AppImage
 
     cat << EOF > bin/mkboardgames-appimage.sh
-cd build-boardgames
+mkdir -p build-boardgames
+cd build-boardgames || exit 1
 rm -rf *
 mkdir AppDir
 . /opt/qt512/bin/qt512-env.sh

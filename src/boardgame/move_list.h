@@ -173,8 +173,7 @@ class Move_List
 public:
     Move_List(U move_list_ui, std::string (*commit_msg_provider)(const std::vector<std::array<typename T::value_type, 2>>&), const T& first_constellation, const std::vector<int>& hint);
     Move_List(U move_list_ui, std::string (*commit_msg_provider)(const std::vector<std::array<typename T::value_type, 2>>&), const std::string& import, bool is_path);
-    bool set_current_move_and_branch_start_id(const int move_id);
-    bool set_current_move_and_branch_start_id(const int move_id, const int branch_start_id);
+    bool set_current_move_and_branch_start_id(const int move_id, const int branch_start_id = -1);
     int get_current_move_id() const { return current_move_id; }
     int get_current_branch_start_id() const { return current_branch_start_id; }
     bool is_empty() const { return move_list.next(detail::Move_List<T>::initial_id).empty(); }
@@ -238,22 +237,17 @@ Move_List<T, U>::Move_List(U move_list_ui, std::string (*commit_msg_provider)(co
 }
 
 template <typename T, typename U>
-bool Move_List<T, U>::set_current_move_and_branch_start_id(const int move_id)
-{
-    if (set_current_move_id(move_id)) {
-        current_branch_start_id = move_list.branch_start_ids(move_id).front();
-        return true;
-    }
-    return false;
-}
-
-template <typename T, typename U>
 bool Move_List<T, U>::set_current_move_and_branch_start_id(const int move_id, const int branch_start_id)
 {
-    if (set_current_move_and_branch_start_id(move_id)) {
-        if (std::find(move_list.branch_start_ids(move_id).begin(), move_list.branch_start_ids(move_id).end(), branch_start_id) != move_list.branch_start_ids(move_id).end()) {
-            current_branch_start_id = branch_start_id;
+    if (set_current_move_id(move_id)) {
+        if (branch_start_id == -1) {
+            current_branch_start_id = move_list.branch_start_ids(move_id).front();
             return true;
+        } else {
+            if (std::find(move_list.branch_start_ids(move_id).begin(), move_list.branch_start_ids(move_id).end(), branch_start_id) != move_list.branch_start_ids(move_id).end()) {
+                current_branch_start_id = branch_start_id;
+                return true;
+            }
         }
     }
     return false;

@@ -143,8 +143,8 @@ TEST_F(Muehle_State_Test, testEnterLeaveSetupMode)
     EXPECT_CALL(mUi, setup_mode_active(true));
     EXPECT_CALL(mUi, engine_active(muehle::white_id, false));
     EXPECT_CALL(mUi, engine_active(muehle::black_id, false));
-    EXPECT_CALL(mlUi, initial_constellation(0));
-    EXPECT_CALL(mlUi, current_move(0));
+    EXPECT_CALL(mlUi, initial_constellation(0)).Times(2);
+    EXPECT_CALL(mlUi, current_move(0)).Times(2);
     EXPECT_CALL(mlUi, need_confirm(true));
     mM.request_setup_mode_active(true);
     mM.request_select_piece(boardgame::Piece_Number{0});
