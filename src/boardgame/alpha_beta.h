@@ -32,12 +32,11 @@ private:
     struct Key_Info
     {
         int score {-winning_score - 1};
+        int depth {0};
         std::vector<Key> successors;
     };
     void iterative_depth(const Key& key);
     int engine(const Key& key, const int depth, int alpha, const int beta);
-    std::vector<Key> successor_constellations(const Key& key);
-    int evaluate(const Key& key);
     static constexpr int target_depth_default {9999};
     int target_depth {target_depth_default};
     int current_depth {0};
@@ -78,23 +77,32 @@ void Alpha_Beta<Key, Game, Hash>::iterative_depth(const Key& key)
     auto start_time = std::chrono::steady_clock::now();
     for (current_depth = 1; current_depth <= target_depth; current_depth += 1) {
         next_score = engine(key, current_depth, -winning_score - 1, winning_score + 1);
+        auto end_time = std::chrono::steady_clock::now();
+        std::chrono::milliseconds tdiff = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+        std::cerr << current_depth << " depth " << transposition_table.size() << " tt " << tdiff.count() << "ms\n";
         if (stop_request || next_score == winning_score || next_score == -winning_score) {
             break;
         }
     }
-    auto end_time = std::chrono::steady_clock::now();
-    std::chrono::milliseconds tdiff = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-    std::cerr << current_depth << " depth " << transposition_table.size() << " tt " << tdiff.count() << "ms\n";
 }
 
 template <typename Key, typename Game, typename Hash>
 int Alpha_Beta<Key, Game, Hash>::engine(const Key& key, const int depth, int alpha, const int beta)
 {
+    auto& initial_info = transposition_table[key];
     if (depth == 0) {
-        return evaluate(key);
+        if (initial_info.score < -winning_score) {
+            initial_info.score = Game::evaluate(key, winning_score);
+        }
+        return initial_info.score;
     }
-    auto successors_copy = successor_constellations(key); // recursive engine() calls alter the transpositon table, so use a copy
-    if (successors_copy.empty()) {
+    if (initial_info.depth >= depth && initial_info.score >= beta) {
+        return initial_info.score;
+    }
+    if (initial_info.successors.empty()) {
+        initial_info.successors = Game::successor_constellations(key);
+    }
+    if (initial_info.successors.empty()) {
         switch(no_move_policy) {
         case No_Move_Policy::lose:
             return -winning_score;
@@ -102,11 +110,16 @@ int Alpha_Beta<Key, Game, Hash>::engine(const Key& key, const int depth, int alp
             return alpha;
         }
     }
+    auto successors_copy = initial_info.successors; // recursive engine() calls alter the transpositon table, so use a copy
+    auto highest_score = -winning_score - 1;
     for (const auto& n : successors_copy) {
         if (stop_request) {
             break;
         }
         auto score = -engine(n, depth - 1, -beta, -alpha);
+        if (score > highest_score) {
+            highest_score = score;
+        }
         if (score > alpha) {
             alpha = score;
             if (alpha >= beta) {
@@ -131,27 +144,14 @@ int Alpha_Beta<Key, Game, Hash>::engine(const Key& key, const int depth, int alp
             }
         }
     }
+    if (!stop_request) {
+        auto& final_info = transposition_table[key];
+        if (depth > final_info.depth || (depth == final_info.depth && highest_score > final_info.score)) {
+            final_info.depth = depth;
+            final_info.score = highest_score;
+        }
+    }
     return alpha;
-}
-
-template <typename Key, typename Game, typename Hash>
-std::vector<Key> Alpha_Beta<Key, Game, Hash>::successor_constellations(const Key& key)
-{
-    auto& info = transposition_table[key];
-    if (info.successors.empty()) {
-        info.successors = Game::successor_constellations(key);
-    }
-    return info.successors;
-}
-
-template <typename Key, typename Game, typename Hash>
-int Alpha_Beta<Key, Game, Hash>::evaluate(const Key& key)
-{
-    auto& info = transposition_table[key];
-    if (info.score < -winning_score) {
-        info.score = Game::evaluate(key, winning_score);
-    }
-    return info.score;
 }
 
 }
