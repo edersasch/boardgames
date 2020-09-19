@@ -111,44 +111,40 @@ int Alpha_Beta<Key, Game, Hash>::engine(const Key& key, const int depth, int alp
         }
     }
     auto successors_copy = initial_info.successors; // recursive engine() calls alter the transpositon table, so use a copy
-    auto highest_score = -winning_score - 1;
     for (const auto& n : successors_copy) {
         if (stop_request) {
             break;
         }
         auto score = -engine(n, depth - 1, -beta, -alpha);
-        if (score > highest_score) {
-            highest_score = score;
-        }
         if (score > alpha) {
             alpha = score;
+            auto& info = transposition_table[key];
+            if (depth > info.depth || (depth == info.depth && alpha > info.score)) {
+                info.depth = depth;
+                info.score = alpha;
+            }
+            auto successors = &info.successors; // reorder the real successors
+            auto it = std::find(successors->begin(), successors->end(), n);
+            if (it != successors->begin()) {
+                std::rotate(successors->begin(), it, it + 1);
+                if (depth == current_depth && !stop_request) {
+                    auto currdepth = depth;
+                    next.clear();
+                    while (!successors->empty() && currdepth) {
+                        next.push_back(successors->front());
+                        auto pos = transposition_table.find(successors->front());
+                        if (pos == transposition_table.end()) {
+                            break;
+                        } else {
+                            successors = &(pos->second.successors);
+                        }
+                        currdepth -= 1;
+                    }
+                }
+            }
             if (alpha >= beta) {
                 break;
             }
-            auto successors = &(transposition_table[key].successors); // reorder the real successors
-            auto it = std::find(successors->begin(), successors->end(), n);
-            std::rotate(successors->begin(), it, it + 1);
-            if (depth == current_depth && !stop_request) {
-                auto currdepth = depth;
-                next.clear();
-                while (!successors->empty() && currdepth) {
-                    next.push_back(successors->front());
-                    auto pos = transposition_table.find(successors->front());
-                    if (pos == transposition_table.end()) {
-                        break;
-                    } else {
-                        successors = &(pos->second.successors);
-                    }
-                    currdepth -= 1;
-                }
-            }
-        }
-    }
-    if (!stop_request) {
-        auto& final_info = transposition_table[key];
-        if (depth > final_info.depth || (depth == final_info.depth && highest_score > final_info.score)) {
-            final_info.depth = depth;
-            final_info.score = highest_score;
         }
     }
     return alpha;
