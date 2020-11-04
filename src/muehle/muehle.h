@@ -43,7 +43,7 @@ const std::vector<int>& free_fields(const Muehle_Key& key);
 const std::vector<int>& fields_of_selectable_pieces(const Muehle_Key& key);
 const std::vector<int>& occupiable_fields(const Muehle_Key& key, const int startfield_of_piece);
 bool closed_muehle(const Muehle_Key& key, const int field);
-long prisoner_count(const Muehle_Key& key);
+int64_t prisoner_count(const Muehle_Key& key);
 std::pair<std::vector<int>, Muehle_Key> occupy(Muehle_Key key, const int from, const int to);
 bool can_slide(const Muehle_Key& key, const std::size_t field);
 const std::vector<int>& free_adjacent_fields(const Muehle_Key& key, const std::size_t field);
@@ -52,7 +52,7 @@ Muehle_Key switch_player(const Muehle_Key& key);
 
 struct Muehle_Key_Hash
 {
-    std::size_t operator()(const Muehle_Key& key) const { return key.to_ulong(); }
+    uint64_t operator()(const Muehle_Key& key) const { return key.to_ullong(); }
 };
 
 struct Engine_Helper

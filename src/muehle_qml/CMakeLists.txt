@@ -10,6 +10,11 @@ target_link_libraries(${PROJECT_NAME}
     muehle
     ${CMAKE_THREAD_LIBS_INIT}
 )
+
+if(WIN32)
+    windeployqt(${PROJECT_NAME})
+endif()
+
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(FILES ${CMAKE_SOURCE_DIR}/data/muehle.desktop DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)
 install(FILES ${CMAKE_SOURCE_DIR}/data/engine.svg DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/apps)

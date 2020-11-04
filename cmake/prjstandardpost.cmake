@@ -1,2 +1,7 @@
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Werror -Wshadow)
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    set(PRIVATEOPTS -Wall -Wextra -Werror -Wshadow)
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    set(PRIVATEOPTS /W3)
+endif()
+target_compile_options(${PROJECT_NAME} PRIVATE ${PRIVATEOPTS})

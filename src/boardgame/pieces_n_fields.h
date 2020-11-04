@@ -93,8 +93,8 @@ constexpr auto number_of_set_elements(const T& elemgr)
 template <typename T, typename U>
 constexpr auto is_in_group(const T& elem, const U& elemgr)
 {
-    int first = elemgr.begin_of_group - elemgr.origin;
-    int last = elemgr.end_of_group - elemgr.origin;
+    auto first = elemgr.begin_of_group - elemgr.origin;
+    auto last = elemgr.end_of_group - elemgr.origin;
     return elem.v >= first && elem.v < last;
 }
 

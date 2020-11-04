@@ -2,11 +2,10 @@
 
 #include <boost/sml.hpp>
 
+namespace sml = boost::sml;
 
 namespace muehle
 {
-
-namespace sml = boost::sml;
 
 static constexpr auto piece_selection                       = sml::state<class Piece_Selection>;
 static constexpr auto destination_selection                 = sml::state<class Destination_Selection>;
@@ -219,7 +218,7 @@ struct Transition_Table
 struct Fsm
 {
     Fsm(Muehle_State* action_handler) : ah(action_handler), fsm{this} {}
-    sml::sm<Transition_Table>& get_fsm()                                            { return fsm; }
+    auto& get_fsm()                                                                 { return fsm; }
     void start_new_game()                                                           { ah->start_new_game(); }
     void stop_engine()                                                              { ah->stop_engine(); }
     void enter_setup_mode()                                                         { ah->enter_setup_mode(); }

@@ -4,7 +4,7 @@
 # Boardgames
 
 * C++ 17 framework with piece / field association, move list, engine and UI
-* Mühle (German name for nine Men's Morris or Mill)
+* Mühle (German name for nine Men's Morris or Mill) [Manual](docs/manuals/muehle_en.md) [Anleitung](docs/manuals/muehle_de.md)
 * Available under [MIT license](LICENSE)
 
 
@@ -114,6 +114,9 @@ CMake files
 and [DownloadProject.cmake](https://github.com/Crascit/DownloadProject/blob/26983dd7883acbabf6fd98968429f9af44186baf/DownloadProject.cmake)
 are licensed under
 [MIT License](https://github.com/Crascit/DownloadProject/blob/master/LICENSE) ([local copy](docs/LICENSE_Crascit_DownloadProject)).
+
+CMake file `DeployQt.cmake` adapted from <https://github.com/nitroshare/nitroshare-desktop/blob/f4feebef29d9d3985d1699ab36f0fac59d3df7da/cmake/DeployQt.cmake>
+is licensed under MIT License included in the file itself: added QML dirs
 
 Icons adapted from [tiddlywiki](https://tiddlywiki.com) 5.1.17 are licensed
 under a [BSD 3-Clause License](https://tiddlywiki.com/#License) ([local copy](docs/LICENSE_tiddlywiki)): added

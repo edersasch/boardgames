@@ -5,7 +5,7 @@ option(BOARDGAMES_BUILD_TESTS                       "Build unit tests, downloads
 option(BOARDGAMES_COVERAGE_REPORT                   "Compile with coverage instrumentation"                     OFF)
 option(BOARDGAMES_USE_EXTERNAL_JSON                 "Use external nlohmann json library, download otherwise"    OFF)
 option(BOARDGAMES_USE_EXTERNAL_ROBIN_HOOD_HASH      "Use external robin_hood hash table, download otherwise"    OFF)
-option(BOARDGAMES_USE_EXTERNAL_SML                  "Use external boost-ext sml, downloads otherwise"           OFF)
+option(BOARDGAMES_USE_EXTERNAL_SML                  "Use external boost-ext sml, download otherwise"            OFF)
 
 set(PROJECT_RELEASE_YEAR    2020)
 set(PROJECT_RELEASE_MONTH   99)
@@ -110,6 +110,10 @@ if(PANDOC)
 endif()
 
 include(FindThreads)
+
+if(WIN32)
+    include(DeployQt)
+endif()
 
 include_directories(src)
 include_directories(${PROJECT_BINARY_DIR}/include)

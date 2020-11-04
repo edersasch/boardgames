@@ -34,7 +34,7 @@ constexpr std::array<std::array<int, 2>, 24> vertical_muehle {{
     {2, 14}
 }};
 
-constexpr std::array<std::initializer_list<int>, 24> adjacent_fields {{
+std::array<std::initializer_list<int>, 24> adjacent_fields {{
     {1, 9},
     {0, 2, 4},
     {1, 14},
@@ -169,7 +169,7 @@ int game_phase(const Muehle_Key& key)
     if (captured == six_prisoners) {
         return 3;
     }
-    auto active = (key & (Muehle_Key(all_active) << board_offset(key))).count();
+    long active = (key & (Muehle_Key(all_active) << board_offset(key))).count();
     return captured + active == number_of_pieces_per_player.v ? 2 : 1;
 }
 
@@ -194,7 +194,7 @@ const std::vector<int>& fields_of_selectable_pieces(const Muehle_Key& key)
         fields_of_selectable_pieces_store.push_back(drawer_field);
     } else {
         auto offset = board_offset(key);
-        for (auto i = 0U; i < number_of_board_fields.v; i += 1) {
+        for (auto i = 0; i < number_of_board_fields.v; i += 1) {
             if (key.test(i + offset) &&
                          (phase == 3 || can_slide(key, i))) {
                 fields_of_selectable_pieces_store.push_back(i);
@@ -233,9 +233,9 @@ bool closed_muehle(const Muehle_Key& key, const int field)
     return muehle_on_fields(field, field - 1, field - 2);
 }
 
-long prisoner_count(const Muehle_Key& key)
+int64_t prisoner_count(const Muehle_Key& key)
 {
-    return static_cast<long>((key >> prison_offset(key)).to_ulong() & all_prisoners_in_key);
+    return static_cast<long>((key >> prison_offset(key)).to_ullong() & all_prisoners_in_key);
 }
 
 /// @return < number_of_board_fields
@@ -343,7 +343,7 @@ int Engine_Helper::evaluate(const Muehle_Key& key, int engine_winning_score)
     auto evaluate_free_fields = [](const Muehle_Key& ffkey){
         int free_fields_score = 0;
         auto offset = board_offset(ffkey);
-        for (unsigned f = 0; f < number_of_board_fields.v; f += 1) {
+        for (auto f = 0; f < number_of_board_fields.v; f += 1) {
             if (ffkey.test(f + offset)) {
                 free_fields_score += number_of_free_adjacent_fields(ffkey, f);
             }

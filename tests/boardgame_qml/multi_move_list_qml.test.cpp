@@ -1,8 +1,5 @@
 #include "multi_move_list_qml.test.h"
 
-#include <chrono>
-#include <thread>
-
 #include <QGuiApplication>
 #include <QQmlProperty>
 

@@ -7,6 +7,7 @@
 #include <chrono>
 #include <vector>
 #include <algorithm>
+#include <atomic>
 
 #include <iostream>
 
@@ -43,8 +44,8 @@ private:
     int next_score {0};
     std::vector<Key> next;
     No_Move_Policy no_move_policy {No_Move_Policy::lose};
-    bool running {false};
-    bool stop_request {false};
+    std::atomic_bool running {false};
+    std::atomic_bool stop_request {false};
     robin_hood::unordered_map<Key, Key_Info, Hash> transposition_table;
 };
 
