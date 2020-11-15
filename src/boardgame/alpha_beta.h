@@ -46,7 +46,7 @@ private:
     No_Move_Policy no_move_policy {No_Move_Policy::lose};
     std::atomic_bool running {false};
     std::atomic_bool stop_request {false};
-    robin_hood::unordered_map<Key, Key_Info, Hash> transposition_table;
+    robin_hood::unordered_node_map<Key, Key_Info, Hash> transposition_table; // node map has stable references and pointers
 };
 
 template <typename Key, typename Game, typename Hash>
@@ -77,7 +77,7 @@ void Alpha_Beta<Key, Game, Hash>::iterative_depth(const Key& key)
 {
     auto start_time = std::chrono::steady_clock::now();
     for (current_depth = 1; current_depth <= target_depth; current_depth += 1) {
-        next_score = engine(key, current_depth, -winning_score - 1, winning_score + 1);
+        engine(key, current_depth, -winning_score - 1, winning_score + 1);
         auto end_time = std::chrono::steady_clock::now();
         std::chrono::milliseconds tdiff = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
         std::cerr << current_depth << " depth " << transposition_table.size() << " tt " << tdiff.count() << "ms\n";
@@ -90,20 +90,23 @@ void Alpha_Beta<Key, Game, Hash>::iterative_depth(const Key& key)
 template <typename Key, typename Game, typename Hash>
 int Alpha_Beta<Key, Game, Hash>::engine(const Key& key, const int depth, int alpha, const int beta)
 {
-    auto& initial_info = transposition_table[key];
+    auto& info = transposition_table[key];
     if (depth == 0) {
-        if (initial_info.score < -winning_score) {
-            initial_info.score = Game::evaluate(key, winning_score);
+        if (info.score < -winning_score) {
+            info.score = Game::evaluate(key, winning_score);
         }
-        return initial_info.score;
+        return info.score;
     }
-    if (initial_info.depth >= depth && initial_info.score >= beta) {
-        return initial_info.score;
+    if (info.depth >= depth && info.score > alpha) {
+        if (info.score >= beta) {
+            return info.score;
+        }
+        alpha = info.score;
     }
-    if (initial_info.successors.empty()) {
-        initial_info.successors = Game::successor_constellations(key);
+    if (info.successors.empty()) {
+        info.successors = Game::successor_constellations(key);
     }
-    if (initial_info.successors.empty()) {
+    if (info.successors.empty()) {
         switch(no_move_policy) {
         case No_Move_Policy::lose:
             return -winning_score;
@@ -111,7 +114,7 @@ int Alpha_Beta<Key, Game, Hash>::engine(const Key& key, const int depth, int alp
             return alpha;
         }
     }
-    auto successors_copy = initial_info.successors; // recursive engine() calls alter the transpositon table, so use a copy
+    auto successors_copy = info.successors; // successors might get reordered during recursion
     for (const auto& n : successors_copy) {
         if (stop_request) {
             break;
@@ -119,28 +122,26 @@ int Alpha_Beta<Key, Game, Hash>::engine(const Key& key, const int depth, int alp
         auto score = -engine(n, depth - 1, -beta, -alpha);
         if (score > alpha) {
             alpha = score;
-            auto& info = transposition_table[key];
-            if (depth > info.depth || (depth == info.depth && alpha > info.score)) {
+            if (depth >= info.depth) {
                 info.depth = depth;
                 info.score = alpha;
             }
-            auto successors = &info.successors; // reorder the real successors
+            auto successors = &info.successors;
             auto it = std::find(successors->begin(), successors->end(), n);
-            if (it != successors->begin()) {
-                std::rotate(successors->begin(), it, it + 1);
-                if (depth == current_depth && !stop_request) {
-                    auto currdepth = depth;
-                    next.clear();
-                    while (!successors->empty() && currdepth) {
-                        next.push_back(successors->front());
-                        auto pos = transposition_table.find(successors->front());
-                        if (pos == transposition_table.end()) {
-                            break;
-                        } else {
-                            successors = &(pos->second.successors);
-                        }
-                        currdepth -= 1;
+            std::rotate(successors->begin(), it, it + 1);
+            if (depth == current_depth && !stop_request) {
+                auto currdepth = depth;
+                next.clear();
+                next_score = score;
+                while (!successors->empty() && currdepth) {
+                    next.push_back(successors->front());
+                    auto pos = transposition_table.find(successors->front());
+                    if (pos == transposition_table.end()) {
+                        break;
+                    } else {
+                        successors = &(pos->second.successors);
                     }
+                    currdepth -= 1;
                 }
             }
             if (alpha >= beta) {
