@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10.0)
+cmake_minimum_required(VERSION 3.11.0)
 project(boardgames VERSION 0.1.1)
 
 option(BOARDGAMES_BUILD_TESTS                       "Build unit tests, downloads google test"                   ON)
@@ -7,7 +7,7 @@ option(BOARDGAMES_USE_EXTERNAL_JSON                 "Use external nlohmann json 
 option(BOARDGAMES_USE_EXTERNAL_ROBIN_HOOD_HASH      "Use external robin_hood hash table, download otherwise"    OFF)
 option(BOARDGAMES_USE_EXTERNAL_SML                  "Use external boost-ext sml, download otherwise"            OFF)
 
-set(PROJECT_RELEASE_YEAR    2020)
+set(PROJECT_RELEASE_YEAR    2021)
 set(PROJECT_RELEASE_MONTH   99)
 set(PROJECT_RELEASE_DAY     99)
 configure_file (
@@ -52,13 +52,17 @@ endif()
 if(BOARDGAMES_USE_EXTERNAL_JSON)
     find_package(nlohmann_json 3.4.0 REQUIRED)
 else()
-    include(DownloadProject)
-    download_project(PROJ   nlohmann_json
+    include(FetchContent)
+    FetchContent_Declare(nlohmann_json
         URL                 https://github.com/nlohmann/json/releases/download/v3.4.0/include.zip
         URL_HASH            SHA256=bfec46fc0cee01c509cf064d2254517e7fa80d1e7647fea37cf81d97c5682bdc
         UPDATE_DISCONNECTED 1
         QUIET
         )
+    FetchContent_GetProperties(nlohmann_json)
+    if(NOT nlohmann_json_POPULATED)
+        FetchContent_Populate(nlohmann_json)
+    endif()
     include_directories(${nlohmann_json_SOURCE_DIR})
 endif()
 

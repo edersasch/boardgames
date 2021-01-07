@@ -111,7 +111,7 @@ int Alpha_Beta<Key, Game, Hash>::engine(const Key& key, const int depth, int alp
         case No_Move_Policy::lose:
             return -winning_score;
         default:
-            return alpha;
+            return info.score;
         }
     }
     auto successors_copy = info.successors; // successors might get reordered during recursion
@@ -120,12 +120,12 @@ int Alpha_Beta<Key, Game, Hash>::engine(const Key& key, const int depth, int alp
             break;
         }
         auto score = -engine(n, depth - 1, -beta, -alpha);
+        if (depth > info.depth || (depth == info.depth && score > info.score)) {
+            info.depth = depth;
+            info.score = score;
+        }
         if (score > alpha) {
             alpha = score;
-            if (depth >= info.depth) {
-                info.depth = depth;
-                info.score = alpha;
-            }
             auto successors = &info.successors;
             auto it = std::find(successors->begin(), successors->end(), n);
             std::rotate(successors->begin(), it, it + 1);
@@ -149,7 +149,7 @@ int Alpha_Beta<Key, Game, Hash>::engine(const Key& key, const int depth, int alp
             }
         }
     }
-    return alpha;
+    return info.score;
 }
 
 }

@@ -44,7 +44,7 @@ depends on Qt, see "Build Requirements" below
 # Build Requirements
 
 * C++ 17 toolchain (e.g. [gcc](https://gcc.gnu.org/) >= 7.3.0)
-* [CMake](https://cmake.org) >= 3.10.0
+* [CMake](https://cmake.org) >= 3.11.0
 * [Qt](https://qt.io) >= 5.11.0 with Qml
 * [nlohmann/json](https://github.com/nlohmann/json/) >= 3.4.0, downloaded automatically if option `BOARDGAMES_USE_EXTERNAL_JSON` is `OFF` (license: [MIT](https://github.com/nlohmann/json/blob/v3.4.0/LICENSE.MIT))
 * [martinus/robin-hood-hashing](https://github.com/martinus/robin-hood-hashing) >= 3.8.0, downloaded automatically if option `BOARDGAMES_USE_EXTERNAL_ROBIN_HOOD_HASH` is `OFF` (license: [MIT](https://github.com/martinus/robin-hood-hashing/blob/3.8.0/LICENSE))
@@ -108,12 +108,6 @@ CMake file `CodeCoverage.cmake` adapted from
 is licensed under a BSD 3-Clause License included in the file itself: commented
 out `COMMAND ${LCOV_PATH} --gcov-tool ${GCOV_PATH} --remove ${Coverage_NAME}.total ${COVERAGE_LCOV_EXCLUDES} ...`
 and added `COMMAND ${LCOV_PATH} --gcov-tool ${GCOV_PATH} --extract ${Coverage_NAME}.total ${COVERAGE_LCOV_INCLUDES} ...`
-
-CMake files
-[DownloadProject.CMakeLists.cmake.in](https://github.com/Crascit/DownloadProject/blob/8adf96570b583fd1c280bed8f43a9a0528670cf4/DownloadProject.CMakeLists.cmake.in)
-and [DownloadProject.cmake](https://github.com/Crascit/DownloadProject/blob/26983dd7883acbabf6fd98968429f9af44186baf/DownloadProject.cmake)
-are licensed under
-[MIT License](https://github.com/Crascit/DownloadProject/blob/master/LICENSE) ([local copy](docs/LICENSE_Crascit_DownloadProject)).
 
 CMake file `DeployQt.cmake` adapted from <https://github.com/nitroshare/nitroshare-desktop/blob/f4feebef29d9d3985d1699ab36f0fac59d3df7da/cmake/DeployQt.cmake>
 is licensed under MIT License included in the file itself: added QML dirs
