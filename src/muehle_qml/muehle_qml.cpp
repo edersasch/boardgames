@@ -322,6 +322,8 @@ void Muehle_Qml::end_program()
     static constexpr int hundred_milliseconds = 100;
     static constexpr int stop_tries = 20;
     write_settings();
+    request_white_engine_active(false);
+    request_black_engine_active(false);
     muehle_state.stop_engine();
     for (int i = 0; i < stop_tries && muehle_state.is_engine_running(); i += 1) {
         std::this_thread::sleep_for(std::chrono::milliseconds(hundred_milliseconds)); // huge transition table needs time to free mem

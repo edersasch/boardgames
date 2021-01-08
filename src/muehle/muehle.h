@@ -32,6 +32,8 @@ constexpr int white_prison_in_key = 48;
 constexpr int black_prison_in_key = 51;
 constexpr int all_prisoners_in_key = 7;
 
+constexpr int free_field_factor = 16;
+
 using Muehle_Constellation = std::array<boardgame::Field_Number, number_of_pieces.v>;
 using Key_Diff = std::vector<std::pair<int, int>>;
 using Muehle_Key = std::bitset<55>; // 0-23 white board, 24-47 black board, 48-50 white BCD inmate count, 51-53 black BDC inmate count, 54 white's data if set

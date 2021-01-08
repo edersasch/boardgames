@@ -7,7 +7,7 @@
 namespace
 {
 
-constexpr std::array<std::array<int, 2>, 24> vertical_muehle {{
+constexpr std::array<std::array<int, 2>, muehle::number_of_board_fields.v> vertical_muehle {{
     {9, 21},
     {4, 7},
     {14, 23},
@@ -34,7 +34,7 @@ constexpr std::array<std::array<int, 2>, 24> vertical_muehle {{
     {2, 14}
 }};
 
-std::array<std::initializer_list<int>, 24> adjacent_fields {{
+std::array<std::initializer_list<int>, muehle::number_of_board_fields.v> adjacent_fields {{
     {1, 9},
     {0, 2, 4},
     {1, 14},
@@ -338,8 +338,6 @@ std::vector<Muehle_Key> Engine_Helper::successor_constellations(const Muehle_Key
 
 int Engine_Helper::evaluate(const Muehle_Key& key, int engine_winning_score)
 {
-    static constexpr int free_field_factor = 5;
-    static constexpr int prisoner_factor = 100;
     auto evaluate_free_fields = [](const Muehle_Key& ffkey){
         int free_fields_score = 0;
         auto offset = board_offset(ffkey);
@@ -350,17 +348,13 @@ int Engine_Helper::evaluate(const Muehle_Key& key, int engine_winning_score)
         }
         return free_fields_score;
     };
-    auto prisoners = prisoner_count(key);
-    auto other_prisoners = prisoner_count(switch_player(key));
-    if (prisoners == all_prisoners_in_key) {
+    if (prisoner_count(key) == all_prisoners_in_key) {
         return -engine_winning_score;
     }
-    if (other_prisoners == all_prisoners_in_key) {
+    if (prisoner_count(switch_player(key)) == all_prisoners_in_key) {
         return engine_winning_score;
     }
-    return static_cast<int>(evaluate_free_fields(key) * free_field_factor -
-            evaluate_free_fields(switch_player(key)) * free_field_factor +
-            ((other_prisoners - prisoners) * prisoner_factor));
+    return static_cast<int>((evaluate_free_fields(key) - evaluate_free_fields(switch_player(key))) * free_field_factor);
 }
 
 }

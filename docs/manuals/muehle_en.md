@@ -175,13 +175,11 @@ a box with the score of the current position:
 * The background color corresponds to the player with the better score.
 * The text is a plus sign and the score as a number.
 
-The score is added up from these criteria:
+The score is the difference in the number of possible destination fields for
+the pieces multiplied by 16.
 
-* Each piece more in the game than the opponent: +100
-* Each possible destination field for the own pieces more than the opponent: +5
-
-`+230` for example is a very good score: The current player has two pieces and
-six destination fields more than the opponent.
+`+64` for example means that the corresponding player can choose from four more
+fields to place a piece than the opponent.
 
 Then the symbol representing computation depth ![depth](../../data/depth.svg)
 is shown with the reached depth as number behind. The last info is three fields

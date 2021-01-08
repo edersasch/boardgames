@@ -188,13 +188,11 @@ ein Kästchen mit der Bewertung der aktuellen Stellung:
 * Die Hintergrundfarbe entspricht der des besser bewerteten Spielers.
 * Der Text ist ein Pluszeichen und die Bewertung als Zahl.
 
-Die Bewertung ergibt sich aus folgenden Kriterien:
+Die Bewertung ergibt sich aus dem Unterschied der Anzahl der möglichen
+Zielfelder für Spielsteine multipliziert mit 16.
 
-* Pro Spielstein mehr im Spiel als der Gegner: +100
-* Pro möglichem Zielfeld für die eigenen Spielsteine mehr als der Gegner: +5
-
-`+230` z.B. ist eine sehr gute Bewertung: Der aktuelle Spieler hat zwei Steine
-und sechs Zielfelder mehr als der Gegner.
+`+64` z.B. bedeutet, dass der entsprechende Spieler vier Felder mehr zur
+Verfügung hat als sein Gegner, um einen Stein darauf zu ziehen.
 
 Dann folgt das Symbol für die Rechentiefe ![depth](../../data/depth.svg) und
 die erreichte Tiefe als Zahl dahinter. Die letzte Information sind drei Felder

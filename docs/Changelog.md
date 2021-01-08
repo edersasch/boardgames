@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 Game info can be viewed, engine is faster, but needs more RAM. The project is
 now checked by [lgtm.com](https://lgtm.com/projects/g/edersasch/boardgames/).
+The software can be built for windows.
 
 The release is named after two persons: my uncle, who passed away in 2009 and
 and my mother's friend, whose journey ended in 2006.
@@ -18,6 +19,7 @@ and my mother's friend, whose journey ended in 2006.
 - game info: number of moves, time per player, engine forecast
 - transposition table for engine using [martinus/robin-hood-hashing](https://github.com/martinus/robin-hood-hashing)
 - english manual, chosen according to system language
+- windows build
 
 
 ### Changed
@@ -25,12 +27,15 @@ and my mother's friend, whose journey ended in 2006.
 - put version info in toplevel CMakeLists.txt, show in manual
 - clicking engine settings icons selects engine mode
 - Muehle_State uses [boost-ext/sml](https://github.com/boost-ext/sml) state machine framework
+- requires cmake 3.11 for FetchContent, no need for DownloadProject any more
+- evaluation uses only the difference in number of destination fields
 
 
 ### Fixed
 
 - lgtm.com alerts for 7f1ad0e
 - move list scrolling to highlighted button
+- clang tidy findings
 
 
 ## 0.1.0 "Klaus" - 2019-04-16

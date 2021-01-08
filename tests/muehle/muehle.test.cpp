@@ -25,28 +25,28 @@ std::vector<successor_info> successor_info_data {
         0,
         24,
         muehle::Muehle_Key("0000000000000000000000000000000000000000000000000000001"),
-        -10
+        2 * (-muehle::free_field_factor)
     },
     {
         muehle::Muehle_Key("1000000000000000110001000001000100010000000010000010000"),
-        20,
+        4 * muehle::free_field_factor,
         16,
         muehle::Muehle_Key("0000000000000000110001000001000100010000001010000010000"),
-        -35
+        7 * (-muehle::free_field_factor)
     },
     {
         muehle::Muehle_Key("1000000010100000110001100001011101010000001010010110100"),
-        30,
+        6 * muehle::free_field_factor,
         6,
         muehle::Muehle_Key("0000000010100000110001100001011101010000001100010110100"),
-        -25
+        5 * (-muehle::free_field_factor)
     },
     {
         muehle::Muehle_Key("0000000010101000110001000001011101010101000110000110000"),
-        -15,
+        3 * (-muehle::free_field_factor),
         11,
         muehle::Muehle_Key("1000001010101000010001000001111101000101000110000110000"),
-        -100
+        0
     }
 };
 

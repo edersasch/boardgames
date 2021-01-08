@@ -786,6 +786,7 @@ void Muehle_State::set_selectable_game_pieces()
         active_player(boardgame_ui, "");
         return;
     }
+    game_over = false;
     active_player(boardgame_ui, current_player->id);
     if (!current_player->engine_active) {
         if (fosp.size() == 1) {
