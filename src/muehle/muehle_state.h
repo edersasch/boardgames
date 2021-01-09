@@ -126,7 +126,7 @@ private:
     boardgame::Piece_Number selected_piece {};
     std::vector<boardgame::Piece_Number> selectable_pieces {};
     std::vector<boardgame::Field_Number> m_occupiable_fields {};
-    boardgame::Alpha_Beta<Muehle_Key, Engine_Helper, Muehle_Key_Hash> engine;
+    boardgame::Alpha_Beta<Muehle_Key, Engine_Helper, Muehle_Move_Data, Muehle_Key_Hash> engine;
     std::string import_string {};
     bool import_string_is_path {true};
     int move_id_to_set {-1};

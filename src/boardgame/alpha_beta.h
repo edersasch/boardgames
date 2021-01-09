@@ -13,7 +13,7 @@
 
 namespace boardgame {
 
-template <typename Key, typename Game, typename Hash = robin_hood::hash<Key>>
+template <typename Key, typename Game, typename Move_Data, typename Hash = robin_hood::hash<Key>>
 class Alpha_Beta
 {
 public:
@@ -22,7 +22,7 @@ public:
         draw,
         lose
     };
-    void start(const Key key);
+    void start(const Key key, const Move_Data& md = {});
     std::vector<Key> get_next() const { return next; }
     int get_score() const { return next_score; }
     int get_depth() const { return current_depth; }
@@ -36,8 +36,8 @@ private:
         int depth {0};
         std::vector<Key> successors;
     };
-    void iterative_depth(const Key& key);
-    int engine(const Key& key, const int depth, int alpha, const int beta);
+    void iterative_depth(const Key& key, const Move_Data& md);
+    int engine(const Key& key, const int depth, int alpha, const int beta, Move_Data& md);
     static constexpr int target_depth_default {9999};
     int target_depth {target_depth_default};
     int current_depth {0};
@@ -49,8 +49,8 @@ private:
     robin_hood::unordered_node_map<Key, Key_Info, Hash> transposition_table; // node map has stable references and pointers
 };
 
-template <typename Key, typename Game, typename Hash>
-void Alpha_Beta<Key, Game, Hash>::start(const Key key)
+template <typename Key, typename Game, typename Move_Data, typename Hash>
+void Alpha_Beta<Key, Game, Move_Data, Hash>::start(const Key key, const Move_Data& md)
 {
     if (running) {
         std::cerr << "alpha beta engine start, but running\n";
@@ -58,26 +58,27 @@ void Alpha_Beta<Key, Game, Hash>::start(const Key key)
     }
     running = true;
     stop_request = false;
-    iterative_depth(key);
+    iterative_depth(key, md);
     transposition_table.clear();
     stop_request = false;
     running = false;
 }
 
-template <typename Key, typename Game, typename Hash>
-void Alpha_Beta<Key, Game, Hash>::set_target_depth(int depth)
+template <typename Key, typename Game, typename Move_Data, typename Hash>
+void Alpha_Beta<Key, Game, Move_Data, Hash>::set_target_depth(int depth)
 {
     target_depth = depth > 0 ? depth : target_depth_default;
 }
 
 // private
 
-template <typename Key, typename Game, typename Hash>
-void Alpha_Beta<Key, Game, Hash>::iterative_depth(const Key& key)
+template <typename Key, typename Game, typename Move_Data, typename Hash>
+void Alpha_Beta<Key, Game, Move_Data, Hash>::iterative_depth(const Key& key, const Move_Data& md)
 {
     auto start_time = std::chrono::steady_clock::now();
     for (current_depth = 1; current_depth <= target_depth; current_depth += 1) {
-        engine(key, current_depth, -winning_score - 1, winning_score + 1);
+        auto md_copy = md;
+        engine(key, current_depth, -winning_score - 1, winning_score + 1, md_copy);
         auto end_time = std::chrono::steady_clock::now();
         std::chrono::milliseconds tdiff = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
         std::cerr << current_depth << " depth " << transposition_table.size() << " tt " << tdiff.count() << "ms\n";
@@ -87,8 +88,8 @@ void Alpha_Beta<Key, Game, Hash>::iterative_depth(const Key& key)
     }
 }
 
-template <typename Key, typename Game, typename Hash>
-int Alpha_Beta<Key, Game, Hash>::engine(const Key& key, const int depth, int alpha, const int beta)
+template <typename Key, typename Game, typename Move_Data, typename Hash>
+int Alpha_Beta<Key, Game, Move_Data, Hash>::engine(const Key& key, const int depth, int alpha, const int beta, Move_Data& md)
 {
     auto& info = transposition_table[key];
     if (depth == 0) {
@@ -119,10 +120,15 @@ int Alpha_Beta<Key, Game, Hash>::engine(const Key& key, const int depth, int alp
         if (stop_request) {
             break;
         }
-        auto score = -engine(n, depth - 1, -beta, -alpha);
+        auto move_score = Game::make_move(md, key, n, -winning_score - 1);
+        auto score = -engine(n, depth - 1, -beta, -alpha, md);
         if (depth > info.depth || (depth == info.depth && score > info.score)) {
             info.depth = depth;
             info.score = score;
+        }
+        Game::unmake_move(md, key, n);
+        if (move_score != -winning_score - 1) {
+            return move_score;
         }
         if (score > alpha) {
             alpha = score;

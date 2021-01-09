@@ -357,4 +357,19 @@ int Engine_Helper::evaluate(const Muehle_Key& key, int engine_winning_score)
     return static_cast<int>((evaluate_free_fields(key) - evaluate_free_fields(switch_player(key))) * free_field_factor);
 }
 
+int Engine_Helper::make_move(Muehle_Move_Data &md, const Muehle_Key &key, const Muehle_Key &successor, int invalid_score)
+{
+    (void)md;
+    (void)key;
+    (void)successor;
+    return invalid_score;
+}
+
+void Engine_Helper::unmake_move(Muehle_Move_Data &md, const Muehle_Key &key, const Muehle_Key &successor)
+{
+    (void)md;
+    (void)key;
+    (void)successor;
+}
+
 }

@@ -52,6 +52,10 @@ const std::vector<int>& free_adjacent_fields(const Muehle_Key& key, const std::s
 std::string diff_text(const boardgame::Field_Number_Diff& fndiff);
 Muehle_Key switch_player(const Muehle_Key& key);
 
+struct Muehle_Move_Data
+{
+};
+
 struct Muehle_Key_Hash
 {
     uint64_t operator()(const Muehle_Key& key) const { return key.to_ullong(); }
@@ -61,6 +65,8 @@ struct Engine_Helper
 {
     static std::vector<Muehle_Key> successor_constellations(const Muehle_Key& key);
     static int evaluate(const Muehle_Key& key, int engine_winning_score);
+    static int make_move(Muehle_Move_Data& md, const Muehle_Key& key, const Muehle_Key& successor, int invalid_score);
+    static void unmake_move(Muehle_Move_Data& md, const Muehle_Key& key, const Muehle_Key& successor);
 };
 
 }
