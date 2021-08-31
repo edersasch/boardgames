@@ -17,31 +17,34 @@ template <typename Key, typename Game, typename Move_Data, typename Hash = robin
 class Alpha_Beta
 {
 public:
-    static constexpr int winning_score {2'000'000'000};
+    /// -winning_score is used for lost game
+    static constexpr std::int32_t winning_score         {2'000'000'000};
+    static constexpr std::int32_t invalid_high_score    {winning_score + 1};
+    static constexpr std::int32_t invalid_low_score     {-winning_score - 1};
     enum class No_Move_Policy {
         draw,
         lose
     };
     void start(const Key key, const Move_Data& md = {});
     std::vector<Key> get_next() const { return next; }
-    int get_score() const { return next_score; }
-    int get_depth() const { return current_depth; }
+    std::int32_t get_score() const { return next_score; }
+    std::int32_t get_depth() const { return current_depth; }
     bool is_running() const { return running; }
     void stop_running() { stop_request = true; }
-    void set_target_depth(int depth);
+    void set_target_depth(std::int32_t depth);
 private:
     struct Key_Info
     {
-        int score {-winning_score - 1};
-        int depth {0};
+        std::int32_t score {invalid_low_score};
+        std::int32_t depth {0};
         std::vector<Key> successors;
     };
     void iterative_depth(const Key& key, const Move_Data& md);
-    int engine(const Key& key, const int depth, int alpha, const int beta, Move_Data& md);
-    static constexpr int target_depth_default {9999};
-    int target_depth {target_depth_default};
-    int current_depth {0};
-    int next_score {0};
+    std::int32_t engine(const Key& key, const std::int32_t depth, std::int32_t alpha, const std::int32_t beta, Move_Data& md);
+    static constexpr std::int32_t target_depth_default {9999};
+    std::int32_t target_depth {target_depth_default};
+    std::int32_t current_depth {0};
+    std::int32_t next_score {0};
     std::vector<Key> next;
     No_Move_Policy no_move_policy {No_Move_Policy::lose};
     std::atomic_bool running {false};
@@ -65,7 +68,7 @@ void Alpha_Beta<Key, Game, Move_Data, Hash>::start(const Key key, const Move_Dat
 }
 
 template <typename Key, typename Game, typename Move_Data, typename Hash>
-void Alpha_Beta<Key, Game, Move_Data, Hash>::set_target_depth(int depth)
+void Alpha_Beta<Key, Game, Move_Data, Hash>::set_target_depth(std::int32_t depth)
 {
     target_depth = depth > 0 ? depth : target_depth_default;
 }
@@ -78,7 +81,7 @@ void Alpha_Beta<Key, Game, Move_Data, Hash>::iterative_depth(const Key& key, con
     auto start_time = std::chrono::steady_clock::now();
     for (current_depth = 1; current_depth <= target_depth; current_depth += 1) {
         auto md_copy = md;
-        engine(key, current_depth, -winning_score - 1, winning_score + 1, md_copy);
+        engine(key, current_depth, invalid_low_score, invalid_high_score, md_copy);
         auto end_time = std::chrono::steady_clock::now();
         std::chrono::milliseconds tdiff = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
         std::cerr << current_depth << " depth " << transposition_table.size() << " tt " << tdiff.count() << "ms\n";
@@ -89,7 +92,7 @@ void Alpha_Beta<Key, Game, Move_Data, Hash>::iterative_depth(const Key& key, con
 }
 
 template <typename Key, typename Game, typename Move_Data, typename Hash>
-int Alpha_Beta<Key, Game, Move_Data, Hash>::engine(const Key& key, const int depth, int alpha, const int beta, Move_Data& md)
+std::int32_t Alpha_Beta<Key, Game, Move_Data, Hash>::engine(const Key& key, const std::int32_t depth, std::int32_t alpha, const std::int32_t beta, Move_Data& md)
 {
     auto& info = transposition_table[key];
     if (depth == 0) {
@@ -112,7 +115,7 @@ int Alpha_Beta<Key, Game, Move_Data, Hash>::engine(const Key& key, const int dep
         case No_Move_Policy::lose:
             return -winning_score;
         default:
-            return info.score;
+            return 0; // draw
         }
     }
     auto successors_copy = info.successors; // successors might get reordered during recursion
@@ -120,16 +123,17 @@ int Alpha_Beta<Key, Game, Move_Data, Hash>::engine(const Key& key, const int dep
         if (stop_request) {
             break;
         }
-        auto move_score = Game::make_move(md, key, n, -winning_score - 1);
+        auto move_score = Game::make_move(md, key, n, winning_score, invalid_low_score);
+        if (move_score != invalid_low_score) {
+            Game::unmake_move(md, key, n);
+            return move_score;
+        }
         auto score = -engine(n, depth - 1, -beta, -alpha, md);
         if (depth > info.depth || (depth == info.depth && score > info.score)) {
             info.depth = depth;
             info.score = score;
         }
         Game::unmake_move(md, key, n);
-        if (move_score != -winning_score - 1) {
-            return move_score;
-        }
         if (score > alpha) {
             alpha = score;
             auto successors = &info.successors;

@@ -113,9 +113,9 @@ void Multi_Move_List_Qml::change_move_color(const QString& old_color, const QStr
 
 void Multi_Move_List_Qml::chosen_move_list_path(const QVariant& file_url)
 {
-    emit QQmlProperty(file_dialog_root, "choose_move_list_file_existing").read().toBool() ?
-                request_move_list_import(file_url.toUrl().path().toStdString()) :
-                request_move_list_export(file_url.toUrl().path().toStdString());
+    QQmlProperty(file_dialog_root, "choose_move_list_file_existing").read().toBool() ?
+                emit request_move_list_import(file_url.toUrl().path().toStdString()) :
+                emit request_move_list_export(file_url.toUrl().path().toStdString());
 }
 
 }

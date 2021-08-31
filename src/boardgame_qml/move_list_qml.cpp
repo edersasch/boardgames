@@ -59,21 +59,22 @@ std::vector<QQuickItem*> Move_List_Qml::add_move(const int move_id, const std::s
         branches[id] = std::unique_ptr<QQuickItem>(branch_col);
         return QQmlProperty(branch_col, "buttons").read().value<QQuickItem*>();
     };
-    auto reparent_buttons = [this] (QQuickItem* src, QQuickItem* dest) {
-        for (auto button : src->childItems()) {
+    auto reparent_buttons = [this] (const auto& items, QQuickItem* dest) {
+        for (auto button : items) {
             auto buttonid = QQmlProperty(button, "move_id").read().value<int>();
             if (buttonid > current_move_id) {
                 button->setParentItem(dest);
             }
         }
     };
-    for (auto button : buttons->childItems()) {
+    const auto& items = buttons->childItems();
+    for (const auto& button : items) {
         if (auto buttonid = QQmlProperty(button, "move_id").read().value<int>(); buttonid > current_move_id) {
             auto buttons_to_move = make_branch(buttonid);
             while (buttons->parentItem()->childItems().length() > 2) {
                 buttons->parentItem()->childItems().at(1)->setParentItem(buttons_to_move->parentItem());
             }
-            reparent_buttons(buttons, buttons_to_move);
+            reparent_buttons(buttons->childItems(), buttons_to_move);
             break;
         }
     }
@@ -97,8 +98,8 @@ void Move_List_Qml::cut_off(const int move_id)
 {
     auto it = branches.find(move_id);
     if (it != branches.end()) {
-        auto reparent_buttons = [] (QQuickItem* src, QQuickItem* dest) {
-            for (auto button : src->childItems()) {
+        auto reparent_buttons = [] (const auto& items, QQuickItem* dest) {
+            for (const auto button : items) {
                 if (!QQmlProperty(button, "move_id").read().isNull()) {
                     button->setParentItem(dest);
                 }
@@ -114,9 +115,9 @@ void Move_List_Qml::cut_off(const int move_id)
             auto vonly_child = vParent->childItems().at(1);
             auto buttons_to_delete = QQmlProperty(vonly_child, "buttons").read().value<QQuickItem*>();
             auto branch_start_id = QQmlProperty(buttons_to_delete->childItems().at(2), "move_id").read().value<int>();
-            reparent_buttons(QQmlProperty(vonly_child, "buttons").read().value<QQuickItem*>(), vParent->childItems()[0]);
+            reparent_buttons(QQmlProperty(vonly_child, "buttons").read().value<QQuickItem*>()->childItems(), vParent->childItems().constFirst());
             while (vonly_child->childItems().length() > 1) {
-                vonly_child->childItems()[1]->setParentItem(vParent);
+                vonly_child->childItems().at(1)->setParentItem(vParent);
             }
             branches.erase(branches.find(branch_start_id));
         }

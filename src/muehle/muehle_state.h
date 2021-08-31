@@ -80,7 +80,8 @@ private:
     const boardgame::Boardgame_Ui boardgame_ui;
     const boardgame::Move_List_Ui move_list_ui;
     const boardgame::Main_Loop main_loop;
-    int move_list_hint {-1};
+    int move_list_hint {-1}; // TODO: add number of consecutive moves to hint
+    /// hint data: 0 = potential piece that "moved" (only relevant for first move), 1 = number_of_consecutive_boring_moves (see Muehle_Move_Data)
     std::unique_ptr<boardgame::Move_List<muehle::Muehle_Constellation, boardgame::Move_List_Ui>> move_list {};
     struct Player
     {

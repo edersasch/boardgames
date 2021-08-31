@@ -1,20 +1,25 @@
 #include "move_list_qml.test.h"
 
-#include <chrono>
-#include <thread>
-
 #include <QGuiApplication>
 #include <QQmlProperty>
+
+#include <chrono>
+#include <thread>
 
 using testing::_;
 using testing::Invoke;
 
-void processEvents()
+namespace
 {
-    while (qApp->hasPendingEvents()) {
+
+void processEvents(int times = 2)
+{
+    for (int i = 0; i < times; i += 1) {
         qApp->processEvents();
         std::this_thread::sleep_for(std::chrono::milliseconds(2));
     }
+}
+
 }
 
 Move_List_Qml_Test::Move_List_Qml_Test()
@@ -49,9 +54,10 @@ std::vector<QQuickItem*> Move_List_Qml_Test::add_sequence(int current_move_id, i
     if (expected_number_of_childItems == 0) {
         EXPECT_TRUE(entries.empty());
     } else {
-        auto parentbuttons = QQmlProperty(entries.at(0)->parentItem(), "buttons").read().value<QQuickItem*>();
+        const auto parentbuttons = QQmlProperty(entries.at(0)->parentItem(), "buttons").read().value<QQuickItem*>();
         EXPECT_EQ(expected_number_of_childItems, entries.at(0)->parentItem()->childItems().size());
-        for (auto button : parentbuttons->childItems()) {
+        const auto& items = parentbuttons->childItems();
+        for (const auto& button : items) {
             EXPECT_TRUE(QQmlProperty(button, "move_id").read().value<int>() <= current_move_id);
         }
         for (unsigned i = 1; i < entries.size(); i += 1) {

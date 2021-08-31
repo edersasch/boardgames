@@ -14,8 +14,6 @@
 #include <vector>
 #include <memory>
 
-void processEvents();
-
 class Move_List_Qml_Test_Slots
         : public QObject
 {

@@ -7,7 +7,7 @@
 namespace
 {
 
-constexpr std::array<std::array<int, 2>, muehle::number_of_board_fields.v> vertical_muehle {{
+constexpr std::array<std::array<std::int8_t, 2>, muehle::number_of_board_fields.v> vertical_muehle {{
     {9, 21},
     {4, 7},
     {14, 23},
@@ -34,7 +34,7 @@ constexpr std::array<std::array<int, 2>, muehle::number_of_board_fields.v> verti
     {2, 14}
 }};
 
-std::array<std::initializer_list<int>, muehle::number_of_board_fields.v> adjacent_fields {{
+std::array<std::initializer_list<std::int8_t>, muehle::number_of_board_fields.v> adjacent_fields {{
     {1, 9},
     {0, 2, 4},
     {1, 14},
@@ -61,7 +61,7 @@ std::array<std::initializer_list<int>, muehle::number_of_board_fields.v> adjacen
     {14, 22}
 }};
 
-constexpr std::array<const char*, 24> coordinate_names {
+constexpr std::array<const char[3], 24> coordinate_names {
     "A7",
     "D7",
     "G7",
@@ -88,11 +88,11 @@ constexpr std::array<const char*, 24> coordinate_names {
     "G1"
 };
 
-std::vector<int> fields_of_removable_pieces;
-std::vector<int> pieces_in_muehle;
-std::vector<int> free_fields_store;
-std::vector<int> fields_of_selectable_pieces_store;
-std::vector<int> free_adjacent_fields_store;
+std::vector<std::int32_t> fields_of_removable_pieces;
+std::vector<std::int32_t> pieces_in_muehle;
+std::vector<std::int32_t> free_fields_store;
+std::vector<std::int32_t> fields_of_selectable_pieces_store;
+std::vector<std::int32_t> free_adjacent_fields_store;
 std::vector<muehle::Muehle_Key> successors;
 
 std::size_t prison_offset(const muehle::Muehle_Key& key)
@@ -107,9 +107,9 @@ bool is_field_free(const muehle::Muehle_Key& key, const std::size_t field)
 }
 
 /// @param field < number_of_board_fields
-int number_of_free_adjacent_fields(const muehle::Muehle_Key& key, const std::size_t field)
+std::int32_t number_of_free_adjacent_fields(const muehle::Muehle_Key& key, const std::size_t field)
 {
-    auto check_free = [&key](const int f) {
+    auto check_free = [&key](const std::int32_t f) {
         return is_field_free(key, f);
     };
     return std::count_if(adjacent_fields.at(field).begin(), adjacent_fields.at(field).end(), check_free);
@@ -122,10 +122,20 @@ muehle::Muehle_Key increase_prisoner_count(const muehle::Muehle_Key& key)
 }
 
 /// @param prisoner < number_of_board_fields
-muehle::Muehle_Key to_prison(muehle::Muehle_Key key, const int prisoner)
+muehle::Muehle_Key to_prison(muehle::Muehle_Key key, const std::int32_t prisoner)
 {
     key.reset(prisoner + muehle::board_offset(key));
     return increase_prisoner_count(key);
+}
+
+bool is_boring_move(const muehle::Muehle_Key& key, const muehle::Muehle_Key& successor)
+{
+    if (muehle::game_phase(key) > 1) {
+        auto key_prisoner_count = muehle::prisoner_count(muehle::switch_player(key));
+        auto successor_prisoner_count = muehle::prisoner_count(successor);
+        return key_prisoner_count == successor_prisoner_count;
+    }
+    return false;
 }
 
 }
@@ -133,7 +143,7 @@ muehle::Muehle_Key to_prison(muehle::Muehle_Key key, const int prisoner)
 namespace muehle
 {
 
-int board_offset(const muehle::Muehle_Key& key)
+std::int32_t board_offset(const muehle::Muehle_Key& key)
 {
     return key.test(use_white_data_in_key) ? muehle::first_board_field.v : muehle::number_of_board_fields.v;
 }
@@ -161,23 +171,23 @@ Muehle_Key constellation_to_key(const Muehle_Constellation& constellation, const
     return key;
 }
 
-int game_phase(const Muehle_Key& key)
+std::int32_t game_phase(const Muehle_Key& key)
 {
-    static constexpr long all_active = 0xffffff;
-    static constexpr int six_prisoners = 6;
+    static constexpr std::int64_t all_active = 0xffffff;
+    static constexpr std::int32_t six_prisoners = 6;
     auto captured = prisoner_count(key);
     if (captured == six_prisoners) {
         return 3;
     }
-    long active = (key & (Muehle_Key(all_active) << board_offset(key))).count();
+    std::int64_t active = (key & (Muehle_Key(all_active) << board_offset(key))).count();
     return captured + active == number_of_pieces_per_player.v ? 2 : 1;
 }
 
 /// @return < number_of_board_fields
-const std::vector<int>& free_fields(const Muehle_Key& key)
+const std::vector<std::int32_t>& free_fields(const Muehle_Key& key)
 {
     free_fields_store.clear();
-    for (int f = 0U; f < number_of_board_fields.v; f += 1) {
+    for (std::int32_t f = 0U; f < number_of_board_fields.v; f += 1) {
         if (is_field_free(key, f)) {
             free_fields_store.push_back(f);
         }
@@ -186,10 +196,10 @@ const std::vector<int>& free_fields(const Muehle_Key& key)
 }
 
 /// @return < number_of_board_fields
-const std::vector<int>& fields_of_selectable_pieces(const Muehle_Key& key)
+const std::vector<std::int32_t>& fields_of_selectable_pieces(const Muehle_Key& key)
 {
     fields_of_selectable_pieces_store.clear();
-    int phase = game_phase(key);
+    std::int32_t phase = game_phase(key);
     if (phase == 1) {
         fields_of_selectable_pieces_store.push_back(drawer_field);
     } else {
@@ -205,7 +215,7 @@ const std::vector<int>& fields_of_selectable_pieces(const Muehle_Key& key)
 }
 
 /// @param startfield_of_piece < number_of_board_fields
-const std::vector<int>& occupiable_fields(const Muehle_Key& key, const int startfield_of_piece)
+const std::vector<std::int32_t>& occupiable_fields(const Muehle_Key& key, const std::int32_t startfield_of_piece)
 {
     return (game_phase(key) != 2) ?
                 free_fields(key) :
@@ -213,10 +223,10 @@ const std::vector<int>& occupiable_fields(const Muehle_Key& key, const int start
 }
 
 /// @param field < number_of_board_fields
-bool closed_muehle(const Muehle_Key& key, const int field)
+bool closed_muehle(const Muehle_Key& key, const std::int32_t field)
 {
     auto offset = board_offset(key);
-    auto muehle_on_fields = [key, offset] (int field_one, int field_two, int field_three) {
+    auto muehle_on_fields = [key, offset] (std::int32_t field_one, std::int32_t field_two, std::int32_t field_three) {
         return key[field_one + offset] && key[field_two + offset] && key[field_three + offset];
     };
 
@@ -233,13 +243,13 @@ bool closed_muehle(const Muehle_Key& key, const int field)
     return muehle_on_fields(field, field - 1, field - 2);
 }
 
-int64_t prisoner_count(const Muehle_Key& key)
+std::int64_t prisoner_count(const Muehle_Key& key)
 {
-    return static_cast<long>((key >> prison_offset(key)).to_ullong() & all_prisoners_in_key);
+    return static_cast<std::int64_t>((key >> prison_offset(key)).to_ullong() & all_prisoners_in_key);
 }
 
 /// @return < number_of_board_fields
-std::pair<std::vector<int>, Muehle_Key> occupy(Muehle_Key key, const int from, const int to)
+std::pair<std::vector<std::int32_t>, Muehle_Key> occupy(Muehle_Key key, const std::int32_t from, const std::int32_t to)
 {
     auto offset = board_offset(key);
     fields_of_removable_pieces.clear();
@@ -252,7 +262,7 @@ std::pair<std::vector<int>, Muehle_Key> occupy(Muehle_Key key, const int from, c
         if (closed_muehle(key, to)) {
             key.flip(use_white_data_in_key);
             offset = board_offset(key);
-            for (int i = 0; i < number_of_board_fields.v; i += 1) {
+            for (std::int32_t i = 0; i < number_of_board_fields.v; i += 1) {
                 if (key.test(i + offset)) {
                     if (!closed_muehle(key, i)) {
                         fields_of_removable_pieces.push_back(i);
@@ -271,7 +281,7 @@ std::pair<std::vector<int>, Muehle_Key> occupy(Muehle_Key key, const int from, c
 /// @param field < number_of_board_fields
 bool can_slide(const Muehle_Key& key, const std::size_t field)
 {
-    auto check_free = [&key](const int f) {
+    auto check_free = [&key](const std::int32_t f) {
         return is_field_free(key, f);
     };
     return std::find_if(adjacent_fields.at(field).begin(), adjacent_fields.at(field).end(), check_free) != adjacent_fields.at(field).end();
@@ -279,9 +289,9 @@ bool can_slide(const Muehle_Key& key, const std::size_t field)
 
 /// @param field < number_of_board_fields
 /// @return < number_of_board_fields
-const std::vector<int>& free_adjacent_fields(const Muehle_Key& key, const std::size_t field)
+const std::vector<std::int32_t>& free_adjacent_fields(const Muehle_Key& key, const std::size_t field)
 {
-    auto check_free = [&key](const int f) {
+    auto check_free = [&key](const std::int32_t f) {
         return is_field_free(key, f);
     };
     free_adjacent_fields_store.resize(adjacent_fields.at(field).size());
@@ -336,10 +346,10 @@ std::vector<Muehle_Key> Engine_Helper::successor_constellations(const Muehle_Key
     return successors;
 }
 
-int Engine_Helper::evaluate(const Muehle_Key& key, int engine_winning_score)
+std::int32_t Engine_Helper::evaluate(const Muehle_Key& key, std::int32_t engine_winning_score)
 {
     auto evaluate_free_fields = [](const Muehle_Key& ffkey){
-        int free_fields_score = 0;
+        std::int32_t free_fields_score = 0;
         auto offset = board_offset(ffkey);
         for (auto f = 0; f < number_of_board_fields.v; f += 1) {
             if (ffkey.test(f + offset)) {
@@ -354,22 +364,29 @@ int Engine_Helper::evaluate(const Muehle_Key& key, int engine_winning_score)
     if (prisoner_count(switch_player(key)) == all_prisoners_in_key) {
         return engine_winning_score;
     }
-    return static_cast<int>((evaluate_free_fields(key) - evaluate_free_fields(switch_player(key))) * free_field_factor);
+    return static_cast<std::int32_t>((evaluate_free_fields(key) - evaluate_free_fields(switch_player(key))) * free_field_factor);
 }
 
-int Engine_Helper::make_move(Muehle_Move_Data &md, const Muehle_Key &key, const Muehle_Key &successor, int invalid_score)
+std::int32_t Engine_Helper::make_move(Muehle_Move_Data &md, const Muehle_Key &key, const Muehle_Key &successor, std::int32_t engine_winning_score, std::int32_t engine_invalid_score)
 {
-    (void)md;
-    (void)key;
-    (void)successor;
-    return invalid_score;
+    (void)engine_winning_score; // not needed, checks lead to draw
+    md.prev_number_of_consecutive_boring_moves = md.number_of_consecutive_boring_moves;
+    if (is_boring_move(key, successor)) {
+        md.number_of_consecutive_boring_moves += 1;
+    } else {
+        md.number_of_consecutive_boring_moves = 0;
+    }
+    if (md.number_of_consecutive_boring_moves < 50) {
+        return engine_invalid_score;
+    }
+    return 0;
 }
 
 void Engine_Helper::unmake_move(Muehle_Move_Data &md, const Muehle_Key &key, const Muehle_Key &successor)
 {
-    (void)md;
-    (void)key;
-    (void)successor;
+    (void)key; // not needed, just set to previous value
+    (void)successor; // not needed, just set to previous value
+    md.number_of_consecutive_boring_moves = md.prev_number_of_consecutive_boring_moves;
 }
 
 }

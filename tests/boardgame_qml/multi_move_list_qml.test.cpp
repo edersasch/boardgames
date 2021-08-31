@@ -3,8 +3,24 @@
 #include <QGuiApplication>
 #include <QQmlProperty>
 
+#include <chrono>
+#include <thread>
+
 using testing::_;
 using testing::Invoke;
+
+namespace
+{
+
+void processEvents(int times = 2)
+{
+    for (int i = 0; i < times; i += 1) {
+        qApp->processEvents();
+        std::this_thread::sleep_for(std::chrono::milliseconds(2));
+    }
+}
+
+}
 
 Multi_Move_List_Qml_Test::Multi_Move_List_Qml_Test()
     : move_list_component(v.engine(), QUrl(QStringLiteral("qrc:/Move_List_Qml_Test.qml")))

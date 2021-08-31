@@ -19,41 +19,40 @@ struct successor_info
     int one_successor_score;
 };
 
-std::vector<successor_info> successor_info_data {
-     {
-        muehle::Muehle_Key("1000000000000000000000000000000000000000000000000000000"),
-        0,
-        24,
-        muehle::Muehle_Key("0000000000000000000000000000000000000000000000000000001"),
-        2 * (-muehle::free_field_factor)
-    },
-    {
-        muehle::Muehle_Key("1000000000000000110001000001000100010000000010000010000"),
-        4 * muehle::free_field_factor,
-        16,
-        muehle::Muehle_Key("0000000000000000110001000001000100010000001010000010000"),
-        7 * (-muehle::free_field_factor)
-    },
-    {
-        muehle::Muehle_Key("1000000010100000110001100001011101010000001010010110100"),
-        6 * muehle::free_field_factor,
-        6,
-        muehle::Muehle_Key("0000000010100000110001100001011101010000001100010110100"),
-        5 * (-muehle::free_field_factor)
-    },
-    {
-        muehle::Muehle_Key("0000000010101000110001000001011101010101000110000110000"),
-        3 * (-muehle::free_field_factor),
-        11,
-        muehle::Muehle_Key("1000001010101000010001000001111101000101000110000110000"),
-        0
-    }
-};
-
 }
 
 TEST(Muehle, test_initial_successor_constellations)
 {
+    std::vector<successor_info> successor_info_data {
+         {
+            muehle::Muehle_Key("1000000000000000000000000000000000000000000000000000000"),
+            0,
+            24,
+            muehle::Muehle_Key("0000000000000000000000000000000000000000000000000000001"),
+            2 * (-muehle::free_field_factor)
+        },
+        {
+            muehle::Muehle_Key("1000000000000000110001000001000100010000000010000010000"),
+            4 * muehle::free_field_factor,
+            16,
+            muehle::Muehle_Key("0000000000000000110001000001000100010000001010000010000"),
+            7 * (-muehle::free_field_factor)
+        },
+        {
+            muehle::Muehle_Key("1000000010100000110001100001011101010000001010010110100"),
+            6 * muehle::free_field_factor,
+            6,
+            muehle::Muehle_Key("0000000010100000110001100001011101010000001100010110100"),
+            5 * (-muehle::free_field_factor)
+        },
+        {
+            muehle::Muehle_Key("0000000010101000110001000001011101010101000110000110000"),
+            3 * (-muehle::free_field_factor),
+            11,
+            muehle::Muehle_Key("1000001010101000010001000001111101000101000110000110000"),
+            0
+        }
+    };
     for (auto sid : successor_info_data) {
         auto successors = muehle::Engine_Helper::successor_constellations(sid.start);
         EXPECT_EQ(sid.number_of_successors, successors.size());
