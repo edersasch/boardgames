@@ -116,84 +116,12 @@ RowLayout {
                 }
             }
 
-            Rectangle {
+            Image {
                 id: bg
-
-                color: "#ffffff"
-                Layout.fillHeight: true
+                source: "qrc:/muehle_field_bright.svg"
+                fillMode: Image.Stretch
                 Layout.fillWidth: true
-
-                Rectangle {
-                    id: outer
-
-                    width: parent.width * 0.88
-                    height: parent.height * 0.88
-                    color: "#000000"
-                    anchors.centerIn: parent
-                }
-
-                Rectangle {
-                    id: bg1
-
-                    width: parent.width * 0.85
-                    height: parent.height * 0.85
-                    color: "#ffffff"
-                    anchors.centerIn: parent
-                }
-
-                Rectangle {
-                    id: middle
-
-                    width: parent.width * 0.59
-                    height: parent.height * 0.59
-                    color: "#000000"
-                    anchors.centerIn: parent
-                }
-
-                Rectangle {
-                    id: bg2
-
-                    width: parent.width * 0.56
-                    height: parent.height * 0.56
-                    color: "#ffffff"
-                    anchors.centerIn: parent
-                }
-
-                Rectangle {
-                    id: inner
-
-                    width: parent.width * 0.3
-                    height: parent.height * 0.3
-                    color: "#000000"
-                    anchors.centerIn: parent
-                }
-
-                Rectangle {
-                    id: vertical_bar
-
-                    width: parent.width / 50 * 0.88
-                    height: parent.height * 0.88
-                    color: "#000000"
-                    anchors.centerIn: parent
-                }
-
-                Rectangle {
-                    id: horizontal_bar
-
-                    width: parent.width * 0.88
-                    height: parent.height / 50 * 0.88
-                    color: "#000000"
-                    anchors.centerIn: parent
-                }
-
-                Rectangle {
-                    id: bg_center
-
-                    width: parent.width * 0.27
-                    height: parent.height * 0.27
-                    color: "#ffffff"
-                    anchors.centerIn: parent
-                }
+                Layout.fillHeight: true
 
                 GridLayout {
                     anchors.fill: parent
