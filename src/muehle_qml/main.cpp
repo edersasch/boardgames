@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
     muehle_qml::Muehle_Qml mq(v.engine(), v.contentItem());
     v.setWidth(size.width());
     v.setHeight(size.height());
+    v.setIcon(QIcon(":/muehle_field_bright.svg"));
     v.show();
     auto ret = QGuiApplication::exec();
     size.setWidth(v.width());

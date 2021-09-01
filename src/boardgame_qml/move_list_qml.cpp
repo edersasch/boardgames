@@ -59,11 +59,11 @@ std::vector<QQuickItem*> Move_List_Qml::add_move(const int move_id, const std::s
         branches[id] = std::unique_ptr<QQuickItem>(branch_col);
         return QQmlProperty(branch_col, "buttons").read().value<QQuickItem*>();
     };
-    auto reparent_buttons = [this] (const auto& items, QQuickItem* dest) {
-        for (auto button : items) {
-            auto buttonid = QQmlProperty(button, "move_id").read().value<int>();
-            if (buttonid > current_move_id) {
-                button->setParentItem(dest);
+    auto reparent_buttons = [this] (const auto& button_container, QQuickItem* dest) {
+        for (auto rp_button : button_container) {
+            auto rp_buttonid = QQmlProperty(rp_button, "move_id").read().value<int>();
+            if (rp_buttonid > current_move_id) {
+                rp_button->setParentItem(dest);
             }
         }
     };
