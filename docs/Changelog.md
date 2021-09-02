@@ -6,8 +6,9 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## 0.1.1 "Hans" - unreleased
 
-Game info can be viewed, engine is faster, but needs more RAM. The project is
-now checked by [lgtm.com](https://lgtm.com/projects/g/edersasch/boardgames/).
+Game info can be viewed, engine is faster, but needs more RAM.
+Muehle game is draw if 50 consecutive moves without capturing a piece are played.
+The project is now checked by [lgtm.com](https://lgtm.com/projects/g/edersasch/boardgames/).
 The software can be built for windows.
 
 The release is named after two persons: my uncle, who passed away in 2009 and
@@ -20,6 +21,7 @@ and my mother's friend, whose journey ended in 2006.
 - transposition table for engine using [martinus/robin-hood-hashing](https://github.com/martinus/robin-hood-hashing)
 - english manual, chosen according to system language
 - windows build
+- draw muehle game if 50 consecutive moves without capturing a piece are played
 
 
 ### Changed
@@ -29,6 +31,8 @@ and my mother's friend, whose journey ended in 2006.
 - Muehle_State uses [boost-ext/sml](https://github.com/boost-ext/sml) state machine framework
 - requires cmake 3.11 for FetchContent, no need for DownloadProject any more
 - evaluation uses only the difference in number of destination fields
+- field is an svg file, also used as application icon
+- appimage build is based on ubuntu bionic
 
 
 ### Fixed

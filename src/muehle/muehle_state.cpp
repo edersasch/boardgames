@@ -215,8 +215,9 @@ struct Transition_Table
     }
 };
 
-struct Fsm
+class Fsm
 {
+public:
     Fsm(Muehle_State* action_handler) : ah(action_handler), fsm{this} {}
     auto& get_fsm()                                                                 { return fsm; }
     void start_new_game()                                                           { ah->start_new_game(); }
@@ -330,7 +331,7 @@ void Muehle_State::request_engine_active(const std::string& player_id, bool is_a
     engine_active(boardgame_ui, player_id, is_active);
 }
 
-void Muehle_State::request_set_move_and_branch(const int move_id, const int branch_id)
+void Muehle_State::request_set_move_and_branch(const std::int32_t move_id, const std::int32_t branch_id)
 {
     if (move_id != -1) {
         move_id_to_set = move_id;
@@ -339,10 +340,10 @@ void Muehle_State::request_set_move_and_branch(const int move_id, const int bran
     }
 }
 
-void Muehle_State::request_cut_off(const int move_id)
+void Muehle_State::request_cut_off(const std::int32_t move_id)
 {
-    int currm = move_list->get_current_move_id();
-    int currb = move_list->get_current_branch_start_id();
+    std::int32_t currm = move_list->get_current_move_id();
+    std::int32_t currb = move_list->get_current_branch_start_id();
     if (move_list->cut_off(move_id) &&
             (currm != move_list->get_current_move_id() ||
              currb != move_list->get_current_branch_start_id())) {
@@ -381,7 +382,7 @@ std::string Muehle_State::get_move_list_string() const
     return move_list->get_move_list_string();
 }
 
-void Muehle_State::set_engine_depth(int depth)
+void Muehle_State::set_engine_depth(std::int32_t depth)
 {
     if (depth) {
         set_engine_time(std::chrono::seconds(0)); // do not limit by time if depth gets set
@@ -496,7 +497,7 @@ void Muehle_State::set_occupiable_fields(const std::vector<int>& fns)
     }
 }
 
-void Muehle_State::set_occupiable_board_fields(const int field_number)
+void Muehle_State::set_occupiable_board_fields(const std::int32_t field_number)
 {
     set_occupiable_fields(muehle::occupiable_fields(make_key(), field_number));
 }
@@ -554,7 +555,7 @@ boardgame::Field_Number_Diff Muehle_State::diff_keys(Muehle_Key oldk, Muehle_Key
         std::vector<int> single_from;
         std::vector<int> single_to;
         auto offset = board_offset(oldk);
-        for (int i = 0; i < number_of_board_fields.v; i += 1) {
+        for (std::int32_t i = 0; i < number_of_board_fields.v; i += 1) {
             if (oldk.test(i + offset) && !newk.test(i + offset)) {
                 single_from.push_back(i);
             } else {
@@ -624,7 +625,7 @@ void Muehle_State::new_move_list()
     std::vector<int>{current_player == &white_player ? muehle::first_black_piece.v : muehle::first_white_piece.v}); // initial position, hint is the potential piece that "moved"
 }
 
-int Muehle_State::count_moves() const
+std::int32_t Muehle_State::count_moves() const
 {
     return move_list->count_predecessors_if([](std::vector<int> hint) -> bool {
         return hint[0] < muehle::first_black_piece.v;
@@ -641,7 +642,7 @@ void Muehle_State::start_new_game()
     set_selected_piece(boardgame::no_piece); // stop highlighting last field of potential previous setup mode
     std::fill(all_fields.begin(), all_fields.end(), boardgame::no_piece);
     std::fill(current_constellation.begin(), current_constellation.end(), boardgame::no_field);
-    for (int i = 0; i < muehle::number_of_pieces_per_player.v; i += 1) {
+    for (std::int32_t i = 0; i < muehle::number_of_pieces_per_player.v; i += 1) {
         set_field_helper(boardgame::Piece_Number{muehle::first_white_piece.v + i}, boardgame::Field_Number{muehle::first_white_drawer_field.v + i});
         set_field_helper(boardgame::Piece_Number{muehle::first_black_piece.v + i}, boardgame::Field_Number{muehle::first_black_drawer_field.v + i});
     }
@@ -762,7 +763,7 @@ void Muehle_State::set_move_and_branch()
         set_selected_piece(boardgame::no_piece);
         std::fill(all_fields.begin(), all_fields.end(), boardgame::no_piece);
         std::fill(current_constellation.begin(), current_constellation.end(), boardgame::no_field);
-        for (int i = 0; i < static_cast<int>(move_list->constellation().size()); i += 1) {
+        for (std::int32_t i = 0; i < static_cast<int>(move_list->constellation().size()); i += 1) {
             set_field_helper(boardgame::Piece_Number{i}, move_list->constellation().at(static_cast<std::size_t>(i)));
         }
         set_player_on_hint(move_list->hint());
@@ -778,6 +779,25 @@ void Muehle_State::set_selectable_game_pieces()
     }
     movecount(boardgame_ui, count_moves());
     current_key = make_key();
+    std::int32_t boring_move_count = 0;
+    auto successor_key = current_key;
+    auto move_id = move_list->get_predecessor_move_id(move_list->get_current_move_id());
+    while (move_id != boardgame::Move_List<muehle::Muehle_Constellation, boardgame::Move_List_Ui>::invalid_id) {
+        auto key = constellation_to_key(move_list->constellation(move_id), !successor_key.test(use_white_data_in_key));
+        if (is_boring_move(key, successor_key)) {
+            boring_move_count += 1;
+            successor_key = key;
+            move_id = move_list->get_predecessor_move_id(move_id);
+        } else {
+            break;
+        }
+    }
+    if (boring_move_count >= 50) {
+        game_over = true;
+        draw(boardgame_ui);
+        active_player(boardgame_ui, "");
+        return;
+    }
     auto fosp = muehle::fields_of_selectable_pieces(current_key);
     if (fosp.empty() ||
             boardgame::first_empty_field(current_player->prison_group) == boardgame::no_field) {
@@ -805,8 +825,10 @@ void Muehle_State::set_selectable_game_pieces()
     } else {
         fsm->get_fsm().process_event(Trigger_Engine_Started());
         set_selected_piece(boardgame::no_piece);
-        engine_future(main_loop, std::async(std::launch::async, [this]() {
-            engine.start(current_key);
+        engine_future(main_loop, std::async(std::launch::async, [this, boring_move_count] {
+            Muehle_Move_Data md;
+            md.number_of_consecutive_boring_moves_stack.push_back(boring_move_count);
+            engine.start(current_key, md);
         }));
     }
 }

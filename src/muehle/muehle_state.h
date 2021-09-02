@@ -57,16 +57,16 @@ public:
     void request_select_piece(const boardgame::Piece_Number pn);
     void request_occupy(const boardgame::Field_Number fn);
     void request_engine_active(const std::string& player_id, bool is_active);
-    void request_set_move_and_branch(const int move_id, const int branch_id = -1);
-    void request_cut_off(const int move_id);
+    void request_set_move_and_branch(const std::int32_t move_id, const std::int32_t branch_id = -1);
+    void request_cut_off(const std::int32_t move_id);
     void request_move_list_forward();
     void request_move_list_back();
     void request_move_list_import(const std::string& import, bool is_path = true);
     bool request_move_list_export(const std::string& path) const;
     std::string get_move_list_string() const;
-    int get_move_id() const { return move_list->get_current_move_id(); }
-    int get_branch_start_id() const { return move_list->get_current_branch_start_id(); }
-    void set_engine_depth(int depth);
+    std::int32_t get_move_id() const { return move_list->get_current_move_id(); }
+    std::int32_t get_branch_start_id() const { return move_list->get_current_branch_start_id(); }
+    void set_engine_depth(std::int32_t depth);
     void set_engine_time(std::chrono::seconds time_in_s);
     void engine_move();
     void stop_engine(); // also fsm action
@@ -80,8 +80,8 @@ private:
     const boardgame::Boardgame_Ui boardgame_ui;
     const boardgame::Move_List_Ui move_list_ui;
     const boardgame::Main_Loop main_loop;
-    int move_list_hint {-1}; // TODO: add number of consecutive moves to hint
-    /// hint data: 0 = potential piece that "moved" (only relevant for first move), 1 = number_of_consecutive_boring_moves (see Muehle_Move_Data)
+    std::int32_t move_list_hint {-1};
+    /// hint data: 0 = potential piece that "moved" (only relevant for first move)
     std::unique_ptr<boardgame::Move_List<muehle::Muehle_Constellation, boardgame::Move_List_Ui>> move_list {};
     struct Player
     {
@@ -102,7 +102,7 @@ private:
     void set_removable_pieces(const std::vector<int>& fns);
     std::vector<int> occupiable_empty_board_fields() { return muehle::free_fields(make_key()); }
     void set_occupiable_fields(const std::vector<int>& fns);
-    void set_occupiable_board_fields(const int field_number);
+    void set_occupiable_board_fields(const std::int32_t field_number);
     void set_occupiable_empty_board_fields();
     void set_occupiable_empty_fields();
     void check_hide_drawer() const;
@@ -112,7 +112,7 @@ private:
     void set_player_on_hint(const std::vector<int>& hint);
     void modified_if_not_start_constellation();
     void new_move_list();
-    int count_moves() const;
+    std::int32_t count_moves() const;
     const boardgame::Piecegroup<decltype(current_constellation.cbegin())> white_pieces { make_piecegroup(current_constellation, muehle::first_white_piece, muehle::number_of_pieces_per_player) };
     const boardgame::Piecegroup<decltype(current_constellation.cbegin())> black_pieces { make_piecegroup(current_constellation, muehle::first_black_piece, muehle::number_of_pieces_per_player) };
     const boardgame::Fieldgroup<decltype(all_fields.cbegin())> game_board { make_fieldgroup(all_fields, muehle::first_board_field, muehle::number_of_board_fields) };
@@ -130,8 +130,8 @@ private:
     boardgame::Alpha_Beta<Muehle_Key, Engine_Helper, Muehle_Move_Data, Muehle_Key_Hash> engine;
     std::string import_string {};
     bool import_string_is_path {true};
-    int move_id_to_set {-1};
-    int branch_id_to_set {-1};
+    std::int32_t move_id_to_set {boardgame::Move_List<muehle::Muehle_Constellation, boardgame::Move_List_Ui>::invalid_id};
+    std::int32_t branch_id_to_set {boardgame::Move_List<muehle::Muehle_Constellation, boardgame::Move_List_Ui>::invalid_id};
     bool game_over {false};
     std::chrono::time_point<std::chrono::steady_clock> last_time_accounting;
     Fsm* fsm;

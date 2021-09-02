@@ -31,7 +31,7 @@ public:
     Muehle_Qml(QQmlEngine* engine, QQuickItem* parentItem);
 
     // Boardgame_Ui functions
-    friend void draw(Muehle_Qml* mui) { (void)mui; } // muehle has no draw
+    friend void draw(Muehle_Qml* mui);
     friend void win(Muehle_Qml* mui, const std::string& player);
     friend void drawer_can_hide(Muehle_Qml* ui, const std::string& player_id, const bool can_hide) { ui->board_property(player_id + "_drawer_can_hide").write(can_hide); }
     friend void prison_can_hide(Muehle_Qml* ui, const std::string& player_id, const bool can_hide) { ui->board_property(player_id + "_prison_can_hide").write(can_hide); }
@@ -46,10 +46,10 @@ public:
     friend void engine_active(const Muehle_Qml* ui, const std::string& player_id, const bool is_active) { QQmlProperty(ui->control.get(), (player_id + "_engine_active").c_str()).write(is_active); }
     friend void active_player(const Muehle_Qml* ui, const std::string& player_id);
     friend void need_confirm(Muehle_Qml* ui, const bool is_needed) { QQmlProperty(ui->control.get(), "confirm").write(is_needed); }
-    friend void movecount(Muehle_Qml* ui, const int count) { QQmlProperty(ui->control.get(), "movecount").write(count); }
+    friend void movecount(Muehle_Qml* ui, const std::int32_t count) { QQmlProperty(ui->control.get(), "movecount").write(count); }
     friend void time_accounting_correct(Muehle_Qml* ui, const bool is_correct) { QQmlProperty(ui->control.get(), "time_accounting_correct").write(is_correct); }
     friend void player_time(const Muehle_Qml* ui, const std::string& player_id, const std::chrono::milliseconds time_in_ms);
-    friend void engine_forecast(const Muehle_Qml* ui, const int score, const int depth, const std::vector<std::string>& descriptions);
+    friend void engine_forecast(const Muehle_Qml* ui, const std::int32_t score, const std::int32_t depth, const std::vector<std::string>& descriptions);
 
     // Main_Loop functions
     friend void engine_future(Muehle_Qml* ml, std::future<void>&& efu) { ml->wait_for_engine_move(std::move(efu)); }

@@ -14,13 +14,20 @@
 namespace muehle_qml
 {
 
+void draw(Muehle_Qml* ui)
+{
+    for (std::int32_t i = muehle::first_white_piece.v; i < muehle::number_of_pieces.v; i += 1) {
+        QQmlProperty(ui->pieces.at(i).get(), "state").write("draw");
+    }
+}
+
 void win(Muehle_Qml* ui, const std::string& player)
 {
     auto first_piece = muehle::first_white_piece;
     if (player == muehle::black_id) {
         first_piece = muehle::first_black_piece;
     }
-    for (int i = first_piece.v; i < first_piece.v + muehle::number_of_pieces_per_player.v; i += 1) {
+    for (std::int32_t i = first_piece.v; i < first_piece.v + muehle::number_of_pieces_per_player.v; i += 1) {
         QQmlProperty(ui->pieces.at(i).get(), "state").write("win");
     }
 }
@@ -41,7 +48,7 @@ void active_player(const Muehle_Qml* ui, const std::string& player_id)
 
 void player_time(const Muehle_Qml* ui, const std::string& player_id, const std::chrono::milliseconds time_in_ms)
 {
-    static constexpr int seconds_per_minute = 60;
+    static constexpr std::int32_t seconds_per_minute = 60;
     auto s_count = std::chrono::round<std::chrono::seconds>(time_in_ms).count();
     QString seconds = QString::number(s_count % seconds_per_minute);
     if (seconds.size() == 1) {
@@ -56,7 +63,7 @@ void player_time(const Muehle_Qml* ui, const std::string& player_id, const std::
     }
 }
 
-void engine_forecast(const Muehle_Qml* ui, const int score, const int depth, const std::vector<std::string>& descriptions)
+void engine_forecast(const Muehle_Qml* ui, const std::int32_t score, const std::int32_t depth, const std::vector<std::string>& descriptions)
 {
     QString ef1;
     QString ef2;
@@ -88,9 +95,9 @@ Muehle_Qml::Muehle_Qml(QQmlEngine* engine, QQuickItem* parentItem)
     , field_component(engine, QUrl(QStringLiteral("qrc:/Field.qml")))
     , move_lists(engine, {board_item("v_move_list"), board_item("h_move_list")}, "Boardgame Muehle", "bgmu")
 {
-    static constexpr int one_second_in_milliseconds = 1000;
-    auto fillPieces = [this](const std::string& color, int offset = 0) {
-        for (int i = 0; i < muehle::number_of_pieces_per_player.v; i += 1) {
+    static constexpr std::int32_t one_second_in_milliseconds = 1000;
+    auto fillPieces = [this](const std::string& color, std::int32_t offset = 0) {
+        for (std::int32_t i = 0; i < muehle::number_of_pieces_per_player.v; i += 1) {
             pieces.emplace_back(qobject_cast<QQuickItem*>(piece_component.create()));
             QQmlProperty(pieces.back().get(), "next_color").write(color.c_str());
             QQmlProperty(pieces.back().get(), "piece_id").write(i + offset);
@@ -99,15 +106,15 @@ Muehle_Qml::Muehle_Qml(QQmlEngine* engine, QQuickItem* parentItem)
             connect(pieces.back().get(), SIGNAL(selected(int)), this, SLOT(selected(int)));
         }
     };
-    auto fillFields = [this](const std::string& repeaterName, int offset, std::vector<int> skip = {}, const std::string& altrepeaterName = {}) {
+    auto fillFields = [this](const std::string& repeaterName, std::int32_t offset, std::vector<int> skip = {}, const std::string& altrepeaterName = {}) {
         auto repeater = board_item(repeaterName);
         QQuickItem* altrepeater = nullptr;
         if (!altrepeaterName.empty()) {
             altrepeater = board_item(altrepeaterName);
         }
         auto checkSkip = skip.begin();
-        int fieldNumber = 0;
-        for (int i = 0; i < QQmlProperty(repeater, "count").read().toInt(); i += 1) {
+        std::int32_t fieldNumber = 0;
+        for (std::int32_t i = 0; i < QQmlProperty(repeater, "count").read().toInt(); i += 1) {
             if (checkSkip == skip.end() || *checkSkip != i) {
                 QQuickItem* item = nullptr;
                 QQuickItem* altitem = nullptr;
@@ -150,7 +157,7 @@ Muehle_Qml::Muehle_Qml(QQmlEngine* engine, QQuickItem* parentItem)
     fillFields("black_h_prison_fields", muehle::first_black_prison_field.v, {}, "black_v_prison_fields");
     connect(control.get(), SIGNAL(horizontal()), this, SLOT(use_main_field()));
     connect(control.get(), SIGNAL(vertical()), this, SLOT(use_alternative_field()));
-    connect(&move_lists, &boardgame_qml::Multi_Move_List_Qml::request_set_current_move_and_branch_start_id, this, [this](const int move_id) {
+    connect(&move_lists, &boardgame_qml::Multi_Move_List_Qml::request_set_current_move_and_branch_start_id, this, [this](const std::int32_t move_id) {
         muehle_state.request_set_move_and_branch(move_id);
     });
     connect(&move_lists, &boardgame_qml::Multi_Move_List_Qml::request_move_list_forward, this, [this]() {
@@ -165,10 +172,10 @@ Muehle_Qml::Muehle_Qml(QQmlEngine* engine, QQuickItem* parentItem)
     connect(&move_lists, &boardgame_qml::Multi_Move_List_Qml::request_move_list_export, this, [this](const std::string& url) {
         muehle_state.request_move_list_export(url);
     });
-    connect(&move_lists, &boardgame_qml::Multi_Move_List_Qml::request_delete_branch, this, [this](const int move_id) {
+    connect(&move_lists, &boardgame_qml::Multi_Move_List_Qml::request_delete_branch, this, [this](const std::int32_t move_id) {
         muehle_state.request_cut_off(move_id);
     });
-    connect(&move_lists, &boardgame_qml::Multi_Move_List_Qml::added_move, this, [this](const int move_id, const int piece_number) {
+    connect(&move_lists, &boardgame_qml::Multi_Move_List_Qml::added_move, this, [this](const std::int32_t move_id, const std::int32_t piece_number) {
         move_lists.set_move_color(move_id, board_property((piece_number >= muehle::first_black_piece.v) ? std::string("black_color") : std::string("white_color")).read().toString().toStdString());
     });
     connect(this, &Muehle_Qml::engine_move, this, [this] {
@@ -252,14 +259,14 @@ void Muehle_Qml::show_help() const
 
 void Muehle_Qml::read_settings()
 {
-    static constexpr int whiteR = 0xff;
-    static constexpr int whiteG = 0xfe;
-    static constexpr int whiteB = 0xcc;
-    static constexpr int blackR = 0x66;
-    static constexpr int blackG = 0x33;
-    static constexpr int blackB = 0x33;
-    static constexpr int default_engine_time_in_s = 4;
-    static constexpr int default_engine_depth = 5;
+    static constexpr std::int32_t whiteR = 0xff;
+    static constexpr std::int32_t whiteG = 0xfe;
+    static constexpr std::int32_t whiteB = 0xcc;
+    static constexpr std::int32_t blackR = 0x66;
+    static constexpr std::int32_t blackG = 0x33;
+    static constexpr std::int32_t blackB = 0x33;
+    static constexpr std::int32_t default_engine_time_in_s = 4;
+    static constexpr std::int32_t default_engine_depth = 5;
     settings.beginGroup("Ui");
     auto wc = settings.value("white_color", QColor(whiteR, whiteG, whiteB)).toString();
     auto bc = settings.value("black_color", QColor(blackR, blackG, blackB)).toString();
@@ -319,20 +326,20 @@ void Muehle_Qml::write_settings()
 
 void Muehle_Qml::end_program()
 {
-    static constexpr int hundred_milliseconds = 100;
-    static constexpr int stop_tries = 20;
+    static constexpr std::int32_t hundred_milliseconds = 100;
+    static constexpr std::int32_t stop_tries = 20;
     write_settings();
     request_white_engine_active(false);
     request_black_engine_active(false);
     muehle_state.stop_engine();
-    for (int i = 0; i < stop_tries && muehle_state.is_engine_running(); i += 1) {
+    for (std::int32_t i = 0; i < stop_tries && muehle_state.is_engine_running(); i += 1) {
         std::this_thread::sleep_for(std::chrono::milliseconds(hundred_milliseconds)); // huge transition table needs time to free mem
     }
 }
 
 void Muehle_Qml::wait_for_engine_move(std::future<void>&& efu)
 {
-    static constexpr int half_a_second_in_milliseconds = 500;
+    static constexpr std::int32_t half_a_second_in_milliseconds = 500;
     if (!efu.valid()) {
         std::cerr << "no engine thread!\n";
         return;
@@ -360,14 +367,14 @@ void Muehle_Qml::wait_for_engine_move(std::future<void>&& efu)
 void Muehle_Qml::color_change(const std::string& color_property_name, const QString& player_active_property_name, const QString& new_color,  boardgame::Piece_Number first_piece, boardgame::Field_Number first_prison_field)
 {
     auto old_color = board_property(color_property_name).read().toString();
-    for (int i = first_piece.v; i < first_piece.v + muehle::number_of_pieces_per_player.v; i += 1) {
+    for (std::int32_t i = first_piece.v; i < first_piece.v + muehle::number_of_pieces_per_player.v; i += 1) {
         QQmlProperty(pieces.at(i).get(), "next_color").write(new_color);
     }
     if (QQmlProperty(control.get(), player_active_property_name).read().toBool()) {
-        for (int i = muehle::first_board_field.v; i < muehle::first_board_field.v + muehle::number_of_board_fields.v; i += 1) {
+        for (std::int32_t i = muehle::first_board_field.v; i < muehle::first_board_field.v + muehle::number_of_board_fields.v; i += 1) {
             QQmlProperty(fields.at(i).get(), "hint_color").write(new_color);
         }
-        for (int i = first_prison_field.v; i < first_prison_field.v + muehle::number_of_prison_fields.v; i += 1) {
+        for (std::int32_t i = first_prison_field.v; i < first_prison_field.v + muehle::number_of_prison_fields.v; i += 1) {
             QQmlProperty(fields.at(i).get(), "hint_color").write(new_color);
         }
     }

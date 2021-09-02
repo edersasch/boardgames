@@ -97,6 +97,13 @@ Rectangle {
                     piece.color = piece.next_color; // break binding to next_color without flicker
                 }
             }
+        },
+        State {
+            name: "draw"
+            PropertyChanges {
+                target: piece
+                scale: 0.3
+            }
         }
     ]
     transitions: [

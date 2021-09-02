@@ -128,16 +128,6 @@ muehle::Muehle_Key to_prison(muehle::Muehle_Key key, const std::int32_t prisoner
     return increase_prisoner_count(key);
 }
 
-bool is_boring_move(const muehle::Muehle_Key& key, const muehle::Muehle_Key& successor)
-{
-    if (muehle::game_phase(key) > 1) {
-        auto key_prisoner_count = muehle::prisoner_count(muehle::switch_player(key));
-        auto successor_prisoner_count = muehle::prisoner_count(successor);
-        return key_prisoner_count == successor_prisoner_count;
-    }
-    return false;
-}
-
 }
 
 namespace muehle
@@ -328,6 +318,16 @@ Muehle_Key switch_player(const Muehle_Key& key)
     return Muehle_Key(key).flip(use_white_data_in_key);
 }
 
+bool is_boring_move(const muehle::Muehle_Key& key, const muehle::Muehle_Key& successor)
+{
+    if (muehle::game_phase(key) > 1) {
+        auto key_prisoner_count = muehle::prisoner_count(muehle::switch_player(key));
+        auto successor_prisoner_count = muehle::prisoner_count(successor);
+        return key_prisoner_count == successor_prisoner_count;
+    }
+    return false;
+}
+
 std::vector<Muehle_Key> Engine_Helper::successor_constellations(const Muehle_Key& key)
 {
     successors.clear();
@@ -370,23 +370,19 @@ std::int32_t Engine_Helper::evaluate(const Muehle_Key& key, std::int32_t engine_
 std::int32_t Engine_Helper::make_move(Muehle_Move_Data &md, const Muehle_Key &key, const Muehle_Key &successor, std::int32_t engine_winning_score, std::int32_t engine_invalid_score)
 {
     (void)engine_winning_score; // not needed, checks lead to draw
-    md.prev_number_of_consecutive_boring_moves = md.number_of_consecutive_boring_moves;
     if (is_boring_move(key, successor)) {
-        md.number_of_consecutive_boring_moves += 1;
+        md.number_of_consecutive_boring_moves_stack.push_back(md.number_of_consecutive_boring_moves_stack.back() + 1);
     } else {
-        md.number_of_consecutive_boring_moves = 0;
+        md.number_of_consecutive_boring_moves_stack.push_back(0);
     }
-    if (md.number_of_consecutive_boring_moves < 50) {
-        return engine_invalid_score;
-    }
-    return 0;
+    return md.number_of_consecutive_boring_moves_stack.back() < 50 ? engine_invalid_score : 0;
 }
 
 void Engine_Helper::unmake_move(Muehle_Move_Data &md, const Muehle_Key &key, const Muehle_Key &successor)
 {
     (void)key; // not needed, just set to previous value
     (void)successor; // not needed, just set to previous value
-    md.number_of_consecutive_boring_moves = md.prev_number_of_consecutive_boring_moves;
+    md.number_of_consecutive_boring_moves_stack.pop_back();
 }
 
 }

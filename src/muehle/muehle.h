@@ -50,11 +50,11 @@ bool can_slide(const Muehle_Key& key, const std::size_t field);
 const std::vector<std::int32_t>& free_adjacent_fields(const Muehle_Key& key, const std::size_t field);
 std::string diff_text(const boardgame::Field_Number_Diff& fndiff);
 Muehle_Key switch_player(const Muehle_Key& key);
+bool is_boring_move(const muehle::Muehle_Key& key, const muehle::Muehle_Key& successor);
 
 struct Muehle_Move_Data
 {
-    std::int32_t number_of_consecutive_boring_moves = {0};
-    std::int32_t prev_number_of_consecutive_boring_moves = {0};
+    std::vector<std::int32_t> number_of_consecutive_boring_moves_stack;
 };
 
 struct Muehle_Key_Hash
