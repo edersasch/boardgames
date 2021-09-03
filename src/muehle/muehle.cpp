@@ -367,22 +367,30 @@ std::int32_t Engine_Helper::evaluate(const Muehle_Key& key, std::int32_t engine_
     return static_cast<std::int32_t>((evaluate_free_fields(key) - evaluate_free_fields(switch_player(key))) * free_field_factor);
 }
 
-std::int32_t Engine_Helper::make_move(Muehle_Move_Data &md, const Muehle_Key &key, const Muehle_Key &successor, std::int32_t engine_winning_score, std::int32_t engine_invalid_score)
+std::int32_t Engine_Helper::make_move(Muehle_Move_Data& md, const Muehle_Key& key, const Muehle_Key& successor, std::int32_t engine_winning_score, std::int32_t engine_invalid_score)
 {
     (void)engine_winning_score; // not needed, checks lead to draw
     if (is_boring_move(key, successor)) {
-        md.number_of_consecutive_boring_moves_stack.push_back(md.number_of_consecutive_boring_moves_stack.back() + 1);
+        md.consecutive_boring_moves.push_back(md.consecutive_boring_moves.back() + 1);
+        auto& v = md.key_occurence[successor];
+        v.push_back(1); // value does not matter during engine run
+        if (v.size() == 3) {
+            return 0;
+        }
     } else {
-        md.number_of_consecutive_boring_moves_stack.push_back(0);
+        md.consecutive_boring_moves.push_back(0);
     }
-    return md.number_of_consecutive_boring_moves_stack.back() < 50 ? engine_invalid_score : 0;
+    return md.consecutive_boring_moves.back() < 50 ? engine_invalid_score : 0;
 }
 
-void Engine_Helper::unmake_move(Muehle_Move_Data &md, const Muehle_Key &key, const Muehle_Key &successor)
+void Engine_Helper::unmake_move(Muehle_Move_Data& md, const Muehle_Key& key, const Muehle_Key& successor)
 {
-    (void)key; // not needed, just set to previous value
-    (void)successor; // not needed, just set to previous value
-    md.number_of_consecutive_boring_moves_stack.pop_back();
+    (void)key; // not needed
+    auto& v = md.key_occurence[successor];
+    if (!v.empty()) {
+        v.pop_back();
+    }
+    md.consecutive_boring_moves.pop_back();
 }
 
 }

@@ -34,3 +34,25 @@
    ...
    fun:_ZN22QGuiApplicationPrivate25createPlatformIntegrationEv
 }
+
+{
+   QQmlComponentPrivate create
+   Memcheck:Cond
+   ...
+   fun:QQmlComponentPrivate::complete
+   fun:QQmlComponentPrivate::completeCreate
+}
+
+{
+   QQuick GLrender
+   Memcheck:Cond
+   ...
+   fun:_ZN23QSGDefaultRenderContext10preprocessEv
+   fun:_ZN11QSGRenderer10preprocessEv
+   fun:_ZN11QSGRenderer11renderSceneERK11QSGBindable
+   fun:_ZN11QSGRenderer11renderSceneEj
+   fun:_ZN23QSGDefaultRenderContext15renderNextFrameEP11QSGRendererj
+   fun:_ZN19QQuickWindowPrivate16renderSceneGraphERK5QSizeS2_
+   ...
+   fun:clone
+}

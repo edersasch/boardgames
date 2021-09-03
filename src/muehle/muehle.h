@@ -2,6 +2,7 @@
 #define SRC_MUEHLE_MUEHLE_TYPES
 
 #include "boardgame/pieces_n_fields.h"
+#include "robin_hood.h"
 
 #include <bitset>
 #include <vector>
@@ -52,14 +53,15 @@ std::string diff_text(const boardgame::Field_Number_Diff& fndiff);
 Muehle_Key switch_player(const Muehle_Key& key);
 bool is_boring_move(const muehle::Muehle_Key& key, const muehle::Muehle_Key& successor);
 
-struct Muehle_Move_Data
-{
-    std::vector<std::int32_t> number_of_consecutive_boring_moves_stack;
-};
-
 struct Muehle_Key_Hash
 {
     std::uint64_t operator()(const Muehle_Key& key) const { return key.to_ullong(); }
+};
+
+struct Muehle_Move_Data
+{
+    std::vector<std::int32_t> consecutive_boring_moves;
+    robin_hood::unordered_node_map<Muehle_Key, std::vector<std::int32_t>, Muehle_Key_Hash> key_occurence;
 };
 
 /// -engine_winning_score is used for lost game, 0 for draw

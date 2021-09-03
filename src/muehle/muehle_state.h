@@ -51,6 +51,7 @@ class Muehle_State
 {
 public:
     Muehle_State(boardgame::Boardgame_Ui bui, boardgame::Move_List_Ui mlu, boardgame::Main_Loop ml);
+    virtual ~Muehle_State();
     void new_game();
     void request_setup_mode_active(bool is_active);
     void piece_removed(const boardgame::Piece_Number pn);
@@ -134,7 +135,7 @@ private:
     std::int32_t branch_id_to_set {boardgame::Move_List<muehle::Muehle_Constellation, boardgame::Move_List_Ui>::invalid_id};
     bool game_over {false};
     std::chrono::time_point<std::chrono::steady_clock> last_time_accounting;
-    Fsm* fsm;
+    std::unique_ptr<Fsm> fsm;
 
     // fsm actions
     void start_new_game();

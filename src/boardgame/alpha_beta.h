@@ -61,6 +61,7 @@ void Alpha_Beta<Key, Game, Move_Data, Hash>::start(const Key key, Move_Data md)
     }
     running = true;
     stop_request = false;
+    next.clear();
     iterative_depth(key, md);
     transposition_table.clear();
     stop_request = false;
@@ -123,17 +124,15 @@ std::int32_t Alpha_Beta<Key, Game, Move_Data, Hash>::engine(const Key& key, cons
         if (stop_request) {
             break;
         }
-        auto move_score = Game::make_move(md, key, n, winning_score, invalid_low_score);
-        if (move_score != invalid_low_score) {
-            Game::unmake_move(md, key, n);
-            return move_score;
+        auto score = Game::make_move(md, key, n, winning_score, invalid_low_score);
+        if (score == invalid_low_score) {
+            score = -engine(n, depth - 1, -beta, -alpha, md);
+            if (depth > info.depth || (depth == info.depth && score > info.score)) {
+                info.depth = depth;
+                info.score = score;
+            }
         }
-        auto score = -engine(n, depth - 1, -beta, -alpha, md);
         Game::unmake_move(md, key, n);
-        if (depth > info.depth || (depth == info.depth && score > info.score)) {
-            info.depth = depth;
-            info.score = score;
-        }
         if (score > alpha) {
             alpha = score;
             auto successors = &info.successors;

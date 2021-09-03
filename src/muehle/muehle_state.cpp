@@ -270,6 +270,8 @@ Muehle_State::Muehle_State(boardgame::Boardgame_Ui bui, boardgame::Move_List_Ui 
 {
 }
 
+Muehle_State::~Muehle_State() = default;
+
 void Muehle_State::new_game()
 {
     fsm->get_fsm().process_event(Trigger_Start_New_Game{engine.is_running()});
@@ -779,14 +781,24 @@ void Muehle_State::set_selectable_game_pieces()
     }
     movecount(boardgame_ui, count_moves());
     current_key = make_key();
+    Muehle_Move_Data md;
     std::int32_t boring_move_count = 0;
     auto successor_key = current_key;
-    auto move_id = move_list->get_predecessor_move_id(move_list->get_current_move_id());
+    auto successor_move_id = move_list->get_current_move_id();
+    auto move_id = move_list->get_predecessor_move_id(successor_move_id);
     while (move_id != boardgame::Move_List<muehle::Muehle_Constellation, boardgame::Move_List_Ui>::invalid_id) {
         auto key = constellation_to_key(move_list->constellation(move_id), !successor_key.test(use_white_data_in_key));
         if (is_boring_move(key, successor_key)) {
             boring_move_count += 1;
+            md.key_occurence[successor_key].push_back(successor_move_id);
+            if (md.key_occurence[successor_key].size() == 3) {
+                game_over = true;
+                draw(boardgame_ui);
+                active_player(boardgame_ui, "");
+                return;
+            }
             successor_key = key;
+            successor_move_id = move_id;
             move_id = move_list->get_predecessor_move_id(move_id);
         } else {
             break;
@@ -798,6 +810,7 @@ void Muehle_State::set_selectable_game_pieces()
         active_player(boardgame_ui, "");
         return;
     }
+    md.consecutive_boring_moves.push_back(boring_move_count);
     auto fosp = muehle::fields_of_selectable_pieces(current_key);
     if (fosp.empty() ||
             boardgame::first_empty_field(current_player->prison_group) == boardgame::no_field) {
@@ -825,9 +838,7 @@ void Muehle_State::set_selectable_game_pieces()
     } else {
         fsm->get_fsm().process_event(Trigger_Engine_Started());
         set_selected_piece(boardgame::no_piece);
-        engine_future(main_loop, std::async(std::launch::async, [this, boring_move_count] {
-            Muehle_Move_Data md;
-            md.number_of_consecutive_boring_moves_stack.push_back(boring_move_count);
+        engine_future(main_loop, std::async(std::launch::async, [this, md] {
             engine.start(current_key, md);
         }));
     }
