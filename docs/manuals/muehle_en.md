@@ -1,6 +1,6 @@
 # Muehle (Nine Men's Morris)
 
-Translated from german [Wikipedia](https://de.wikipedia.org/wiki/M%C3%BChle_(Spiel)#Spielablauf), version from 29th July 2018:
+Rules translated from German [Wikipedia](https://de.wikipedia.org/wiki/M%C3%BChle_(Spiel)#Spielablauf), version from 29th July 2018:
 
 > The game has three stages:
 >
@@ -34,12 +34,17 @@ Official Rules: <http://www.muehlespiel.eu/images/pdf/WMD_Spielregeln.pdf>
 * Ending the game stores the session, starting the game restores it.
 
 
-## Visual Clues
+# Installation
 
-* Selectable pieces are bigger than the others
-* The start field of the selected piece is green.
-* Possible destinations of a selected piece show a transparent preview of the piece in the correct color.
-* A piece than can be removed has a red background color.
+
+## Linux
+
+On an internet connected system the current version can be installed or updated
+from the command line:
+
+```bash
+wget -O - https://raw.githubusercontent.com/edersasch/boardgames/master/tools/muehle_installer.sh | bash
+```
 
 
 # How to Operate
@@ -61,10 +66,6 @@ the actions
 
 have to be [confirmed](#confirm-cancel-chosen-action) from the beginning.
 
-If a player has won, the color of his pieces starts to pulse.
-On draw by 50 moves without piece removal or three times position repetition
-all pieces shrink.
-
 
 ## Making a Move
 
@@ -75,6 +76,10 @@ piece. A move is made either by clicking on a piece and then clicking on the
 destination field of by dragging a piece and dropping it on the destination. If
 a mill has been closed, removable opponent pieces get a red background color.
 Clicking on such a piece moves it to prison.
+
+If a player has won, the color of his pieces starts to pulse.
+On draw by 50 moves without piece removal or three times position repetition
+all pieces shrink.
 
 
 ## Buttons Besides the Playfield

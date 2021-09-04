@@ -38,12 +38,18 @@ Die offiziellen Regeln: <http://www.muehlespiel.eu/images/pdf/WMD_Spielregeln.pd
 * Beim Beenden wird die aktuelle Sitzung gespeichert und bei Start wiederhergestellt.
 
 
-## Sichtbare Hinweise
+# Installation
 
-* Auswählbare Spielsteine sind größer als die anderen.
-* Das Startfeld des ausgewählten Spielsteins ist grün.
-* Mögliche Zielfelder eines ausgewählten Spielsteins zeigen eine leicht durchsichtige Vorschau des Spielsteins in der passenden Farbe.
-* Ein Spielstein, der geschlagen werden kann, hat eine rote Hintergrundfarbe.
+
+## Linux
+
+Auf einem mit dem Internet verbundenen System wird die aktuelle Version des
+Spiels aus der Kommandozeile mit folgendem Befehl installiert oder
+aktualisiert:
+
+```bash
+wget -O - https://raw.githubusercontent.com/edersasch/boardgames/master/tools/muehle_installer.sh | bash
+```
 
 
 # Bedienung des Spiels
@@ -66,10 +72,6 @@ verändert und die Aktionen
 müssen von Anfang an [bestätigt](#gewählte-aktion-bestätigen--abbrechen)
 werden.
 
-Hat ein Spieler gewonnen, beginnt die Farbe seiner Spielsteine zu pulsieren.
-Bei unentschieden durch 50 Züge ohne schlagen oder dreimalige
-Stellungswiederholung werden alle Spielsteine verkleinert.
-
 
 ## Einen Zug ausführen
 
@@ -81,6 +83,10 @@ Spielstein durch anklicken auswählt und ihn dann entweder auf ein Zielfeld
 zieht, oder auf ein Zielfeld klickt. Ist eine Mühle entstanden, werden
 entfernbare gegnerische Spielsteine durch eine rote Hintergrundfarbe markiert.
 Klickt man einen solchen Stein an, wandert er vom Spielfeld ins Gefängnis.
+
+Hat ein Spieler gewonnen, beginnt die Farbe seiner Spielsteine zu pulsieren.
+Bei unentschieden durch 50 Züge ohne schlagen oder dreimalige
+Stellungswiederholung werden alle Spielsteine verkleinert.
 
 
 ## Bedienknöpfe am Spielfeld
