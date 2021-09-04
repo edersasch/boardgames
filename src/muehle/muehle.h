@@ -36,7 +36,7 @@ constexpr std::int32_t all_prisoners_in_key = 7;
 constexpr std::int32_t free_field_factor = 16;
 
 using Muehle_Constellation = std::array<boardgame::Field_Number, number_of_pieces.v>;
-using Muehle_Key = std::bitset<55>; // 0-23 white board, 24-47 black board, 48-50 white BCD inmate count, 51-53 black BDC inmate count, 54 white's data if set
+using Muehle_Key = std::bitset<55>; // 0-23 white board, 24-47 black board, 48-50 white BCD inmate count, 51-53 black BCD inmate count, 54 white's data if set
 
 std::int32_t board_offset(const muehle::Muehle_Key& key);
 Muehle_Key constellation_to_key(const Muehle_Constellation& constellation, const bool whites_turn);
@@ -61,7 +61,7 @@ struct Muehle_Key_Hash
 struct Muehle_Move_Data
 {
     std::vector<std::int32_t> consecutive_boring_moves;
-    robin_hood::unordered_node_map<Muehle_Key, std::vector<std::int32_t>, Muehle_Key_Hash> key_occurence;
+    robin_hood::unordered_node_map<Muehle_Key, std::vector<std::int32_t>, Muehle_Key_Hash> key_occurrence;
 };
 
 /// -engine_winning_score is used for lost game, 0 for draw

@@ -67,6 +67,8 @@ müssen von Anfang an [bestätigt](#gewählte-aktion-bestätigen--abbrechen)
 werden.
 
 Hat ein Spieler gewonnen, beginnt die Farbe seiner Spielsteine zu pulsieren.
+Bei unentschieden durch 50 Züge ohne schlagen oder dreimalige
+Stellungswiederholung werden alle Spielsteine verkleinert.
 
 
 ## Einen Zug ausführen

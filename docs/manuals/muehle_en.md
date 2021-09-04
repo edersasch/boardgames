@@ -62,6 +62,8 @@ the actions
 have to be [confirmed](#confirm-cancel-chosen-action) from the beginning.
 
 If a player has won, the color of his pieces starts to pulse.
+On draw by 50 moves without piece removal or three times position repetition
+all pieces shrink.
 
 
 ## Making a Move

@@ -790,8 +790,8 @@ void Muehle_State::set_selectable_game_pieces()
         auto key = constellation_to_key(move_list->constellation(move_id), !successor_key.test(use_white_data_in_key));
         if (is_boring_move(key, successor_key)) {
             boring_move_count += 1;
-            md.key_occurence[successor_key].push_back(successor_move_id);
-            if (md.key_occurence[successor_key].size() == 3) {
+            md.key_occurrence[successor_key].push_back(successor_move_id);
+            if (md.key_occurrence[successor_key].size() == 3) {
                 game_over = true;
                 draw(boardgame_ui);
                 active_player(boardgame_ui, "");

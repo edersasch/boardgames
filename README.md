@@ -104,10 +104,11 @@ is licensed under a
 use URL instead of GIT
 
 CMake file `CodeCoverage.cmake` adapted from
-<https://github.com/bilke/cmake-modules/blob/7727aa773b8d72afe6801436af9e60cb1688351e/CodeCoverage.cmake>
-is licensed under a BSD 3-Clause License included in the file itself: commented
-out `COMMAND ${LCOV_PATH} --gcov-tool ${GCOV_PATH} --remove ${Coverage_NAME}.total ${COVERAGE_LCOV_EXCLUDES} ...`
-and added `COMMAND ${LCOV_PATH} --gcov-tool ${GCOV_PATH} --extract ${Coverage_NAME}.total ${COVERAGE_LCOV_INCLUDES} ...`
+<https://github.com/bilke/cmake-modules/blob/d98828f54f6974717798e63195cfbf08fe2daad0/CodeCoverage.cmake>
+is licensed under a BSD 3-Clause License included in the file itself: changed
+`LCOV_FILTER_CMD` parameter from `--remove` to `--extract`, so
+`setup_target_for_coverage_lcov()` parameter `EXCLUDE` is turned on its head
+and will only include what is listed.
 
 CMake file `DeployQt.cmake` adapted from <https://github.com/nitroshare/nitroshare-desktop/blob/f4feebef29d9d3985d1699ab36f0fac59d3df7da/cmake/DeployQt.cmake>
 is licensed under MIT License included in the file itself: added QML dirs

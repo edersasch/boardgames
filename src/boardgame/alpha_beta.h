@@ -85,7 +85,7 @@ void Alpha_Beta<Key, Game, Move_Data, Hash>::iterative_depth(const Key& key, Mov
         engine(key, current_depth, invalid_low_score, invalid_high_score, md);
         auto end_time = std::chrono::steady_clock::now();
         std::chrono::milliseconds tdiff = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-        std::cerr << current_depth << " depth " << transposition_table.size() << " tt " << tdiff.count() << "ms\n";
+        std::cerr << (std::chrono::duration_cast<std::chrono::milliseconds>(end_time.time_since_epoch())).count() << "ms " << current_depth << " depth " << transposition_table.size() << " tt " << tdiff.count() << "ms\n";
         if (stop_request || next_score == winning_score || next_score == -winning_score || ttsz == transposition_table.size()) {
             break;
         }
@@ -158,7 +158,7 @@ std::int32_t Alpha_Beta<Key, Game, Move_Data, Hash>::engine(const Key& key, cons
             }
         }
     }
-    return info.score;
+    return alpha;
 }
 
 }

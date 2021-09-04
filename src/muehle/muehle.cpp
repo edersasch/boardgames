@@ -372,7 +372,7 @@ std::int32_t Engine_Helper::make_move(Muehle_Move_Data& md, const Muehle_Key& ke
     (void)engine_winning_score; // not needed, checks lead to draw
     if (is_boring_move(key, successor)) {
         md.consecutive_boring_moves.push_back(md.consecutive_boring_moves.back() + 1);
-        auto& v = md.key_occurence[successor];
+        auto& v = md.key_occurrence[successor];
         v.push_back(1); // value does not matter during engine run
         if (v.size() == 3) {
             return 0;
@@ -386,9 +386,14 @@ std::int32_t Engine_Helper::make_move(Muehle_Move_Data& md, const Muehle_Key& ke
 void Engine_Helper::unmake_move(Muehle_Move_Data& md, const Muehle_Key& key, const Muehle_Key& successor)
 {
     (void)key; // not needed
-    auto& v = md.key_occurence[successor];
-    if (!v.empty()) {
-        v.pop_back();
+    bool boring = md.consecutive_boring_moves.back() != 0;
+    if (boring) {
+        auto it = md.key_occurrence.find(successor);
+        if (it->second.size() == 1) {
+            md.key_occurrence.erase(it);
+        } else {
+            it->second.pop_back();
+        }
     }
     md.consecutive_boring_moves.pop_back();
 }

@@ -7,7 +7,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## 0.1.1 "Hans" - unreleased
 
 Game info can be viewed, engine is faster, but needs more RAM.
-Muehle game is draw if 50 consecutive moves without capturing a piece are played.
+Muehle game is draw if 50 consecutive moves without capturing a piece are
+played or the same constellation occurs three times.
 The project is now checked by [lgtm.com](https://lgtm.com/projects/g/edersasch/boardgames/).
 The software can be built for windows.
 
@@ -20,8 +21,8 @@ and my mother's friend, whose journey ended in 2006.
 - game info: number of moves, time per player, engine forecast
 - transposition table for engine using [martinus/robin-hood-hashing](https://github.com/martinus/robin-hood-hashing)
 - english manual, chosen according to system language
-- windows build
-- draw muehle game if 50 consecutive moves without capturing a piece are played
+- windows visual studio build support
+- draw muehle game after 50 consecutive boring moves or three times constellation repetition
 
 
 ### Changed

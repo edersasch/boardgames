@@ -30,13 +30,11 @@ endif()
 
 if(BOARDGAMES_COVERAGE_REPORT)
     include(CodeCoverage)
-    APPEND_COVERAGE_COMPILER_FLAGS()
-    set(COVERAGE_LCOV_INCLUDES '${CMAKE_SOURCE_DIR}/src/*')
-    SETUP_TARGET_FOR_COVERAGE_LCOV(
-        NAME
-        coverage_report
-        EXECUTABLE
-        ctest -j ${PROCESSOR_COUNT}
+    append_coverage_compiler_flags()
+    setup_target_for_coverage_lcov(
+        NAME coverage_report
+        EXECUTABLE ctest -j ${PROCESSOR_COUNT}
+        EXCLUDE "src/*"
         )
 endif()
 

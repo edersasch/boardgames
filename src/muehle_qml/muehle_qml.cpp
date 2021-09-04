@@ -354,8 +354,9 @@ void Muehle_Qml::wait_for_engine_move(std::future<void>&& efu)
             if (status == std::future_status::ready) {
                 emit engine_move();
             } else {
-                std::cerr << "can't stop engine\n";
+                std::cerr << (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch())).count() << "ms can't stop engine\n";
                 ef.wait();
+                std::cerr << (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch())).count() << "ms engine stopped\n";
                 emit engine_move();
             }
         } else {
