@@ -62,6 +62,7 @@ void Alpha_Beta<Key, Game, Move_Data, Hash>::start(const Key key, Move_Data md)
     running = true;
     stop_request = false;
     next.clear();
+    next_score = 0;
     iterative_depth(key, md);
     transposition_table.clear();
     stop_request = false;
@@ -81,12 +82,11 @@ void Alpha_Beta<Key, Game, Move_Data, Hash>::iterative_depth(const Key& key, Mov
 {
     auto start_time = std::chrono::steady_clock::now();
     for (current_depth = 1; current_depth <= target_depth; current_depth += 1) {
-        auto ttsz = transposition_table.size();
         engine(key, current_depth, invalid_low_score, invalid_high_score, md);
         auto end_time = std::chrono::steady_clock::now();
         std::chrono::milliseconds tdiff = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
         std::cerr << (std::chrono::duration_cast<std::chrono::milliseconds>(end_time.time_since_epoch())).count() << "ms " << current_depth << " depth " << transposition_table.size() << " tt " << tdiff.count() << "ms\n";
-        if (stop_request || next_score == winning_score || next_score == -winning_score || ttsz == transposition_table.size()) {
+        if (stop_request || next_score == winning_score || next_score == -winning_score) {
             break;
         }
     }
@@ -95,23 +95,31 @@ void Alpha_Beta<Key, Game, Move_Data, Hash>::iterative_depth(const Key& key, Mov
 template <typename Key, typename Game, typename Move_Data, typename Hash>
 std::int32_t Alpha_Beta<Key, Game, Move_Data, Hash>::engine(const Key& key, const std::int32_t depth, std::int32_t alpha, const std::int32_t beta, Move_Data& md)
 {
-    auto& info = transposition_table[key];
+    Key_Info local_info;
+    auto get_info = [this, &key, &local_info]() {
+        auto info_it = transposition_table.find(key);
+        if (info_it != transposition_table.end()) {
+            return &info_it->second;
+        }
+        return &local_info;
+    };
+    auto info = get_info();
     if (depth == 0) {
-        if (info.score < -winning_score) {
-            info.score = Game::evaluate(key, winning_score);
+        if (info->score < -winning_score) {
+            info->score = Game::evaluate(key, winning_score);
         }
-        return info.score;
+        return info->score;
     }
-    if (info.depth >= depth && info.score > alpha) {
-        if (info.score >= beta) {
-            return info.score;
+    if (info->depth >= depth && info->score > alpha) {
+        if (info->score >= beta) {
+            return info->score;
         }
-        alpha = info.score;
+        alpha = info->score;
     }
-    if (info.successors.empty()) {
-        info.successors = Game::successor_constellations(key);
+    if (info->successors.empty()) {
+        info->successors = Game::successor_constellations(key);
     }
-    if (info.successors.empty()) {
+    if (info->successors.empty()) {
         switch(no_move_policy) {
         case No_Move_Policy::lose:
             return -winning_score;
@@ -119,26 +127,34 @@ std::int32_t Alpha_Beta<Key, Game, Move_Data, Hash>::engine(const Key& key, cons
             return 0; // draw
         }
     }
-    auto successors_copy = info.successors; // successors might get reordered during recursion
-    for (const auto& n : successors_copy) {
+    const auto successors_copy = info->successors; // successors might get reordered during recursion
+    auto sccopy_it = successors_copy.begin();
+    while(sccopy_it != successors_copy.end()) {
         if (stop_request) {
             break;
         }
+        const auto& n = *sccopy_it;
         auto score = Game::make_move(md, key, n, winning_score, invalid_low_score);
         if (score == invalid_low_score) {
             score = -engine(n, depth - 1, -beta, -alpha, md);
-            if (depth > info.depth || (depth == info.depth && score > info.score)) {
-                info.depth = depth;
-                info.score = score;
+            if (depth > info->depth || (depth == info->depth && score > info->score)) {
+                info->depth = depth;
+                info->score = score;
             }
         }
         Game::unmake_move(md, key, n);
         if (score > alpha) {
             alpha = score;
-            auto successors = &info.successors;
+            if (info == &local_info) {
+                info = &transposition_table[key];
+                *info = local_info;
+            }
+            auto successors = &info->successors;
             auto it = std::find(successors->begin(), successors->end(), n);
-            std::rotate(successors->begin(), it, it + 1);
-            if (depth == current_depth && !stop_request) {
+            if (it != successors->begin()) {
+                std::rotate(successors->begin(), it, it + 1);
+            }
+            if (depth == current_depth) {
                 auto currdepth = depth;
                 next.clear();
                 next_score = score;
@@ -157,6 +173,7 @@ std::int32_t Alpha_Beta<Key, Game, Move_Data, Hash>::engine(const Key& key, cons
                 break;
             }
         }
+        sccopy_it += 1;
     }
     return alpha;
 }

@@ -19,6 +19,7 @@ echo "Checking version ..."
 RELEASE_VERSION=$(wget -qO - "https://api.github.com/repos/edersasch/boardgames/releases/latest" | grep -Po '"tag_name": ?"v\K.*?(?=")')
 if [[ -e ~/.muehle/VERSION ]] && [[ $(< ~/.muehle/VERSION) == "${RELEASE_VERSION}" ]]; then
     echo "You already have the latest version ${RELEASE_VERSION} installed."
+    exit 0
 else
     [[ -e ~/.muehle/VERSION ]] && CURRENT_VERSION=$(< ~/.muehle/VERSION)
     echo "The latest version is ${RELEASE_VERSION}, but you have ${CURRENT_VERSION:-no version} installed."

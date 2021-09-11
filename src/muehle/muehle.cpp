@@ -61,7 +61,7 @@ std::array<std::initializer_list<std::int8_t>, muehle::number_of_board_fields.v>
     {14, 22}
 }};
 
-constexpr std::array<const char[3], 24> coordinate_names {
+constexpr std::array<const std::string_view, 24> coordinate_names {
     "A7",
     "D7",
     "G7",
