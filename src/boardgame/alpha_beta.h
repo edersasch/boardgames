@@ -113,14 +113,11 @@ std::int32_t Alpha_Beta<Key, Game, Move_Data, Hash>::engine(const Key& key, cons
         }
     };
     Key_Info local_info;
-    auto get_info = [this, &key, &local_info]() {
-        auto info_it = transposition_table.find(key);
-        if (info_it != transposition_table.end()) {
-            return &info_it->second;
-        }
-        return &local_info;
-    };
-    auto info = get_info();
+    auto info = &local_info;
+    auto info_it = transposition_table.find(key);
+    if (info_it != transposition_table.end()) {
+        info = &info_it->second;
+    }
     if (depth == 0) {
         if (info->score < -winning_score) {
             info->score = Game::evaluate(key, winning_score);
@@ -130,9 +127,6 @@ std::int32_t Alpha_Beta<Key, Game, Move_Data, Hash>::engine(const Key& key, cons
     if (info->depth >= depth && info->score > alpha) {
         alpha = info->score;
         update_next(&info->successors);
-        if (alpha >= beta) {
-            return alpha;
-        }
     }
     if (info->successors.empty()) {
         info->successors = Game::successor_constellations(key);
@@ -147,10 +141,7 @@ std::int32_t Alpha_Beta<Key, Game, Move_Data, Hash>::engine(const Key& key, cons
     }
     const auto successors_copy = info->successors; // successors might get reordered during recursion
     auto sccopy_it = successors_copy.begin();
-    while(sccopy_it != successors_copy.end()) {
-        if (stop_request) {
-            break;
-        }
+    while(sccopy_it != successors_copy.end() && alpha < beta && !stop_request) {
         const auto& n = *sccopy_it;
         auto score = Game::make_move(md, key, n, winning_score, invalid_low_score);
         if (score == invalid_low_score) {
@@ -171,9 +162,6 @@ std::int32_t Alpha_Beta<Key, Game, Move_Data, Hash>::engine(const Key& key, cons
             auto it = std::find(successors->begin(), successors->end(), n);
             std::rotate(successors->begin(), it, it + 1);
             update_next(successors);
-            if (alpha >= beta) {
-                break;
-            }
         }
         sccopy_it += 1;
     }

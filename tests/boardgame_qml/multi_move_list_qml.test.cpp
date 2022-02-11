@@ -235,18 +235,18 @@ TEST_F(Multi_Move_List_Qml_Test, change_color)
 {
     add_sequence(1, 30);
     for (int i = 3; i < 28; i += 2) {
-        EXPECT_EQ("#111111", QQmlProperty(move_list_root_buttons->childItems()[i], "color").read().toString().toStdString());
-        EXPECT_EQ("#222222", QQmlProperty(move_list_root_buttons->childItems()[i + 1], "color").read().toString().toStdString());
+        EXPECT_EQ("#111111", QQmlProperty(move_list_root_buttons->childItems().at(i), "color").read().toString().toStdString());
+        EXPECT_EQ("#222222", QQmlProperty(move_list_root_buttons->childItems().at(i + 1), "color").read().toString().toStdString());
     }
     mlq.change_move_color("#111111", "#333333");
     for (int i = 3; i < 28; i += 2) {
-        EXPECT_EQ("#333333", QQmlProperty(move_list_root_buttons->childItems()[i], "color").read().toString().toStdString());
-        EXPECT_EQ("#222222", QQmlProperty(move_list_root_buttons->childItems()[i + 1], "color").read().toString().toStdString());
+        EXPECT_EQ("#333333", QQmlProperty(move_list_root_buttons->childItems().at(i), "color").read().toString().toStdString());
+        EXPECT_EQ("#222222", QQmlProperty(move_list_root_buttons->childItems().at(i + 1), "color").read().toString().toStdString());
     }
     mlq.change_move_color("#222222", "#444444");
     for (int i = 3; i < 28; i += 2) {
-        EXPECT_EQ("#333333", QQmlProperty(move_list_root_buttons->childItems()[i], "color").read().toString().toStdString());
-        EXPECT_EQ("#444444", QQmlProperty(move_list_root_buttons->childItems()[i + 1], "color").read().toString().toStdString());
+        EXPECT_EQ("#333333", QQmlProperty(move_list_root_buttons->childItems().at(i), "color").read().toString().toStdString());
+        EXPECT_EQ("#444444", QQmlProperty(move_list_root_buttons->childItems().at(i + 1), "color").read().toString().toStdString());
     }
 }
 

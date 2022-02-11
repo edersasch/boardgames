@@ -39,7 +39,7 @@ and my mother's friend, whose journey ended in 2006.
 
 ### Fixed
 
-- lgtm.com alerts for 7f1ad0e
+- lgtm.com alerts
 - move list scrolling to highlighted button
 - clang tidy findings
 

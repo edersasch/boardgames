@@ -7,7 +7,7 @@ option(BOARDGAMES_USE_EXTERNAL_JSON                 "Use external nlohmann json 
 option(BOARDGAMES_USE_EXTERNAL_ROBIN_HOOD_HASH      "Use external robin_hood hash table, download otherwise"    OFF)
 option(BOARDGAMES_USE_EXTERNAL_SML                  "Use external boost-ext sml, download otherwise"            OFF)
 
-set(PROJECT_RELEASE_YEAR    2021)
+set(PROJECT_RELEASE_YEAR    2022)
 set(PROJECT_RELEASE_MONTH   99)
 set(PROJECT_RELEASE_DAY     99)
 configure_file (
