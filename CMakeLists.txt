@@ -65,8 +65,8 @@ else()
 endif()
 
 if(NOT BOARDGAMES_USE_EXTERNAL_ROBIN_HOOD_HASH)
-    FILE(DOWNLOAD https://raw.githubusercontent.com/martinus/robin-hood-hashing/3.11.3/src/include/robin_hood.h ${CMAKE_BINARY_DIR}/include/robin_hood.h
-        EXPECTED_HASH SHA256=9c7d97340ba156c4e53621987320799db388276cd947f9e70a6b6ff6b44bbe8f
+    FILE(DOWNLOAD https://raw.githubusercontent.com/martinus/robin-hood-hashing/3.11.5/src/include/robin_hood.h ${CMAKE_BINARY_DIR}/include/robin_hood.h
+        EXPECTED_HASH SHA256=96d1da494c0cafd7f83d4531ab517b0d043f0fe9328a9a89e6c096f1cf8f23cf
         )
 endif()
 

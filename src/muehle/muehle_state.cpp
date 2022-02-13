@@ -268,6 +268,7 @@ Muehle_State::Muehle_State(boardgame::Boardgame_Ui bui, boardgame::Move_List_Ui 
     , last_time_accounting(std::chrono::steady_clock::now())
     , fsm(new Fsm(this))
 {
+    engine.set_table_limit(800'000); // limit RAM usage
 }
 
 Muehle_State::~Muehle_State() = default;

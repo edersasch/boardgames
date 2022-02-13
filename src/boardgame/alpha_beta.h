@@ -32,6 +32,7 @@ public:
     bool is_running() const { return running; }
     void stop_running() { stop_request = true; }
     void set_target_depth(std::int32_t depth);
+    void set_table_limit(std::int32_t limit);
 private:
     struct Key_Info
     {
@@ -39,8 +40,14 @@ private:
         std::int32_t depth {0};
         std::vector<Key> successors;
     };
+    struct Successor_Info
+    {
+        std::vector<Key> successors;
+        std::ptrdiff_t offset;
+    };
     void iterative_depth(const Key& key, Move_Data& md);
     std::int32_t engine(const Key& key, const std::int32_t depth, std::int32_t alpha, const std::int32_t beta, Move_Data& md);
+    void copy_to_next_tt(robin_hood::unordered_node_map<Key, Key_Info, Hash>& next_tt, const Key& currkey, int currdepth);
     static constexpr std::int32_t target_depth_default {9999};
     std::int32_t target_depth {target_depth_default};
     std::int32_t current_depth {0};
@@ -50,6 +57,9 @@ private:
     std::atomic_bool running {false};
     std::atomic_bool stop_request {false};
     robin_hood::unordered_node_map<Key, Key_Info, Hash> transposition_table; // node map has stable references and pointers
+    static constexpr std::int32_t table_limit_default {20'000'000};
+    std::int32_t table_limit {table_limit_default};
+    robin_hood::unordered_node_map<std::int32_t, Successor_Info> successors_before_clear {};
 };
 
 template <typename Key, typename Game, typename Move_Data, typename Hash>
@@ -73,6 +83,12 @@ template <typename Key, typename Game, typename Move_Data, typename Hash>
 void Alpha_Beta<Key, Game, Move_Data, Hash>::set_target_depth(std::int32_t depth)
 {
     target_depth = depth > 0 ? depth : target_depth_default;
+}
+
+template <typename Key, typename Game, typename Move_Data, typename Hash>
+void Alpha_Beta<Key, Game, Move_Data, Hash>::set_table_limit(std::int32_t limit)
+{
+    table_limit = limit > 1000 ? limit : table_limit_default;
 }
 
 // private
@@ -113,10 +129,15 @@ std::int32_t Alpha_Beta<Key, Game, Move_Data, Hash>::engine(const Key& key, cons
         }
     };
     Key_Info local_info;
+    static constexpr int always_store_up_to_depth = 6;
     auto info = &local_info;
-    auto info_it = transposition_table.find(key);
-    if (info_it != transposition_table.end()) {
-        info = &info_it->second;
+    if (current_depth - depth < always_store_up_to_depth) {
+        info = &transposition_table[key];
+    } else {
+        auto info_it = transposition_table.find(key);
+        if (info_it != transposition_table.end()) {
+            info = &info_it->second;
+        }
     }
     if (depth == 0) {
         if (info->score < -winning_score) {
@@ -139,8 +160,15 @@ std::int32_t Alpha_Beta<Key, Game, Move_Data, Hash>::engine(const Key& key, cons
             return 0; // draw
         }
     }
-    const auto successors_copy = info->successors; // successors might get reordered during recursion
+    auto successors_copy = info->successors; // successors might get reordered during recursion
     auto sccopy_it = successors_copy.begin();
+    auto sbc_it = successors_before_clear.find(depth);
+    if (sbc_it != successors_before_clear.end()) {
+        successors_copy = sbc_it->second.successors;
+        sccopy_it = successors_copy.begin() + sbc_it->second.offset;
+        successors_before_clear.erase(sbc_it);
+        std::cerr << depth << ":" << sbc_it->second.offset << "/" << successors_copy.size() << " " << *sccopy_it << "\n";
+    }
     while(sccopy_it != successors_copy.end() && alpha < beta && !stop_request) {
         const auto& n = *sccopy_it;
         auto score = Game::make_move(md, key, n, winning_score, invalid_low_score);
@@ -148,24 +176,56 @@ std::int32_t Alpha_Beta<Key, Game, Move_Data, Hash>::engine(const Key& key, cons
             score = -engine(n, depth - 1, -beta, -alpha, md);
         }
         Game::unmake_move(md, key, n);
-        if (depth > info->depth || (depth == info->depth && score > info->score)) {
-            info->depth = depth;
-            info->score = score;
-        }
-        if (score > alpha) {
-            alpha = score;
-            if (info == &local_info) {
-                info = &transposition_table[key];
-                *info = local_info;
+        if (transposition_table.size() < static_cast<std::size_t>(table_limit)) {
+            if (depth > info->depth || (depth == info->depth && score > info->score)) {
+                info->depth = depth;
+                info->score = score;
             }
-            auto successors = &info->successors;
-            auto it = std::find(successors->begin(), successors->end(), n);
-            std::rotate(successors->begin(), it, it + 1);
-            update_next(successors);
+            if (score > alpha) {
+                alpha = score;
+                if (info == &local_info) {
+                    info = &transposition_table[key];
+                    *info = std::move(local_info);
+                }
+                auto successors = &info->successors;
+                auto it = std::find(successors->begin(), successors->end(), n);
+                std::rotate(successors->begin(), it, it + 1);
+                update_next(successors);
+            }
+            sccopy_it += 1;
+        } else {
+            auto successor_offset = sccopy_it - successors_copy.begin();
+            std::cerr << depth << ":" << successor_offset << "/" << successors_copy.size() << " " << n << " " << " in\n";
+            if (depth != current_depth) {
+                successors_before_clear[depth] = {successors_copy, successor_offset};
+                break;
+            }
+            robin_hood::unordered_node_map<Key, Key_Info, Hash> next_tt {};
+            copy_to_next_tt(next_tt, key, current_depth > always_store_up_to_depth ? always_store_up_to_depth : current_depth);
+            for (const auto& next_succ : next) {
+                next_tt[next_succ] = transposition_table[next_succ];
+            }
+            transposition_table = std::move(next_tt);
+            info = &transposition_table[key];
+            std::cerr << (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch())).count() << "ms tt cleared\n";
         }
-        sccopy_it += 1;
     }
     return alpha;
+}
+
+template <typename Key, typename Game, typename Move_Data, typename Hash>
+void Alpha_Beta<Key, Game, Move_Data, Hash>::copy_to_next_tt(robin_hood::unordered_node_map<Key, Key_Info, Hash>& next_tt, const Key& currkey, int currdepth)
+{
+    auto key_it = transposition_table.find(currkey);
+    if (key_it != transposition_table.end()) {
+        next_tt[currkey] = key_it->second;
+        const auto& successors = key_it->second.successors;
+        auto succ_it = successors.begin();
+        while (succ_it != successors.end() && currdepth) {
+            copy_to_next_tt(next_tt, *succ_it, currdepth - 1);
+            succ_it += 1;
+        }
+    }
 }
 
 }
