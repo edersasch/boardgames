@@ -6,7 +6,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## 0.1.1 "Hans" - unreleased
 
-Game info can be viewed, engine is faster, but needs a lot of RAM.
+Game info can be viewed. The engine is faster, but needs a lot of RAM.
+The RAM usage is limited to about 200MB.
 Muehle game is draw if 50 consecutive moves without capturing a piece are
 played or the same constellation occurs three times.
 The project is now checked by [lgtm.com](https://lgtm.com/projects/g/edersasch/boardgames/).

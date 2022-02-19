@@ -7,3 +7,7 @@ target_link_libraries(${PROJECT_NAME}
     boardgame_qml
     Qt5::Quick
 )
+
+if(WIN32)
+    windeployqt(${PROJECT_NAME})
+endif()

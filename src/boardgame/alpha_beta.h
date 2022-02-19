@@ -167,7 +167,7 @@ std::int32_t Alpha_Beta<Key, Game, Move_Data, Hash>::engine(const Key& key, cons
         successors_copy = sbc_it->second.successors;
         sccopy_it = successors_copy.begin() + sbc_it->second.offset;
         successors_before_clear.erase(sbc_it);
-        std::cerr << depth << ":" << sbc_it->second.offset << "/" << successors_copy.size() << " " << *sccopy_it << "\n";
+        //std::cerr << depth << ":" << sbc_it->second.offset << "/" << successors_copy.size() << " " << *sccopy_it << "\n";
     }
     while(sccopy_it != successors_copy.end() && alpha < beta && !stop_request) {
         const auto& n = *sccopy_it;
@@ -195,7 +195,7 @@ std::int32_t Alpha_Beta<Key, Game, Move_Data, Hash>::engine(const Key& key, cons
             sccopy_it += 1;
         } else {
             auto successor_offset = sccopy_it - successors_copy.begin();
-            std::cerr << depth << ":" << successor_offset << "/" << successors_copy.size() << " " << n << " " << " in\n";
+            std::cerr << depth << ":" << successor_offset << "/" << successors_copy.size() << " " << n << " in\n";
             if (depth != current_depth) {
                 successors_before_clear[depth] = {successors_copy, successor_offset};
                 break;
