@@ -3,7 +3,7 @@
 
 #include <QQmlEngine>
 #include <QGuiApplication>
-#include <QProcess>
+#include <QDesktopServices>
 #include <QFile>
 
 #include <thread>
@@ -245,9 +245,7 @@ void Muehle_Qml::show_help() const
     }
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
     auto docpath = qApp->applicationDirPath() + "/../share/doc/boardgames/muehle_" + locale_id + ".html";
-    if (QFile::permissions(docpath) & QFileDevice::ReadUser) {
-        QProcess::startDetached("xdg-open", QStringList(docpath));
-    } else {
+    if (!(QFile::permissions(docpath) & QFileDevice::ReadUser && QDesktopServices::openUrl(docpath))) {
         QQmlProperty(control.get(), "no_help_available_visible").write(!QQmlProperty(control.get(), "no_help_available_visible").read().toBool());
         // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
         std::cerr << qPrintable(qApp->platformName()) << '\n' << qPrintable(qApp->applicationDirPath()) << '\n';
