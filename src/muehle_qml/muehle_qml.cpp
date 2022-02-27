@@ -5,6 +5,7 @@
 #include <QGuiApplication>
 #include <QDesktopServices>
 #include <QFile>
+#include <QLocale>
 
 #include <thread>
 
@@ -232,19 +233,16 @@ void Muehle_Qml::use_alternative_field()
 
 void Muehle_Qml::show_help() const
 {
-    QString locale_id = "en";
-    const char* curr_locale =  std::setlocale(0, nullptr);
-    if (curr_locale && strnlen(curr_locale, 2) == 2) {
-        std::string l_id(curr_locale, 2);
-        for (auto id : { "en", "de" }) {
-            if (l_id == id) {
-                locale_id = id;
-                break;
-            }
-        }
+    QString lang = "en";
+    switch (QLocale::system().language()) {
+    case QLocale::German:
+        lang = "de";
+        break;
+    default:
+        break;
     }
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
-    auto docpath = qApp->applicationDirPath() + "/../share/doc/boardgames/muehle_" + locale_id + ".html";
+    auto docpath = qApp->applicationDirPath() + "/../share/doc/boardgames/muehle_" + lang + ".html";
     if (!(QFile::permissions(docpath) & QFileDevice::ReadUser && QDesktopServices::openUrl(docpath))) {
         QQmlProperty(control.get(), "no_help_available_visible").write(!QQmlProperty(control.get(), "no_help_available_visible").read().toBool());
         // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)

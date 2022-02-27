@@ -3,3 +3,12 @@
 ----
 
 [v@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@](https://github.com/edersasch/boardgames) (@PROJECT_RELEASE_YEAR@-@PROJECT_RELEASE_MONTH@-@PROJECT_RELEASE_DAY@) / [Alexander Eder](https://bitbucket.org/alexander_eder/aewiki/)
+
+
+----
+
+- [License](License.txt): MIT
+- [Qt License](License_Qt.txt): LGPLv3
+- [nlohmann/JSON License](License_nlohmann-json.txt): MIT
+- [martinus/robin-hood-hashing License](License_martinus-robin-hood-hashing.txt): MIT
+- [boost-ext/sml License](License_boost-ext-sml.txt): Boost 1.0

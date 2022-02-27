@@ -47,6 +47,8 @@ if(DOXYGEN_FOUND)
         )
 endif()
 
+include(GNUInstallDirs)
+
 if(BOARDGAMES_USE_EXTERNAL_JSON)
     find_package(nlohmann_json 3.4.0 REQUIRED)
 else()
@@ -62,21 +64,36 @@ else()
         FetchContent_Populate(nlohmann_json)
     endif()
     include_directories(${nlohmann_json_SOURCE_DIR})
+    FILE(DOWNLOAD https://raw.githubusercontent.com/nlohmann/json/v3.4.0/LICENSE.MIT ${CMAKE_BINARY_DIR}/docs/License_nlohmann-json.txt
+        EXPECTED_HASH SHA256=7b875bb7a4e28abb7956ea821b4b7d88ff6a2a4fabf261c3993730a365ec56dd
+        )
+    install (FILES ${CMAKE_BINARY_DIR}/docs/License_nlohmann-json.txt DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/doc/boardgames)
 endif()
 
 if(NOT BOARDGAMES_USE_EXTERNAL_ROBIN_HOOD_HASH)
     FILE(DOWNLOAD https://raw.githubusercontent.com/martinus/robin-hood-hashing/3.11.5/src/include/robin_hood.h ${CMAKE_BINARY_DIR}/include/robin_hood.h
         EXPECTED_HASH SHA256=96d1da494c0cafd7f83d4531ab517b0d043f0fe9328a9a89e6c096f1cf8f23cf
         )
+    FILE(DOWNLOAD https://raw.githubusercontent.com/martinus/robin-hood-hashing/3.11.5/LICENSE ${CMAKE_BINARY_DIR}/docs/License_martinus-robin-hood-hashing.txt
+        EXPECTED_HASH SHA256=686cf8d62cc44fecff4be967238aba89665f9b6acf8a728987801ffc3a626bc7
+        )
+    install (FILES ${CMAKE_BINARY_DIR}/docs/License_martinus-robin-hood-hashing.txt DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/doc/boardgames)
 endif()
 
 if(NOT BOARDGAMES_USE_EXTERNAL_SML)
     FILE(DOWNLOAD https://raw.githubusercontent.com/boost-ext/sml/v1.1.3/include/boost/sml.hpp ${CMAKE_BINARY_DIR}/include/boost/sml.hpp
         EXPECTED_HASH SHA256=5b0c6e8a6199f986d5c81728b0af030777792f12d5da73d1928d0c28e6071a8f
         )
+    FILE(DOWNLOAD https://raw.githubusercontent.com/boost-ext/sml/v1.1.4/LICENSE.md ${CMAKE_BINARY_DIR}/docs/License_boost-ext-sml.txt
+        EXPECTED_HASH SHA256=c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566
+        )
+    install (FILES ${CMAKE_BINARY_DIR}/docs/License_boost-ext-sml.txt DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/doc/boardgames)
 endif()
 
-include(GNUInstallDirs)
+FILE(DOWNLOAD https://raw.githubusercontent.com/qt/qt5/5.15.2/LICENSE.LGPLv3 ${CMAKE_BINARY_DIR}/docs/License_Qt.txt
+    EXPECTED_HASH SHA256=5ceb37d1c7c1d92878b82af3c0fd5558087f3d5a08a3a4d43850bad4ad265a52
+    )
+install (FILES ${CMAKE_BINARY_DIR}/docs/License_Qt.txt DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/doc/boardgames)
 
 find_program(PANDOC pandoc)
 if(PANDOC)
@@ -125,3 +142,5 @@ if(BOARDGAMES_BUILD_TESTS AND BUILD_TESTING)
     include(AddGoogleTest)
     add_subdirectory(tests)
 endif()
+
+install (FILES ${CMAKE_SOURCE_DIR}/LICENSE DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/doc/boardgames RENAME License.txt)
