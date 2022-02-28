@@ -4,7 +4,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## 0.1.1 "Hans" - unreleased
+## 0.1.1 "Hans" - 2022-02-28
 
 Game info can be viewed. The engine is faster, but needs a lot of RAM.
 The maximum RAM usage is limited in muehle.
