@@ -2,6 +2,7 @@
 #define SRC_MUEHLE_MUEHLE_STATE
 
 #include "muehle.h"
+#include "muehle_fsm_action_handler.h"
 #include "boardgame/alpha_beta.h"
 #include "boardgame/boardgame_ui.h"
 #include "boardgame/move_list_ui.h"
@@ -48,6 +49,7 @@ namespace muehle
 class Fsm;
 
 class Muehle_State
+        : public Muehle_FSM_Action_Handler
 {
 public:
     Muehle_State(boardgame::Boardgame_Ui bui, boardgame::Move_List_Ui mlu, boardgame::Main_Loop ml);
@@ -70,11 +72,10 @@ public:
     void set_engine_depth(std::int32_t depth);
     void set_engine_time(std::chrono::seconds time_in_s);
     void engine_move();
-    void stop_engine(); // also fsm action
+    void stop_engine() override; // also fsm action
     void tick_1s();
     bool is_engine_running() const { return engine.is_running(); }
 private:
-    friend Fsm;
     muehle::Muehle_Constellation current_constellation;
     muehle::Muehle_Key current_key;
     std::array<boardgame::Piece_Number, muehle::number_of_fields.v> all_fields {};
@@ -138,20 +139,20 @@ private:
     std::unique_ptr<Fsm> fsm;
 
     // fsm actions
-    void start_new_game();
-    void enter_setup_mode();
-    void exit_setup_mode();
-    void select_game_piece(boardgame::Piece_Number pn);
-    void select_setup_piece(boardgame::Piece_Number pn);
-    void occupy_game(boardgame::Field_Number fn);
-    void occupy_setup(boardgame::Field_Number fn);
-    void remove_piece_and_finish_move(boardgame::Piece_Number pn);
-    void import_move_list();
-    void set_move_and_branch();
-    void set_selectable_game_pieces();
-    void finish_move();
-    void finish_engine_move();
-    void restore_last_constellation();
+    void start_new_game() override;
+    void enter_setup_mode() override;
+    void exit_setup_mode() override;
+    void select_game_piece(boardgame::Piece_Number pn) override;
+    void select_setup_piece(boardgame::Piece_Number pn) override;
+    void occupy_game(boardgame::Field_Number fn) override;
+    void occupy_setup(boardgame::Field_Number fn) override;
+    void remove_piece_and_finish_move(boardgame::Piece_Number pn) override;
+    void import_move_list() override;
+    void set_move_and_branch() override;
+    void set_selectable_game_pieces() override;
+    void finish_move() override;
+    void finish_engine_move() override;
+    void restore_last_constellation() override;
 };
 
 }

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.11.0)
-project(boardgames VERSION 0.1.1)
+project(boardgames VERSION 0.1.2)
 
 option(BOARDGAMES_BUILD_TESTS                       "Build unit tests, downloads google test"                   ON)
 option(BOARDGAMES_COVERAGE_REPORT                   "Compile with coverage instrumentation"                     OFF)
@@ -8,8 +8,8 @@ option(BOARDGAMES_USE_EXTERNAL_ROBIN_HOOD_HASH      "Use external robin_hood has
 option(BOARDGAMES_USE_EXTERNAL_SML                  "Use external boost-ext sml, download otherwise"            OFF)
 
 set(PROJECT_RELEASE_YEAR    2022)
-set(PROJECT_RELEASE_MONTH   02)
-set(PROJECT_RELEASE_DAY     28)
+set(PROJECT_RELEASE_MONTH   99)
+set(PROJECT_RELEASE_DAY     99)
 configure_file (
     "${CMAKE_SOURCE_DIR}/src/boardgame/version.h.in"
     "${CMAKE_BINARY_DIR}/include/boardgame/version.h"
