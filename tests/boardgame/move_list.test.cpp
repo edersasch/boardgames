@@ -1,6 +1,7 @@
 #include "move_list.test.h"
 
 #include <fstream>
+#include <filesystem>
 
 namespace
 {
@@ -251,10 +252,12 @@ TEST_F(Move_List_Test, detect_present_constellation)
 
 TEST_F(Move_List_Test, import_export)
 {
+    auto tmppath = std::filesystem::temp_directory_path();
     EXPECT_CALL(ui, need_confirm(true));
     commit_sequence(0, 1, 1, 1, 0);
     commit_sequence(0, 2, 3, 2, 2);
-    EXPECT_TRUE(move_list->export_move_list("/tmp/Move_List_Test_import_export_1.out"));
+    auto tmp1 = tmppath / "Move_List_Test_import_export_1.out";
+    EXPECT_TRUE(move_list->export_move_list(tmp1.string()));
 
     for (int i = 1; i <= 3; i += 1) {
         EXPECT_CALL(ui, delete_move(i));
@@ -275,7 +278,8 @@ TEST_F(Move_List_Test, import_export)
     commit_sequence(1, 6, 8, 6, 6);
     commit_sequence(7, 9, 11, 9, 9);
     commit_sequence(6, 12, 14, 12, 12);
-    EXPECT_TRUE(move_list->export_move_list("/tmp/Move_List_Test_import_export_2.out"));
+    auto tmp2 = tmppath / "Move_List_Test_import_export_2.out";
+    EXPECT_TRUE(move_list->export_move_list(tmp2.string()));
 
     EXPECT_CALL(ui, initial_constellation(0));
     EXPECT_CALL(ui, current_move(0));
@@ -286,13 +290,14 @@ TEST_F(Move_List_Test, import_export)
     commit_sequence(50, 200, 299, 200, 200);
     commit_sequence(250, 300, 399, 300, 300);
     commit_sequence(150, 400, 499, 400, 400);
-    EXPECT_TRUE(move_list->export_move_list("/tmp/Move_List_Test_import_export_3.out"));
+    auto tmp3 = tmppath / "Move_List_Test_import_export_3.out";
+    EXPECT_TRUE(move_list->export_move_list(tmp3.string()));
 
     EXPECT_CALL(ui, initial_constellation(0));
     EXPECT_CALL(ui, current_move(0));
     expect_import_sequence(0, 1, 1, 1);
     expect_import_sequence(0, 2, 3, 2);
-    move_list = std::make_unique<boardgame::Move_List<std::vector<int>, boardgame::Move_List_Ui>>(boardgame::Move_List_Ui(&ui), diff_text, "/tmp/Move_List_Test_import_export_1.out", true);
+    move_list = std::make_unique<boardgame::Move_List<std::vector<int>, boardgame::Move_List_Ui>>(boardgame::Move_List_Ui(&ui), diff_text, tmp1.string(), true);
 
     EXPECT_CALL(ui, initial_constellation(0));
     EXPECT_CALL(ui, current_move(0));
@@ -301,7 +306,7 @@ TEST_F(Move_List_Test, import_export)
     expect_import_sequence(1, 6, 8, 6);
     expect_import_sequence(7, 9, 11, 9);
     expect_import_sequence(6, 12, 14, 12);
-    move_list = std::make_unique<boardgame::Move_List<std::vector<int>, boardgame::Move_List_Ui>>(boardgame::Move_List_Ui(&ui), diff_text, "/tmp/Move_List_Test_import_export_2.out", true);
+    move_list = std::make_unique<boardgame::Move_List<std::vector<int>, boardgame::Move_List_Ui>>(boardgame::Move_List_Ui(&ui), diff_text, tmp2.string(), true);
 
     EXPECT_CALL(ui, initial_constellation(0));
     EXPECT_CALL(ui, current_move(0));
@@ -312,7 +317,8 @@ TEST_F(Move_List_Test, import_export)
     commit_sequence(1, 6, 8, 6, 6);
     commit_sequence(7, 9, 11, 9, 9);
     commit_sequence(4, 12, 14, 12, 12);
-    EXPECT_TRUE(move_list->export_move_list("/tmp/Move_List_Test_import_export_4.out"));
+    auto tmp4 = tmppath / "Move_List_Test_import_export_4.out";
+    EXPECT_TRUE(move_list->export_move_list(tmp4.string()));
 
     EXPECT_CALL(ui, initial_constellation(0));
     EXPECT_CALL(ui, current_move(0));
@@ -321,7 +327,7 @@ TEST_F(Move_List_Test, import_export)
     expect_import_sequence(50, 200, 299, 200);
     expect_import_sequence(250, 300, 399, 300);
     expect_import_sequence(150, 400, 499, 400);
-    move_list = std::make_unique<boardgame::Move_List<std::vector<int>, boardgame::Move_List_Ui>>(boardgame::Move_List_Ui(&ui), diff_text, "/tmp/Move_List_Test_import_export_3.out", true);
+    move_list = std::make_unique<boardgame::Move_List<std::vector<int>, boardgame::Move_List_Ui>>(boardgame::Move_List_Ui(&ui), diff_text, tmp3.string(), true);
 
     EXPECT_CALL(ui, initial_constellation(0));
     EXPECT_CALL(ui, current_move(0));
@@ -330,7 +336,7 @@ TEST_F(Move_List_Test, import_export)
     expect_import_sequence(1, 6, 8, 6);
     expect_import_sequence(7, 9, 11, 9);
     expect_import_sequence(4, 12, 14, 12);
-    move_list = std::make_unique<boardgame::Move_List<std::vector<int>, boardgame::Move_List_Ui>>(boardgame::Move_List_Ui(&ui), diff_text, "/tmp/Move_List_Test_import_export_4.out", true);
+    move_list = std::make_unique<boardgame::Move_List<std::vector<int>, boardgame::Move_List_Ui>>(boardgame::Move_List_Ui(&ui), diff_text, tmp4.string(), true);
     for (int i = 12; i < 15; i += 1) {
         EXPECT_CALL(ui, delete_move(i));
     }
@@ -344,21 +350,26 @@ TEST_F(Move_List_Test, import_export_errors)
     EXPECT_CALL(ui, initial_constellation(0));
     move_list = std::make_unique<boardgame::Move_List<std::vector<int>, boardgame::Move_List_Ui>>(boardgame::Move_List_Ui(&ui), diff_text, "/this/file/does/not/exist", true);
     EXPECT_EQ(move_list->get_current_move_id(), -1);
+    auto tmppath = std::filesystem::temp_directory_path();
 
+    auto tmp1 = tmppath / "Move_List_Test_broken_json_1.out";
     {
-        std::ofstream out1("/tmp/Move_List_Test_broken_json_1.out");
+        std::ofstream out1(tmp1.string());
+        EXPECT_TRUE(out1);
         out1 << "{\"notexpected\": \"something\"}";
     }
     EXPECT_CALL(ui, initial_constellation(0));
-    move_list = std::make_unique<boardgame::Move_List<std::vector<int>, boardgame::Move_List_Ui>>(boardgame::Move_List_Ui(&ui), diff_text, "/tmp/Move_List_Test_broken_json_1.out", true);
+    move_list = std::make_unique<boardgame::Move_List<std::vector<int>, boardgame::Move_List_Ui>>(boardgame::Move_List_Ui(&ui), diff_text, tmp1.string(), true);
     EXPECT_EQ(move_list->get_current_move_id(), -1);
 
+    auto tmp2 = tmppath / "Move_List_Test_broken_json_2.out";
     {
-        std::ofstream out2("/tmp/Move_List_Test_broken_json_2.out");
+        std::ofstream out2(tmp2.string());
+        EXPECT_TRUE(out2);
         out2 << "[[1,{\"bs\":[0],\"co\":[24],\"hi\":[9],\"ne\":[1],\"pr\":-1}]]"; // the first 1 is not the initial id, so it's not a valid move list
     }
     EXPECT_CALL(ui, initial_constellation(0));
-    move_list = std::make_unique<boardgame::Move_List<std::vector<int>, boardgame::Move_List_Ui>>(boardgame::Move_List_Ui(&ui), diff_text, "/tmp/Move_List_Test_broken_json_2.out", true);
+    move_list = std::make_unique<boardgame::Move_List<std::vector<int>, boardgame::Move_List_Ui>>(boardgame::Move_List_Ui(&ui), diff_text, tmp2.string(), true);
     EXPECT_EQ(move_list->get_current_move_id(), -1);
 }
 

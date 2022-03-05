@@ -304,8 +304,11 @@ template <typename T, typename U>
 bool Move_List<T, U>::export_move_list(const std::string& path) const
 {
     std::ofstream out(path);
-    out << get_move_list_string();
-    return out.good();
+    if (out) {
+        out << get_move_list_string();
+        return out.good();
+    }
+    return false;
 }
 
 template <typename T, typename U>
