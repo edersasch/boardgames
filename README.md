@@ -14,7 +14,7 @@
 * Interface `move_list_ui` for commands from the provided `move_list` implementation to its user interface
 * Interface `main_loop` to delegate tasks to the utilized main loop implementation
 * Engine implementation `alpha_beta` (depends on martinus/robin-hood-hashing, see "Build Requirements" below)
-* Move list implementation `move_list`, supporting variants and json import / export (depends on nlohmann/json, see "Build Requirements" below)
+* Move list implementation `move_list`, supporting branches and json import / export (depends on nlohmann/json, see "Build Requirements" below)
 * Piece and field functions `pieces_n_fields` that help manage associations; defines strong types to prevent mixing up field and piece ids
 
 
@@ -53,7 +53,7 @@ depends on Qt, see "Build Requirements" below
 
 # Optional Tools
 
-* [GTest](https://github.com/google/googletest) >= 1.8.1, downloaded automatically if option `BOARDGAMES_BUILD_TESTS` is `ON`
+* [GTest](https://github.com/google/googletest) >= 1.12.1, downloaded automatically if option `BOARDGAMES_BUILD_TESTS` is `ON`
 * [Umlet](https://www.umlet.com) UML Editor (`*.uxf` files in `/docs`)
 * [Doxygen](http://www.doxygen.nl) documentation tool, enables `apidoc` build target
 * [Pandoc](https://pandoc.org) enables `manuals` build target
@@ -77,7 +77,7 @@ Manuals, [Changelog.md](docs/Changelog.md) and UML diagrams
 
 ## `src/`
 
-Framework parts are located in the directories `boardgame/` and `boardgam_qml/`.
+Framework parts are located in the directories `boardgame/` and `boardgame_qml/`.
 "Mühle" resides in `muehle` and `muehle_qml`.
 
 

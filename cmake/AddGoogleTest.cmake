@@ -11,7 +11,7 @@ if(CMAKE_VERSION VERSION_LESS 3.11)
 
     include(DownloadProject)
     download_project(PROJ                googletest
-        URL https://github.com/google/googletest/archive/release-1.8.1.zip
+        URL https://github.com/google/googletest/archive/release-1.12.1.zip
         UPDATE_DISCONNECTED 1
         QUIET
         )
@@ -23,7 +23,7 @@ if(CMAKE_VERSION VERSION_LESS 3.11)
 else()
     include(FetchContent)
     FetchContent_Declare(googletest
-        URL https://github.com/google/googletest/archive/release-1.8.1.zip
+        URL https://github.com/google/googletest/archive/release-1.12.1.zip
         )
     FetchContent_GetProperties(googletest)
     if(NOT googletest_POPULATED)
