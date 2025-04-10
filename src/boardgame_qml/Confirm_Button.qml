@@ -1,5 +1,5 @@
-import QtQuick 2.3
-import QtQuick.Controls 2.3
+import QtQuick
+import QtQuick.Controls
 
 Item {
     id: root
@@ -60,7 +60,7 @@ Item {
 
     ToolButton {
         id: trigger_button
-
+        background: Rectangle {id: bg}
         onClicked: {
             if (!root.checkable) {
                 if (!root.confirm || state === "show") {
@@ -87,20 +87,27 @@ Item {
             State {
                 name: "show"
                 PropertyChanges {
-                    target: trigger_button
-                    background.opacity: 1
-                    background.color: "red"
-                    background.radius: 5
-                    x: root.target_x()
-                    y: root.target_y()
+                    trigger_button {
+                        x: root.target_x()
+                        y: root.target_y()
+                    }
                 }
                 PropertyChanges {
-                    target: cancel_button
-                    opacity: 1
+                    bg {
+                        opacity: 1
+                        color: "red"
+                        radius: 5
+                    }
                 }
                 PropertyChanges {
-                    target: auto_cancel
-                    running: true
+                    cancel_button {
+                        opacity: 1
+                    }
+                }
+                PropertyChanges {
+                    auto_cancel {
+                        running: true
+                    }
                 }
             }
         ]
@@ -118,7 +125,7 @@ Item {
         flat: trigger_button.flat
         icon.source: "qrc:/cancel.svg"
         opacity: 0
-        visible: opacity != 0
+        visible: opacity !== 0
         onClicked: {
             trigger_button.state = "";
         }

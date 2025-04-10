@@ -41,16 +41,16 @@ protected:
     QQuickView v;
     QQmlComponent move_list_component;
     std::unique_ptr<QQuickItem> move_list_item;
-    QQuickItem* move_list_root_entry1;
-    QQuickItem* move_list_root_entry2;
-    QQuickItem* move_list_root_buttons;
-    QQuickItem* move_list_control;
-    QQuickItem* move_list_back_to_start_button;
-    QQuickItem* move_list_back_button;
-    QQuickItem* move_list_forward_button;
-    QQuickItem* move_list_import_button;
-    QQuickItem* move_list_export_button;
-    boardgame_qml::Multi_Move_List_Qml mlq;
+    QQuickItem* move_list_root_entry1 {nullptr};
+    QQuickItem* move_list_root_entry2 {nullptr};
+    QQuickItem* move_list_root_buttons {nullptr};
+    QQuickItem* move_list_control {nullptr};
+    QQuickItem* move_list_back_to_start_button {nullptr};
+    QQuickItem* move_list_back_button {nullptr};
+    QQuickItem* move_list_forward_button {nullptr};
+    QQuickItem* move_list_import_button {nullptr};
+    QQuickItem* move_list_export_button {nullptr};
+    std::unique_ptr<boardgame_qml::Multi_Move_List_Qml> mlq;
     ::testing::StrictMock<Multi_Move_List_Qml_Test_Slots> move_list_slots {};
 };
 

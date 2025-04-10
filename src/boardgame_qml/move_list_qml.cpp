@@ -8,8 +8,8 @@ namespace boardgame_qml
 
 Move_List_Qml::Move_List_Qml(QQmlEngine* engine, QQuickItem* move_list_root_entry)
     : root_entry(move_list_root_entry)
-    , move_button(engine, QUrl(QStringLiteral("qrc:/Move_Button.qml")))
-    , move_list_entry(engine, QUrl(QStringLiteral("qrc:/Move_List_Entry.qml")))
+    , move_button(engine, QUrl(QStringLiteral("qrc:/src/boardgame_qml/Move_Button.qml")))
+    , move_list_entry(engine, QUrl(QStringLiteral("qrc:/src/boardgame_qml/Move_List_Entry.qml")))
 {
     auto control = QQmlProperty(root_entry, "control").read().value<QQuickItem*>();
     connect(control, SIGNAL(request_move_list_back_to_start()), this, SLOT(request_move_list_back_to_start()));
@@ -158,7 +158,7 @@ void Move_List_Qml::request_move_list_back_to_start()
 
 void Move_List_Qml::add_move_button(const int move_id, const std::string& description)
 {
-    auto button = qobject_cast<QQuickItem*>(move_button.create());
+    auto * button = qobject_cast<QQuickItem*>(move_button.create());
     QQmlProperty(button, "text").write(description.c_str());
     QQmlProperty(button, "move_id").write(move_id);
     connect(button, SIGNAL(request_set_move_id(int)), this, SIGNAL(request_set_current_move_and_branch_start_id(int)));

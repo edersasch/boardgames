@@ -85,7 +85,7 @@ public:
      */
     friend void prison_can_hide(const Boardgame_Ui& ui, const std::string& player_id, const bool can_hide) { ui.bc->pch(player_id, can_hide); }
 
-    /** \brief The piece must be visible, but the no interaction or manipulation is possible
+    /** \brief The piece must be visible, but no interaction or manipulation is possible
      *
      * \param ui User interface instance
      * \param piece_id Identification number of the required piece

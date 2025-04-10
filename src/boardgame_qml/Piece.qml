@@ -1,4 +1,4 @@
-import QtQuick 2.7
+import QtQuick
 
 Rectangle {
     id: piece
@@ -68,26 +68,30 @@ Rectangle {
         State {
             name: "selectable"
             PropertyChanges {
-                target: piece
-                scale: 1
+                piece {
+                    scale: 1
+                }
             }
             PropertyChanges {
-                target: mouse_area
-                drag.target: piece
-                cursorShape: Qt.OpenHandCursor // looks the same as ClosedHandCursor, changing to CrossCursor shows effect
-                onClicked: { piece.selected(piece.piece_id) }
+                mouse_area {
+                    drag.target: piece
+                    cursorShape: Qt.OpenHandCursor // looks the same as ClosedHandCursor, changing to CrossCursor shows effect
+                    onClicked: { piece.selected(piece.piece_id) }
+                }
             }
         },
         State {
             name: "removable"
             PropertyChanges {
-                target: remove_hint
-                opacity: 1
+                remove_hint {
+                    opacity: 1
+                }
             }
             PropertyChanges {
-                target: mouse_area
-                cursorShape: Qt.CrossCursor
-                onClicked: { piece.removed(piece.piece_id) }
+                mouse_area {
+                    cursorShape: Qt.CrossCursor
+                    onClicked: { piece.removed(piece.piece_id) }
+                }
             }
         },
         State {
@@ -101,8 +105,9 @@ Rectangle {
         State {
             name: "draw"
             PropertyChanges {
-                target: piece
-                scale: 0.3
+                piece {
+                    scale: 0.3
+                }
             }
         }
     ]
@@ -115,20 +120,20 @@ Rectangle {
     SequentialAnimation {
         id: win_animation
 
-        running: state === "win"
+        running: piece.state === "win"
         alwaysRunToEnd: true
         loops: Animation.Infinite
         ColorAnimation {
             target: piece
             properties: "color"
-            from: next_color
-            to: next_color.hslLightness > 0.5 ? "black" : "white"
+            from: piece.next_color
+            to: piece.next_color.hslLightness > 0.5 ? "black" : "white"
             duration: 500
         }
         ColorAnimation {
             target: piece
             properties: "color"
-            to: next_color
+            to: piece.next_color
             duration: 1000
         }
         onStopped: {
@@ -149,7 +154,7 @@ Rectangle {
             easing.period: 0.9
             duration: 500
             onRunningChanged: {
-                anchorparent()
+                piece.anchorparent()
             }
         }
     }
@@ -161,7 +166,7 @@ Rectangle {
             easing.period: 0.9
             duration: 500
             onRunningChanged: {
-                anchorparent()
+                piece.anchorparent()
             }
         }
     }
@@ -183,8 +188,9 @@ Rectangle {
             State {
                 when: mouse_area.pressed && mouse_area.drag.active
                 PropertyChanges {
-                    target: mouse_area
-                    cursorShape: Qt.ClosedHandCursor
+                    mouse_area {
+                        cursorShape: Qt.ClosedHandCursor
+                    }
                 }
                 StateChangeScript {
                     script: {

@@ -1,5 +1,5 @@
-import QtQuick 2.3
-import QtQuick.Controls 2.3
+import QtQuick
+import QtQuick.Controls
 
 ToolButton {
     id: move_button
@@ -27,6 +27,6 @@ ToolButton {
         radius: 5
         color: Qt.darker(move_button.color, move_button.pressed ? 1.5 : 1.0)
         border.color: color.hslLightness < 0.5 ? "lightgreen" : "darkgreen";
-        border.width: highlight ? 2 : 0
+        border.width: move_button.highlight ? 2 : 0
     }
 }

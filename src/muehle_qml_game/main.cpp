@@ -1,6 +1,7 @@
 #include "muehle_qml/muehle_qml.h"
 
 #include <QGuiApplication>
+#include <QQmlEngine>
 #include <QQuickView>
 #include <QSettings>
 
@@ -14,9 +15,8 @@ int main(int argc, char *argv[])
 
     QSettings settings;
     auto size = settings.value("MainWindow/size", QSize(initial_window_width, initial_window_height)).toSize();
-    Q_INIT_RESOURCE(muehle);
-    Q_INIT_RESOURCE(boardgame_qml);
     QQuickView v;
+    v.engine()->addImportPath("qrc:/");
     muehle_qml::Muehle_Qml mq(v.engine(), v.contentItem());
     v.setWidth(size.width());
     v.setHeight(size.height());

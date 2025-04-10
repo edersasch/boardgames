@@ -1,6 +1,7 @@
 #include "move_list_qml.test.h"
 
 #include <QGuiApplication>
+#include <QQmlEngine>
 #include <QQmlProperty>
 
 #include <chrono>
@@ -23,34 +24,33 @@ void processEvents(int times = 2)
 }
 
 Move_List_Qml_Test::Move_List_Qml_Test()
-    : move_list_component(v.engine(), QUrl(QStringLiteral("qrc:/Move_List_Qml_Test.qml")))
-    , move_list_item(qobject_cast<QQuickItem*>(move_list_component.create()))
-    , move_list_root_entry(QQmlProperty(move_list_item.get(), "move_list_1").read().value<QQuickItem*>())
-    , move_list_root_buttons(QQmlProperty(move_list_root_entry, "buttons").read().value<QQuickItem*>())
-    , move_list_control(QQmlProperty(move_list_root_entry, "control").read().value<QQuickItem*>())
-    , move_list_back_to_start_button(move_list_control->childItems().at(0))
-    , move_list_back_button(move_list_control->childItems().at(1))
-    , move_list_forward_button(move_list_control->childItems().at(2))
-    , mlq(v.engine(), move_list_root_entry)
+: move_list_component(v.engine())
 {
-    Q_INIT_RESOURCE(boardgame_qml);
-    Q_INIT_RESOURCE(move_list_qml_test);
-    move_list_item->setParentItem(v.contentItem());
+    v.engine()->addImportPath("qrc:/");
+    move_list_component.loadUrl(QUrl("qrc:/tests/boardgame_qml/Move_List_Qml_Test.qml"));
+    move_list_item.reset(qobject_cast<QQuickItem*>(move_list_component.create()));
+    move_list_root_entry = QQmlProperty(move_list_item.get(), "move_list_1").read().value<QQuickItem*>();
+    move_list_root_buttons = QQmlProperty(move_list_root_entry, "buttons").read().value<QQuickItem*>();
+    move_list_control = QQmlProperty(move_list_root_entry, "control").read().value<QQuickItem*>();
+    move_list_back_to_start_button = move_list_control->childItems().at(0);
+    move_list_back_button = move_list_control->childItems().at(1);
+    move_list_forward_button = move_list_control->childItems().at(2);
+    mlq.reset(new boardgame_qml::Move_List_Qml(v.engine(), move_list_root_entry));
 
-    connect(&mlq, &boardgame_qml::Move_List_Qml::request_set_current_move_and_branch_start_id, &move_list_slots, &Move_List_Qml_Test_Slots::request_set_current_move_and_branch_start_id);
-    auto set_current_move = [this](int move_id) { mlq.current_move(move_id); };
+    connect(mlq.get(), &boardgame_qml::Move_List_Qml::request_set_current_move_and_branch_start_id, &move_list_slots, &Move_List_Qml_Test_Slots::request_set_current_move_and_branch_start_id);
+    auto set_current_move = [this](int move_id) { mlq->current_move(move_id); };
     ON_CALL(move_list_slots, request_set_current_move_and_branch_start_id(_)).WillByDefault(Invoke(set_current_move));
-    connect(&mlq, &boardgame_qml::Move_List_Qml::request_move_list_forward, &move_list_slots, &Move_List_Qml_Test_Slots::request_move_list_forward);
-    connect(&mlq, &boardgame_qml::Move_List_Qml::request_move_list_back, &move_list_slots, &Move_List_Qml_Test_Slots::request_move_list_back);
-    mlq.initial_constellation(0);
+    connect(mlq.get(), &boardgame_qml::Move_List_Qml::request_move_list_forward, &move_list_slots, &Move_List_Qml_Test_Slots::request_move_list_forward);
+    connect(mlq.get(), &boardgame_qml::Move_List_Qml::request_move_list_back, &move_list_slots, &Move_List_Qml_Test_Slots::request_move_list_back);
+    mlq->initial_constellation(0);
     processEvents();
 }
 
 std::vector<QQuickItem*> Move_List_Qml_Test::add_sequence(int current_move_id, int move_id, int number_of_moves, int expected_number_of_childItems)
 {
-    mlq.current_move(current_move_id);
+    mlq->current_move(current_move_id);
     auto end = move_id + number_of_moves;
-    auto entries = mlq.add_move(move_id, std::to_string(move_id));
+    auto entries = mlq->add_move(move_id, std::to_string(move_id));
     if (expected_number_of_childItems == 0) {
         EXPECT_TRUE(entries.empty());
     } else {
@@ -66,7 +66,7 @@ std::vector<QQuickItem*> Move_List_Qml_Test::add_sequence(int current_move_id, i
     }
     move_id += 1;
     for (; move_id < end; move_id += 1) {
-        auto noentries = mlq.add_move(move_id, std::to_string(move_id));
+        auto noentries = mlq->add_move(move_id, std::to_string(move_id));
         EXPECT_TRUE(noentries.empty());
     }
     return entries;
@@ -74,14 +74,14 @@ std::vector<QQuickItem*> Move_List_Qml_Test::add_sequence(int current_move_id, i
 
 TEST_F(Move_List_Qml_Test, controls)
 {
-    auto entries = mlq.add_move(1, "01");
+    auto entries = mlq->add_move(1, "01");
     EXPECT_EQ(0, entries.size());
     EXPECT_EQ(4, move_list_root_buttons->childItems().length());
     EXPECT_FALSE(QQmlProperty(move_list_root_buttons->childItems().at(1), "visible").read().toBool());
     EXPECT_CALL(move_list_slots, request_set_current_move_and_branch_start_id(0));
     QMetaObject::invokeMethod(move_list_back_to_start_button, "clicked");
-    mlq.current_move(0);
-    entries = mlq.add_move(2, "02");
+    mlq->current_move(0);
+    entries = mlq->add_move(2, "02");
     EXPECT_EQ(2, entries.size());
     EXPECT_EQ(move_list_root_entry, entries.at(0)->parentItem());
     EXPECT_EQ(move_list_root_entry, entries.at(1)->parentItem());
@@ -207,9 +207,9 @@ TEST_F(Move_List_Qml_Test, delete_and_cut_off)
     *                                                                                                                                             +---+          +---+   +---+   +---+
     */
 
-    mlq.delete_move(200);
-    mlq.delete_move(199);
-    mlq.delete_move(198);
+    mlq->delete_move(200);
+    mlq->delete_move(199);
+    mlq->delete_move(198);
 
     auto entries101to150 = move_list_root_entry->childItems().at(2);
     EXPECT_EQ(52, QQmlProperty(entries101to150, "buttons").read().value<QQuickItem*>()->childItems().length());
@@ -224,27 +224,27 @@ TEST_F(Move_List_Qml_Test, delete_and_cut_off)
     EXPECT_EQ(102, QQmlProperty(entries301to400, "buttons").read().value<QQuickItem*>()->childItems().length());
 
     for (int i = 200; i > 150; i -= 1) {
-        mlq.delete_move(i);
+        mlq->delete_move(i);
     }
     EXPECT_EQ(2, QQmlProperty(entries151to197, "buttons").read().value<QQuickItem*>()->childItems().length());
 
-    mlq.cut_off(151); // 201 - 250 move behind 150
+    mlq->cut_off(151); // 201 - 250 move behind 150
     EXPECT_EQ(102, QQmlProperty(entries101to150, "buttons").read().value<QQuickItem*>()->childItems().length());
 
     for (int i = 400; i > 300; i -= 1) {
-        mlq.delete_move(i);
+        mlq->delete_move(i);
     }
     EXPECT_EQ(2, QQmlProperty(entries301to400, "buttons").read().value<QQuickItem*>()->childItems().length());
 
-    mlq.cut_off(301); // 251 - 300 move behind 250, which is behind 101 now
+    mlq->cut_off(301); // 251 - 300 move behind 250, which is behind 101 now
     EXPECT_EQ(152, QQmlProperty(entries101to150, "buttons").read().value<QQuickItem*>()->childItems().length());
 
     for (int i = 100; i > 50; i -= 1) {
-        mlq.delete_move(i);
+        mlq->delete_move(i);
     }
     EXPECT_EQ(2, QQmlProperty(move_list_root_entry->childItems().at(1), "buttons").read().value<QQuickItem*>()->childItems().length());
 
-    mlq.cut_off(51); // 101 - 300 move behind 50
+    mlq->cut_off(51); // 101 - 300 move behind 50
     EXPECT_EQ(203, move_list_root_buttons->childItems().length()); // one more because of controls, so 203
 }
 

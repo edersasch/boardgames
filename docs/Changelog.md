@@ -10,6 +10,12 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Added
 
 - muehle: fsm test with [plantuml dump](https://www.plantuml.com/plantuml/uml/hPRDRjGm4CVlUOfmHQguSq3bew1ARK4Bjr9P9XbbBP9nP3i5X7Xtd4nKnzxnxWPosyp7R_uUZ-szj4uQDtHjSJl0lWNnUVmkBovUbRVw4SIDiavSTxtsnfVb5wEQ1ini44yHJBBy3fC_P95NtC4FyK5sKBxuYcLiAhmO1ulStqLPtZz_c8YV55I-0hHGEQNHUnABhwHH03hpYzZWPgVyri9KG4mfbiaTAxm3wnJAyJjuWlxPHWogG8P0pe2li548OZSWAcmMH79GOw3cirDRsb22aA0TMASDY1jfdNYhqJfeMqdjscHvF8Ha6cKrWc7P7wjgw6bRwET8vNaRBvlJTHo_Wqu_4fX-2efzZRLuhr3P_JIS_uA-qqIV1Z8qEa_TlX_9CB9ePa1rtqEz54iUqlodOEwAw2oc5qQQy1-NnWeKa89f9zyOYTMUU8Vs8kIFD1ynzFwpXgWZyM4EGPvvVsr5tEa7gkNpPaUsHfRvx12QGEQcy3AvXgwNUiu-vTIosnUXqyta5y8-GckNilQHEsy7c64wiWOcUhiTuTdC4hAd89h9w41VeOl6CmezzQHG7fcvHEQze9GGd5_sauqFNdcx1CZgUJdita_bg7d-nx9tsLFBosQlvHEN8ezEWh8LYlnKhnPxUjPOSd3dLLu2rkDVsRy0)
+- muehle: adapt to work with Ubuntu 24.04 Qt version 6.4.2
+
+
+### Changed
+
+- qml: fix lint warnings, qmllint needs builddirs `--resource src/boardgame_qml/.rcc/qmake_src_boardgame_qml.qrc`
 
 
 ### Fixed

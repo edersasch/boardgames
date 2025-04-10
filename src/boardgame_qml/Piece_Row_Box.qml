@@ -1,5 +1,5 @@
-import QtQuick 2.7
-import QtQuick.Layouts 1.3
+import QtQuick
+import QtQuick.Layouts
 
 Rectangle {
     property bool can_hide: true
@@ -14,7 +14,7 @@ Rectangle {
 
     states: [
         State {
-            when: can_hide === false
+            when: box.can_hide === false
             PropertyChanges {
                 target: box
                 Layout.preferredHeight: width / fields.model * size_factor

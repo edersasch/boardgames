@@ -1,6 +1,6 @@
-import QtQuick 2.9
-import QtQuick.Controls 2.2
-import QtQuick.Dialogs 1.2
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Dialogs
 
 Flickable {
     id: root
@@ -34,10 +34,22 @@ Flickable {
         id: entries
 
         property alias control: control
-        property alias choose_move_list_file_existing: choose_move_list_file.selectExisting
-        property alias choose_move_list_file_visible: choose_move_list_file.visible
         property alias default_suffix: choose_move_list_file.defaultSuffix
         property alias name_filters: choose_move_list_file.nameFilters
+
+        property bool choose_move_list_file_existing
+        onChoose_move_list_file_existingChanged :
+            choose_move_list_file_existing === true ?
+                choose_move_list_file.fileMode = FileDialog.OpenFile :
+                choose_move_list_file.fileMode = FileDialog.SaveFile
+        choose_move_list_file_existing: true
+
+        property bool choose_move_list_file_visible
+        onChoose_move_list_file_visibleChanged:
+            choose_move_list_file_visible === true ?
+                choose_move_list_file.open() :
+                choose_move_list_file.reject()
+        choose_move_list_file_visible: false
 
         signal chosen_move_list_path(var file_url)
 
@@ -61,7 +73,7 @@ Flickable {
         FileDialog {
             id: choose_move_list_file;
 
-            onAccepted: entries.chosen_move_list_path(choose_move_list_file.fileUrl)
+            onAccepted: entries.chosen_move_list_path(choose_move_list_file.selectedFile)
         }
     }
 

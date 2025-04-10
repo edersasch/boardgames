@@ -1,6 +1,8 @@
-import QtQuick 2.0
-import QtQuick.Layouts 1.3
-import QtQuick.Controls 2.3
+import "qrc:/src/boardgame_qml"
+
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Controls
 
 RowLayout {
     id: root
@@ -66,7 +68,7 @@ RowLayout {
 
     ColumnLayout {
         spacing: 0
-        visible: hor_orientation
+        visible: root.hor_orientation
         z: 100
 
         Confirm_Button {
@@ -76,27 +78,27 @@ RowLayout {
             direction: v_new_game.direction_right
             icon.source: "qrc:/refresh.svg"
             confirm: root.confirm
-            onConfirmed: new_game()
+            onConfirmed: root.new_game()
         }
 
         Engine_Button {
             id: white_engine_v_button
 
-            color: white_color
+            color: root.white_color
             border_color: "darkgreen"
-            working: white_player_active
-            checked: white_engine_active
-            onCheckedChanged: white_engine_active = checked
+            working: root.white_player_active
+            checked: root.white_engine_active
+            onCheckedChanged: root.white_engine_active = checked
         }
 
         Engine_Button {
             id: black_engine_v_button
 
-            color: black_color
+            color: root.black_color
             border_color: "lightgreen"
-            working: black_player_active
-            checked: black_engine_active
-            onCheckedChanged: black_engine_active = checked
+            working: root.black_player_active
+            checked: root.black_engine_active
+            onCheckedChanged: root.black_engine_active = checked
         }
 
         ToolButton {
@@ -114,7 +116,7 @@ RowLayout {
             direction: v_setup.direction_right
             icon.source: "qrc:/setup.svg"
             confirm: root.confirm
-            onCheckedChanged: h_setup.checked = checked // why is this necessary?
+            onCheckedChanged: root.h_layout.h_setup.checked = checked // why is this necessary?
         }
 
         ToolButton {
@@ -135,7 +137,7 @@ RowLayout {
             id: help_v_button
             flat: true
             icon.source: "qrc:/help.svg"
-            onClicked: show_help()
+            onClicked: root.show_help()
         }
 
         Item {
@@ -144,11 +146,12 @@ RowLayout {
     }
 
     ColumnLayout {
+        id: h_layout
         spacing: 0
 
         RowLayout {
             spacing: 0
-            visible: !hor_orientation
+            visible: !root.hor_orientation
             z: 100
 
             Confirm_Button {
@@ -158,27 +161,27 @@ RowLayout {
                 direction: h_new_game.direction_down
                 icon.source: "qrc:/refresh.svg"
                 confirm: root.confirm
-                onConfirmed: new_game()
+                onConfirmed: root.new_game()
             }
 
             Engine_Button {
                 id: white_engine_h_button
 
-                color: white_color
+                color: root.white_color
                 border_color: "darkgreen"
-                working: white_player_active
-                checked: white_engine_active
+                working: root.white_player_active
+                checked: root.white_engine_active
                 onCheckedChanged: white_engine_active = checked
             }
 
             Engine_Button {
                 id: black_engine_h_button
 
-                color: black_color
+                color: root.black_color
                 border_color: "lightgreen"
-                working: black_player_active
-                checked: black_engine_active
-                onCheckedChanged: black_engine_active = checked
+                working: root.black_player_active
+                checked: root.black_engine_active
+                onCheckedChanged: root.black_engine_active = checked
             }
 
             ToolButton {
@@ -223,7 +226,7 @@ RowLayout {
                 id: help_h_button
                 flat: true
                 icon.source: "qrc:/help.svg"
-                onClicked: show_help()
+                onClicked: root.show_help()
             }
 
             Item {
@@ -312,7 +315,7 @@ RowLayout {
             Text {
                 id: infotext
 
-                text: "Muehle " + release_info + " / Alexander Eder";
+                text: "Muehle " + root.release_info + " / Alexander Eder";
                 anchors.centerIn: parent
             }
         }
@@ -329,8 +332,6 @@ RowLayout {
             topMargin: 10
             bottomMargin: 10
 
-            Behavior on implicitHeight { NumberAnimation { easing.type: Easing.OutBack; duration: 200 } }
-
             Flow {
                 width: parent.width
                 spacing: 10
@@ -344,7 +345,7 @@ RowLayout {
 
                 Framed_Label {
                     padding: 20
-                    text: "# " + movecount
+                    text: "# " + root.movecount
                 }
 
                 Rectangle {
@@ -356,20 +357,20 @@ RowLayout {
 
                     RowLayout {
                         Image {
-                            visible: !time_accounting_correct
+                            visible: !root.time_accounting_correct
                             source: "qrc:/warning.svg"
                             Layout.margins: 10
                         }
 
                         Framed_Label {
-                            text: white_time
+                            text: root.white_time
                             color: root.white_color.hslLightness > 0.5 ? "black" : "white"
                             Layout.margins: 10
                             bg.color: root.white_color
                         }
 
                         Framed_Label {
-                            text: black_time
+                            text: root.black_time
                             color: root.black_color.hslLightness > 0.5 ? "black" : "white"
                             Layout.margins: 10
                             bg.color: root.black_color
@@ -379,7 +380,7 @@ RowLayout {
 
                 Rectangle {
                     width: childrenRect.width
-                    visible: root.engine_forecast1.length && ((white_player_active && white_engine_active) || (black_player_active && black_engine_active))
+                    visible: root.engine_forecast1.length && ((root.white_player_active && root.white_engine_active) || (root.black_player_active && root.black_engine_active))
                     height: childrenRect.height
                     radius: 10
                     border.color: "black"
@@ -394,7 +395,7 @@ RowLayout {
                             text: "+ " + root.engine_score * (root.engine_score >= 0 ? 1 : -1)
                             color: bg.color.hslLightness > 0.5 ? "black" : "white"
                             Layout.margins: 10
-                            bg.color: root.engine_score >= 0 ? (white_player_active ? white_color : black_color) : (white_player_active ? black_color : white_color)
+                            bg.color: root.engine_score >= 0 ? (root.white_player_active ? root.white_color : root.black_color) : (root.white_player_active ? root.black_color : root.white_color)
                         }
                         Image {
                             source: "qrc:/depth.svg"
@@ -407,19 +408,19 @@ RowLayout {
                             text: root.engine_forecast1
                             color: bg.color.hslLightness > 0.5 ? "black" : "white"
                             Layout.margins: 10
-                            bg.color: white_player_active ? white_color : black_color
+                            bg.color: root.white_player_active ? root.white_color : root.black_color
                         }
                         Framed_Label {
                             text: root.engine_forecast2
                             color: bg.color.hslLightness > 0.5 ? "black" : "white"
                             Layout.margins: 10
-                            bg.color: white_player_active ? black_color : white_color
+                            bg.color: root.white_player_active ? root.black_color : root.white_color
                         }
                         Framed_Label {
                             text: root.engine_forecast3
                             color: bg.color.hslLightness > 0.5 ? "black" : "white"
                             Layout.margins: 10
-                            bg.color: white_player_active ? white_color : black_color
+                            bg.color: root.white_player_active ? root.white_color : root.black_color
                         }
                     }
                 }

@@ -1,5 +1,5 @@
-import QtQuick 2.3
-import QtQuick.Controls 2.3
+import QtQuick
+import QtQuick.Controls
 
 ToolButton {
     id: button
@@ -20,7 +20,7 @@ ToolButton {
     states: [
         State {
             name: "working"
-            when: working && checked
+            when: button.working && button.checked
             StateChangeScript {
                 script: {
                     bg.color = button.color; // break binding to color without flicker

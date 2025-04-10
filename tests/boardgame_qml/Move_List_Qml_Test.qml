@@ -1,7 +1,8 @@
-import QtQuick 2.9
-import QtQuick.Layouts 1.3
+import "qrc:/src/boardgame_qml"
+import "src/boardgame_qml"
 
-//import "../boardgame_qml" // to make Move_List_Root known causes crash
+import QtQuick
+import QtQuick.Layouts
 
 ColumnLayout {
     id: root

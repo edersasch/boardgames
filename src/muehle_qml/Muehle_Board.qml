@@ -1,8 +1,7 @@
-import QtQuick 2.9
-import QtQuick.Layouts 1.3
-import QtQuick.Controls 2.2
+import "qrc:/src/boardgame_qml"
 
-//import "../boardgame_qml" // causes crash
+import QtQuick
+import QtQuick.Layouts
 
 RowLayout {
     id: root
@@ -34,8 +33,8 @@ RowLayout {
     Piece_Column_Box {
         id: white_h_prison
 
-        color: black_color // pieces for white prison are captured by black, so the prison has black's color
-        can_hide: white_prison_can_hide || !hor_orientation
+        color: root.black_color // pieces for white prison are captured by black, so the prison has black's color
+        can_hide: root.white_prison_can_hide || !root.hor_orientation
         fields.model: 7
         size_factor: 0.7
     }
@@ -43,7 +42,7 @@ RowLayout {
     Piece_Column_Box {
         id: white_h_drawer
 
-        can_hide: white_drawer_can_hide || !hor_orientation
+        can_hide: root.white_drawer_can_hide || !root.hor_orientation
         fields.model: 9
         size_factor: 0.8
     }
@@ -51,15 +50,13 @@ RowLayout {
     ColumnLayout {
         id: column_layout
 
-        width: 100
-        height: 100
         spacing: 1
 
         Piece_Row_Box {
             id: white_v_prison
 
-            color: black_color
-            can_hide: white_prison_can_hide || hor_orientation
+            color: root.black_color
+            can_hide: root.white_prison_can_hide || root.hor_orientation
             fields.model: 7
             size_factor: 0.7
         }
@@ -67,7 +64,7 @@ RowLayout {
         Piece_Row_Box {
             id: white_v_drawer
 
-            can_hide: white_drawer_can_hide || hor_orientation
+            can_hide: root.white_drawer_can_hide || root.hor_orientation
             fields.model: 9
             size_factor: 0.8
         }
@@ -186,7 +183,7 @@ RowLayout {
         Piece_Row_Box {
             id: black_v_drawer
 
-            can_hide: black_drawer_can_hide || hor_orientation
+            can_hide: root.black_drawer_can_hide || root.hor_orientation
             fields.model: 9
             size_factor: 0.8
         }
@@ -194,8 +191,8 @@ RowLayout {
         Piece_Row_Box {
             id: black_v_prison
 
-            color: white_color
-            can_hide: black_prison_can_hide || hor_orientation
+            color: root.white_color
+            can_hide: root.black_prison_can_hide || root.hor_orientation
             fields.model: 7
             size_factor: 0.7
         }
@@ -203,7 +200,7 @@ RowLayout {
         Move_List_Root {
             id: v_move_list_root
 
-            implicitHeight: (!hor_orientation && move_list_visible) ? Math.max(width / white_v_drawer_fields.model, 200) : 0
+            implicitHeight: (!root.hor_orientation && root.move_list_visible) ? Math.max(width / root.white_v_drawer_fields.model, 200) : 0
             Layout.fillWidth: true
             contentWidth: width
 
@@ -214,7 +211,7 @@ RowLayout {
     Piece_Column_Box {
         id: black_h_drawer
 
-        can_hide: black_drawer_can_hide || !hor_orientation
+        can_hide: root.black_drawer_can_hide || !root.hor_orientation
         fields.model: 9
         size_factor: 0.8
     }
@@ -222,8 +219,8 @@ RowLayout {
     Piece_Column_Box {
         id: black_h_prison
 
-        color: white_color
-        can_hide: black_prison_can_hide || !hor_orientation
+        color: root.white_color
+        can_hide: root.black_prison_can_hide || !root.hor_orientation
         fields.model: 7
         size_factor: 0.7
     }
@@ -231,7 +228,7 @@ RowLayout {
     Move_List_Root {
         id: h_move_list_root
 
-        implicitWidth: (hor_orientation && move_list_visible) ? Math.max(height / white_h_drawer_fields.model, entries.maxChildWidth) : 0
+        implicitWidth: (root.hor_orientation && root.move_list_visible) ? Math.max(height / root.white_h_drawer_fields.model, entries.maxChildWidth) : 0
         contentWidth: implicitWidth
         Layout.fillHeight: true
 
