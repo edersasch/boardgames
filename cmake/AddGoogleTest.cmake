@@ -3,17 +3,8 @@
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
-include(FetchContent)
-FetchContent_Declare(googletest
-    URL https://github.com/google/googletest/archive/refs/tags/v1.16.0.zip
-)
-FetchContent_GetProperties(googletest)
-if(NOT googletest_POPULATED)
-    FetchContent_Populate(googletest)
-    set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS 1 CACHE BOOL "")
-    add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR} EXCLUDE_FROM_ALL)
-    unset(CMAKE_SUPPRESS_DEVELOPER_WARNINGS)
-endif()
+include(CPM)
+CPMGetPackage(googletest)
 
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND}
     --force-new-ctest-process --output-on-failure

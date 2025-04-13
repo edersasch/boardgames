@@ -58,7 +58,7 @@ std::vector<QQuickItem*> Move_List_Qml_Test::add_sequence(int current_move_id, i
         EXPECT_EQ(expected_number_of_childItems, entries.at(0)->parentItem()->childItems().size());
         const auto& items = parentbuttons->childItems();
         for (const auto& button : items) {
-            EXPECT_TRUE(QQmlProperty(button, "move_id").read().value<int>() <= current_move_id);
+            EXPECT_TRUE(QQmlProperty(button, "move_id").read().toInt() <= current_move_id);
         }
         for (unsigned i = 1; i < entries.size(); i += 1) {
             EXPECT_EQ(parentbuttons, QQmlProperty(entries.at(i)->parentItem(), "buttons").read().value<QQuickItem*>());

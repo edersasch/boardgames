@@ -15,7 +15,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
-- qml: fix lint warnings, qmllint needs builddirs `--resource src/boardgame_qml/.rcc/qmake_src_boardgame_qml.qrc`
+- qml: fix lint warnings, qmllint needs builddir `--resource src/boardgame_qml/.rcc/qmake_src_boardgame_qml.qrc`
 
 
 ### Fixed
