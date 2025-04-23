@@ -44,7 +44,7 @@ private:
     struct Successor_Info
     {
         std::vector<Key> successors;
-        std::ptrdiff_t offset;
+        std::ptrdiff_t offset {0};
     };
     void iterative_depth(const Key& key, Move_Data& md);
     std::int32_t engine(const Key& key, const std::int32_t depth, std::int32_t alpha, const std::int32_t beta, Move_Data& md);
@@ -134,7 +134,7 @@ std::int32_t Alpha_Beta<Key, Game, Move_Data, Hash>::engine(const Key& key, cons
             }
         }
     };
-    Key_Info local_info;
+    Key_Info local_info {};
     static constexpr std::atomic_int32_t always_store_up_to_depth = 6;
     auto info = &local_info;
     if (current_depth - depth < always_store_up_to_depth) {

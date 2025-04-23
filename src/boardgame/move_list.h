@@ -20,7 +20,7 @@ struct Move_List_Entry
     T constellation;
     std::vector<std::int32_t> hint;
     std::vector<std::int32_t> branch_start_ids;
-    std::int32_t prev;
+    std::int32_t prev {0};
     std::vector<std::int32_t> next;
 };
 

@@ -111,10 +111,6 @@ modified `LCOV_FILTER_CMD` parameter from `--remove` to `--extract`, so
 `setup_target_for_coverage_lcov()` parameter `EXCLUDE` is turned on its head
 and will only include what is listed.
 
-[`DeployQt.cmake`](https://github.com/nitroshare/nitroshare-desktop/blob/f4feebef29d9d3985d1699ab36f0fac59d3df7da/cmake/DeployQt.cmake)
-(MIT License in the file):
-modified to include QML dirs
-
 Icons from [tiddlywiki](https://tiddlywiki.com) 5.1.17
 ([BSD 3-Clause License](https://tiddlywiki.com/#License), [local copy](docs/LICENSE_tiddlywiki)):
 modified to include `version="1.1" xmlns="http://www.w3.org/2000/svg"` in svg tag
@@ -174,3 +170,66 @@ enable ccache: `-DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER
 
 Do not synchronize CMakeLists.txt.user files t other machines,
 if using Visual Studio also skip the .vs folder.
+
+
+## Development Setup with Visual Studio
+
+My personal preferences,
+tested with v17.13.6
+
+
+Cmake must have the Qt dlls in its path, because google test cmake functions
+run the test executable to scan for tests.
+
+example CMakeSettings.json
+
+```
+{
+  "environments": [
+    {
+      "PATH": "${env.USERPROFILE}\\opt\\install\\qt\\6.9.0\\msvc2022_64\\bin;${env.PATH}"
+    }
+  ],
+  "configurations": [
+    {
+      "name": "x64-Debug",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "buildRoot": "C:\\Users\\eders\\opt\\build\\boardgames-vs-${name}",
+      "installRoot": "C:\\Users\\Alexander\\opt\\build\\boardgames-vs-${name}\\install",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "CMAKE_PREFIX_PATH",
+          "value": "C:/Users/eders/opt/install/qt/6.9.0/msvc2022_64",
+          "type": "PATH"
+        },
+        {
+          "name": "CPM_SOURCE_CACHE",
+          "value": "C:/Users/eders/opt/build/cpm-source-cache",
+          "type": "PATH"
+        }
+      ]
+    }
+  ]
+}
+```
+
+To run the executables within Visual Studio the launch.vs.json
+must set the path to the Qt dlls.
+
+example launch.vs.json
+
+```
+{
+  "version": "0.2.1",
+  "defaults": {},
+  "environments": [
+    {
+      "PATH": "${env.USERPROFILE}\\opt\\install\\qt\\6.9.0\\msvc2022_64\\bin;${env.PATH}"
+    }
+  ]
+}
+```

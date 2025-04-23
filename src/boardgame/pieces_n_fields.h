@@ -1,6 +1,8 @@
 #ifndef SRC_BOARDGAME_PIECES_N_FIELDS
 #define SRC_BOARDGAME_PIECES_N_FIELDS
 
+#include "boardgame_lib.h"
+
 #include <nlohmann/json.hpp>
 
 #include <algorithm>
@@ -142,8 +144,8 @@ using Field_Range = detail::Element_Range<const Field_Tag>;
 template <typename T>
 using Fieldgroup = detail::Elementgroup<T, const Field_Tag>;
 
-void from_json(const nlohmann::json& j, boardgame::Field_Number& d);
-void to_json(nlohmann::json& j, const Field_Number& d);
+BOARDGAME_LIB_EXPORT void from_json(const nlohmann::json& j, boardgame::Field_Number& d);
+BOARDGAME_LIB_EXPORT void to_json(nlohmann::json& j, const Field_Number& d);
 
 template <typename T>
 constexpr auto make_fieldgroup(const T& fields, const Field_Number start, const Field_Range range)

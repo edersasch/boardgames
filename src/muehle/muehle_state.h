@@ -1,6 +1,7 @@
 #ifndef SRC_MUEHLE_MUEHLE_STATE
 #define SRC_MUEHLE_MUEHLE_STATE
 
+#include "muehle_lib.h"
 #include "muehle.h"
 #include "muehle_fsm_action_handler.h"
 #include "boardgame/alpha_beta.h"
@@ -48,7 +49,7 @@ namespace muehle
 
 class Fsm;
 
-class Muehle_State
+class MUEHLE_LIB_EXPORT Muehle_State
         : public Muehle_FSM_Action_Handler
 {
 public:

@@ -15,6 +15,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set(BUILD_TESTING ${BOARDGAMES_BUILD_TESTS})
 
 include(GNUInstallDirs)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
 include(CPM)
 CPMUsePackageLock(package-lock.cmake)
 
@@ -94,10 +95,6 @@ if(PANDOC)
 endif()
 
 include(FindThreads)
-
-if(WIN32)
-    include(DeployQt)
-endif()
 
 include_directories(src)
 include_directories(${CMAKE_BINARY_DIR}/include)

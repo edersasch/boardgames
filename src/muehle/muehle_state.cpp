@@ -208,7 +208,7 @@ void Muehle_State::set_selected_piece(const boardgame::Piece_Number pn)
 
 void Muehle_State::clear_selectable_pieces()
 {
-    for (auto sp : selectable_pieces) {
+    for (const auto & sp : selectable_pieces) {
         lock_piece(boardgame_ui, sp);
     }
     selectable_pieces.clear();
@@ -234,7 +234,7 @@ void Muehle_State::set_removable_pieces(const std::vector<int>& fns)
 
 void Muehle_State::set_occupiable_fields(const std::vector<int>& fns)
 {
-    for (auto of : m_occupiable_fields) {
+    for (const auto & of : m_occupiable_fields) {
         lock_field(boardgame_ui, of);
     }
     m_occupiable_fields.clear();
@@ -316,7 +316,7 @@ boardgame::Field_Number_Diff Muehle_State::diff_keys(Muehle_Key oldk, Muehle_Key
         for (; f != single_from.end() && t != single_to.end(); f += 1, t += 1) {
             diffed.push_back({boardgame::Field_Number{*f}, boardgame::Field_Number{*t}});
         }
-        long prison_transfer = prisoner_count(oldk) - (prisoner_count(newk.test(use_white_data_in_key) == oldk.test(use_white_data_in_key) ? newk : muehle::switch_player(newk)));
+        auto prison_transfer = prisoner_count(oldk) - (prisoner_count(newk.test(use_white_data_in_key) == oldk.test(use_white_data_in_key) ? newk : muehle::switch_player(newk)));
         auto next_free_prison_field = oldk.test(use_white_data_in_key) ? muehle::first_white_prison_field : muehle::first_black_prison_field;
         while (f != single_from.end() && prison_transfer < 0) {
             auto field = boardgame::Field_Number{*f};
@@ -409,7 +409,7 @@ void Muehle_State::enter_setup_mode()
     }
     set_occupiable_empty_fields();
     std::vector<int> fosp;
-    for (auto fn : current_constellation) {
+    for (const auto & fn : current_constellation) {
         fosp.push_back(fn.v);
     }
     set_selectable_pieces(fosp);
@@ -608,7 +608,7 @@ void Muehle_State::finish_move()
 void Muehle_State::finish_engine_move()
 {
     auto next_keys = engine.get_next();
-    for (auto d : diff_key(next_keys.front())) {
+    for (const auto & d : diff_key(next_keys.front())) {
         set_field_helper(field_to_piece(d.at(0)), d.at(1));
         if (is_in_group(d.at(1), game_board)) {
             move_list_hint = field_to_piece(d.at(1)).v;

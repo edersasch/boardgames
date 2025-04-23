@@ -12,7 +12,10 @@ qt_add_qml_module(${PROJECT_NAME}
     NO_PLUGIN
 )
 
-target_compile_options(${PROJECT_NAME} PRIVATE -Wno-shadow)
+if (NOT MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wno-shadow)
+endif()
+
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
     boardgame

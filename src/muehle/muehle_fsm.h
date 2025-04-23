@@ -1,6 +1,7 @@
 #ifndef SRC_MUEHLE_MUEHLE_FSM
 #define SRC_MUEHLE_MUEHLE_FSM
 
+#include "muehle_lib.h"
 #include "muehle_fsm_action_handler.h"
 #include <boost/sml.hpp>
 
@@ -217,7 +218,7 @@ struct Transition_Table
     }
 };
 
-class Fsm
+class MUEHLE_LIB_EXPORT Fsm
 {
 public:
     Fsm(muehle::Muehle_FSM_Action_Handler* action_handler) : fsm{action_handler} {}
