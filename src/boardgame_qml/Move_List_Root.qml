@@ -30,6 +30,8 @@ Flickable {
     boundsBehavior: Flickable.OvershootBounds
     ScrollBar.vertical: ScrollBar {}
 
+    Behavior on contentY { SmoothedAnimation { duration: 500 } }
+
     Move_List_Entry {
         id: entries
 
@@ -85,6 +87,9 @@ Flickable {
         y: root.contentY
         opacity: 0
         visible: opacity > 0
+
+        Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.InOutQuad } }
+
         gradient: Gradient {
             GradientStop {
                 position: 0
@@ -123,25 +128,16 @@ Flickable {
             State {
                 when: root.contentY !== 0
                 PropertyChanges {
-                    target: list_overlay
-                    opacity: 1
+                    list_overlay {
+                        opacity: 1
+                    }
                 }
                 PropertyChanges {
-                    target: control
-                    opacity: 0
-                }
-            }
-        ]
-        transitions: [
-            Transition {
-                NumberAnimation {
-                    property: "opacity"
-                    duration: 200
-                    easing.type: Easing.InOutQuad
+                    control {
+                        opacity: 0
+                    }
                 }
             }
         ]
     }
-
-    Behavior on contentY { SmoothedAnimation { duration: 500 } }
 }

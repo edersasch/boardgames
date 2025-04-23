@@ -111,11 +111,6 @@ Rectangle {
             }
         }
     ]
-    transitions: [
-        Transition {
-            NumberAnimation { properties: "opacity" }
-        }
-    ]
 
     SequentialAnimation {
         id: win_animation
@@ -174,9 +169,9 @@ Rectangle {
         enabled: xbeh.enabled
         NumberAnimation { duration: 100 }
     }
-    Behavior on scale {
-        NumberAnimation { duration: 100 }
-    }
+    Behavior on scale { NumberAnimation { duration: 100 } }
+    Behavior on opacity { NumberAnimation { duration: 100 } }
+
 
     MouseArea {
         id: mouse_area
@@ -222,8 +217,6 @@ Rectangle {
         scale: 1.1
         z: -1
 
-        Behavior on opacity {
-            NumberAnimation {}
-        }
+        Behavior on opacity { NumberAnimation {} }
     }
 }

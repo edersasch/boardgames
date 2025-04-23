@@ -280,7 +280,7 @@ RowLayout {
                     onEngine_time_in_sChanged: root.engine_time_in_s(engine_time_in_s)
                 }
 
-                Column {
+                ColumnLayout {
                     HSL_Sliders {
                         id: white_color_select
 
@@ -331,6 +331,8 @@ RowLayout {
             rightMargin: 10
             topMargin: 10
             bottomMargin: 10
+
+            Behavior on implicitHeight { NumberAnimation { easing.type: Easing.OutBack; duration: 200 } }
 
             Flow {
                 width: parent.width
@@ -425,8 +427,6 @@ RowLayout {
                     }
                 }
             }
-
-            Behavior on implicitHeight { NumberAnimation { easing.type: Easing.OutBack; duration: 200 } }
         }
 
         Muehle_Board {

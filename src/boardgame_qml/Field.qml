@@ -27,26 +27,12 @@ DropArea {
     states: [
         State {
             name: "occupiable"
-            PropertyChanges {
-                target: destination
-                enabled: true
-            }
+            PropertyChanges { destination { enabled: true } }
         },
         State {
             name: "highlight"
-            PropertyChanges {
-                target: field
-                opacity: 0.5
-            }
+            PropertyChanges { field { opacity: 0.5 } }
         }
-    ]
-    transitions: [
-        Transition {
-            NumberAnimation {
-                properties: "opacity"
-            }
-        }
-
     ]
 
     Rectangle {
@@ -58,6 +44,8 @@ DropArea {
                 destination.parent.children[1].color.hslLightness < 0.5) ?
                    "darkgreen" :
                    "lightgreen"; // other way round than movebutton / engine button, can be seen well in prison
+
+        Behavior on opacity { NumberAnimation {} }
     }
 
     Piece {
@@ -66,21 +54,16 @@ DropArea {
         states: [
             State {
                 when: destination.enabled === true && destination.containsDrag === false
-                PropertyChanges { target: hint; opacity: 0.2 }
+                PropertyChanges { hint { opacity: 0.2 } }
             },
             State {
                 when: destination.containsDrag === true
-                PropertyChanges { target: hint; opacity: 1 }
+                PropertyChanges { hint { opacity: 1 } }
             }
         ]
-        transitions: [
-            Transition {
-                NumberAnimation { properties: "opacity" }
-            }
-        ]
-        Behavior on color {
-            ColorAnimation {}
-        }
+
+        Behavior on opacity { NumberAnimation {} }
+        Behavior on color { ColorAnimation {} }
 
         MouseArea {
             anchors.fill: parent
