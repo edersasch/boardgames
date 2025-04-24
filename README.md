@@ -41,7 +41,7 @@ depends on Qt, see "Build Requirements" below
 * `muehle` entry point and setup
 
 
-# Build Requirements
+## Build Requirements
 
 * C++ 17 toolchain (e.g. [gcc](https://gcc.gnu.org/) >= 7.3.0)
 * [CMake](https://cmake.org) >= 3.21.0
@@ -51,7 +51,7 @@ depends on Qt, see "Build Requirements" below
 * [boost-ext/sml](https://github.com/boost-ext/sml) >= 1.1.3, downloaded automatically if option `BOARDGAMES_USE_EXTERNAL_SML` is `OFF` (license: [Boost 1.0](http://www.boost.org/LICENSE_1_0.txt))
 
 
-# Optional Tools
+## Optional Tools
 
 * [GTest](https://github.com/google/googletest) >= 1.16.0, downloaded automatically if option `BOARDGAMES_BUILD_TESTS` is `ON`
 * [Umlet](https://www.umlet.com) UML Editor (`*.uxf` files in `/docs`)
@@ -60,28 +60,28 @@ depends on Qt, see "Build Requirements" below
 * GCov (part of [gcc](https://gcc.gnu.org/)) / [LCov](http://ltp.sourceforge.net/coverage/lcov.php) for coverage report if option `BOARDGAMES_COVERAGE_REPORT` is `ON`
 
 
-# Directory Structure
+## Directory Structure
 
 The top level structure follows [the pitchfork layout](https://api.csswg.org/bikeshed/?force=1&url=https://raw.githubusercontent.com/vector-of-bool/pitchfork/develop/data/spec.bs).
 
 
-## `data/`
+### `data/`
 
 Contains graphics files and a valgrind memcheck suppression file [memcheck.supp](data/memcheck.supp)
 
 
-## `docs/`
+### `docs/`
 
 Manuals, [Changelog](docs/Changelog.md), and UML diagrams
 
 
-## `src/`
+### `src/`
 
 Framework parts are located in the directories `boardgame/` and `boardgame_qml/`.
 "Mühle" resides in `muehle` and `muehle_qml`.
 
 
-## `tests/`
+### `tests/`
 
 Unit tests are
 [placed separately](https://api.csswg.org/bikeshed/?force=1&url=https://raw.githubusercontent.com/vector-of-bool/pitchfork/develop/data/spec.bs#src.tests.separate)
@@ -95,7 +95,7 @@ The directories whose names match a directory name from `src/` contain unit
 tests.
 
 
-# Included Resources
+## Included Resources
 
 [`CPM.cmake`](https://github.com/cpm-cmake/CPM.cmake/releases/tag/v0.40.8)
 (MIT License in the file)
@@ -168,7 +168,9 @@ enable ccache: `-DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER
 [CPM source cache](https://github.com/cpm-cmake/CPM.cmake?tab=readme-ov-file#cpm_source_cache):
 `-DCPM_SOURCE_CACHE=~/opt/build/%{ActiveProject:Name}-CPM-Source-Cache`
 
-Do not synchronize CMakeLists.txt.user files t other machines,
+qmllint needs builddir `--resource src/boardgame_qml/.rcc/qmake_src_boardgame_qml.qrc`
+
+Do not synchronize CMakeLists.txt.user files to other machines,
 if using Visual Studio also skip the .vs folder.
 
 

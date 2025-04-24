@@ -14,6 +14,12 @@ target_link_libraries(${PROJECT_NAME}
     ${CMAKE_THREAD_LIBS_INIT}
 )
 
+add_custom_target(qmllint
+    COMMAND ${CMAKE_SOURCE_DIR}/tools/qmllint_helper.sh ${CMAKE_BINARY_DIR}
+    COMMENT "Run qmllint on all QML files"
+    VERBATIM
+)
+
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(FILES ${CMAKE_SOURCE_DIR}/data/muehle.desktop DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)
 install(FILES ${CMAKE_SOURCE_DIR}/data/muehle_field_bright.svg DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/apps)

@@ -18,7 +18,7 @@ Rectangle {
     property alias lightness_to: lightness_slider.to
     property alias lightness_visible: lightness_slider.visible
 
-    radius: 10
+    radius: height / 2
     border.width: 1
     border.color: "#000000"
 
@@ -28,17 +28,11 @@ Rectangle {
         lightness_slider.value = color.hslLightness;
     }
 
-    width: main_layout.implicitWidth + 4
-    height: main_layout.implicitHeight
-
-    ButtonGroup {
-        id: engine_group
-    }
+    width: childrenRect.width
+    height: childrenRect.height
 
     ColumnLayout {
         id: main_layout
-
-        spacing: -10
 
         Slider {
             id: hue_slider
@@ -51,7 +45,7 @@ Rectangle {
                 implicitHeight: 12
                 width: implicitHeight
                 height: lightness_slider.availableWidth
-                radius: 3
+                radius: implicitHeight / 2
                 rotation: 90
                 gradient: Gradient {
                     GradientStop {
@@ -89,7 +83,7 @@ Rectangle {
                 implicitHeight: 12
                 width: implicitHeight
                 height: lightness_slider.availableWidth
-                radius: 3
+                radius: implicitHeight / 2
                 rotation: 90
                 border.width: 1
                 border.color: "black"
@@ -117,7 +111,7 @@ Rectangle {
                 implicitHeight: 12
                 width: implicitHeight
                 height: lightness_slider.availableWidth
-                radius: 3
+                radius: implicitHeight / 2
                 rotation: 90
                 border.width: 1
                 border.color: "black"

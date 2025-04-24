@@ -14,8 +14,8 @@ Rectangle {
     border.width: 1
     border.color: "#000000"
 
-    width: main_layout.implicitWidth + 4
-    height: main_layout.implicitHeight
+    width: childrenRect.width
+    height: childrenRect.height
 
     ButtonGroup {
         id: engine_group
@@ -25,6 +25,9 @@ Rectangle {
         id: main_layout
 
         ColumnLayout {
+
+            Layout.margins: 10
+
             RowLayout {
                 id: depth_layout
 
@@ -67,6 +70,8 @@ Rectangle {
         SpinBox {
             id: depth_spinbox
 
+            Layout.rightMargin: 10
+
             from: 1
             to: 100
             value: 6
@@ -75,6 +80,8 @@ Rectangle {
 
         SpinBox {
             id: time_spinbox
+
+            Layout.rightMargin: 10
 
             from: 1
             to: 999

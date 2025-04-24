@@ -46,12 +46,7 @@ Flickable {
                 choose_move_list_file.fileMode = FileDialog.SaveFile
         choose_move_list_file_existing: true
 
-        property bool choose_move_list_file_visible
-        onChoose_move_list_file_visibleChanged:
-            choose_move_list_file_visible === true ?
-                choose_move_list_file.open() :
-                choose_move_list_file.reject()
-        choose_move_list_file_visible: false
+        property alias choose_move_list_file_visible: choose_move_list_file.visible
 
         signal chosen_move_list_path(var file_url)
 

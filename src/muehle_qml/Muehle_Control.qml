@@ -113,10 +113,9 @@ RowLayout {
 
             flat: true
             checkable: true
-            direction: v_setup.direction_right
+            direction: direction_right
             icon.source: "qrc:/setup.svg"
             confirm: root.confirm
-            onCheckedChanged: root.h_layout.h_setup.checked = checked // why is this necessary?
         }
 
         ToolButton {
@@ -197,7 +196,7 @@ RowLayout {
 
                 flat: true
                 checkable: true
-                direction: h_setup.direction_down
+                direction: direction_down
                 icon.source: "qrc:/setup.svg"
                 confirm: root.confirm
                 checked: v_setup.checked
@@ -254,52 +253,65 @@ RowLayout {
 
                 RowLayout {
                     Image {
-                        Layout.topMargin: 30
-                        Layout.leftMargin: 16
-                        Layout.rightMargin: 16
+                        Layout.margins: 16
                         source: "qrc:/settings.svg"
                     }
-                }
 
-                Engine_Settings {
-                    id: engine_settings
+                    Engine_Settings {
+                        id: engine_settings
 
-                    onEngine_mode_depthChanged: {
-                        if (engine_mode_depth) {
-                            root.engine_depth(engine_depth);
+                        onEngine_mode_depthChanged: {
+                            if (engine_mode_depth) {
+                                root.engine_depth(engine_depth);
+                            }
                         }
+
+                        onEngine_mode_timeChanged: {
+                            if (engine_mode_time) {
+                                root.engine_time_in_s(engine_time_in_s);
+                            }
+                        }
+
+                        onEngine_depthChanged: root.engine_depth(engine_depth)
+                        onEngine_time_in_sChanged: root.engine_time_in_s(engine_time_in_s)
                     }
 
-                    onEngine_mode_timeChanged: {
-                        if (engine_mode_time) {
-                            root.engine_time_in_s(engine_time_in_s);
-                        }
-                    }
+                    Rectangle {
+                        radius: 10
+                        border.width: 1
+                        border.color: "#000000"
 
-                    onEngine_depthChanged: root.engine_depth(engine_depth)
-                    onEngine_time_in_sChanged: root.engine_time_in_s(engine_time_in_s)
-                }
+                        implicitWidth: color_slider_column.width + 20
+                        Layout.fillHeight: true
 
-                ColumnLayout {
-                    HSL_Sliders {
-                        id: white_color_select
 
-                        saturation_visible: false
-                        lightness_visible: false
-                        lightness: 0.8
-                        onColorChanged: {
-                            root.white_color_changed(color);
-                        }
-                    }
+                        Column {
+                            id: color_slider_column
+                            spacing: 10
 
-                    HSL_Sliders {
-                        id: black_color_select
+                            anchors.centerIn: parent
 
-                        saturation_visible: false
-                        lightness_visible: false
-                        lightness: 0.4
-                        onColorChanged: {
-                            root.black_color_changed(color);
+                            HSL_Sliders {
+                                id: white_color_select
+
+                                saturation_visible: false
+                                lightness_visible: false
+                                lightness: 0.8
+                                onColorChanged: {
+                                    root.white_color_changed(color);
+                                }
+                            }
+
+                            HSL_Sliders {
+                                id: black_color_select
+
+                                saturation_visible: false
+                                lightness_visible: false
+                                lightness: 0.4
+                                onColorChanged: {
+                                    root.black_color_changed(color);
+                                }
+                            }
                         }
                     }
                 }
@@ -343,86 +355,86 @@ RowLayout {
                         Layout.margins: 16
                         source: "qrc:/info.svg"
                     }
-                }
 
-                Framed_Label {
-                    padding: 20
-                    text: "# " + root.movecount
-                }
+                    Framed_Label {
+                        padding: 20
+                        text: "# " + root.movecount
+                    }
 
-                Rectangle {
-                    width: childrenRect.width
-                    height: childrenRect.height
-                    radius: 10
-                    border.color: "black"
-                    border.width: 1
+                    Rectangle {
+                        implicitWidth: childrenRect.width
+                        implicitHeight: childrenRect.height
+                        radius: 10
+                        border.color: "black"
+                        border.width: 1
 
-                    RowLayout {
-                        Image {
-                            visible: !root.time_accounting_correct
-                            source: "qrc:/warning.svg"
-                            Layout.margins: 10
-                        }
+                        RowLayout {
+                            Image {
+                                visible: !root.time_accounting_correct
+                                source: "qrc:/warning.svg"
+                                Layout.margins: 10
+                            }
 
-                        Framed_Label {
-                            text: root.white_time
-                            color: root.white_color.hslLightness > 0.5 ? "black" : "white"
-                            Layout.margins: 10
-                            bg.color: root.white_color
-                        }
+                            Framed_Label {
+                                text: root.white_time
+                                color: root.white_color.hslLightness > 0.5 ? "black" : "white"
+                                Layout.margins: 10
+                                bg.color: root.white_color
+                            }
 
-                        Framed_Label {
-                            text: root.black_time
-                            color: root.black_color.hslLightness > 0.5 ? "black" : "white"
-                            Layout.margins: 10
-                            bg.color: root.black_color
+                            Framed_Label {
+                                text: root.black_time
+                                color: root.black_color.hslLightness > 0.5 ? "black" : "white"
+                                Layout.margins: 10
+                                bg.color: root.black_color
+                            }
                         }
                     }
-                }
 
-                Rectangle {
-                    width: childrenRect.width
-                    visible: root.engine_forecast1.length && ((root.white_player_active && root.white_engine_active) || (root.black_player_active && root.black_engine_active))
-                    height: childrenRect.height
-                    radius: 10
-                    border.color: "black"
-                    border.width: 1
+                    Rectangle {
+                        implicitWidth: childrenRect.width
+                        visible: root.engine_forecast1.length && ((root.white_player_active && root.white_engine_active) || (root.black_player_active && root.black_engine_active))
+                        implicitHeight: childrenRect.height
+                        radius: 10
+                        border.color: "black"
+                        border.width: 1
 
-                    RowLayout {
-                        Image {
-                            source: "qrc:/engine.svg"
-                            Layout.margins: 10
-                        }
-                        Framed_Label {
-                            text: "+ " + root.engine_score * (root.engine_score >= 0 ? 1 : -1)
-                            color: bg.color.hslLightness > 0.5 ? "black" : "white"
-                            Layout.margins: 10
-                            bg.color: root.engine_score >= 0 ? (root.white_player_active ? root.white_color : root.black_color) : (root.white_player_active ? root.black_color : root.white_color)
-                        }
-                        Image {
-                            source: "qrc:/depth.svg"
-                            Layout.margins: 10
-                        }
-                        Text {
-                            text: root.reached_depth
-                        }
-                        Framed_Label {
-                            text: root.engine_forecast1
-                            color: bg.color.hslLightness > 0.5 ? "black" : "white"
-                            Layout.margins: 10
-                            bg.color: root.white_player_active ? root.white_color : root.black_color
-                        }
-                        Framed_Label {
-                            text: root.engine_forecast2
-                            color: bg.color.hslLightness > 0.5 ? "black" : "white"
-                            Layout.margins: 10
-                            bg.color: root.white_player_active ? root.black_color : root.white_color
-                        }
-                        Framed_Label {
-                            text: root.engine_forecast3
-                            color: bg.color.hslLightness > 0.5 ? "black" : "white"
-                            Layout.margins: 10
-                            bg.color: root.white_player_active ? root.white_color : root.black_color
+                        RowLayout {
+                            Image {
+                                source: "qrc:/engine.svg"
+                                Layout.margins: 10
+                            }
+                            Framed_Label {
+                                text: "+ " + root.engine_score * (root.engine_score >= 0 ? 1 : -1)
+                                color: bg.color.hslLightness > 0.5 ? "black" : "white"
+                                Layout.margins: 10
+                                bg.color: root.engine_score >= 0 ? (root.white_player_active ? root.white_color : root.black_color) : (root.white_player_active ? root.black_color : root.white_color)
+                            }
+                            Image {
+                                source: "qrc:/depth.svg"
+                                Layout.margins: 10
+                            }
+                            Text {
+                                text: root.reached_depth
+                            }
+                            Framed_Label {
+                                text: root.engine_forecast1
+                                color: bg.color.hslLightness > 0.5 ? "black" : "white"
+                                Layout.margins: 10
+                                bg.color: root.white_player_active ? root.white_color : root.black_color
+                            }
+                            Framed_Label {
+                                text: root.engine_forecast2
+                                color: bg.color.hslLightness > 0.5 ? "black" : "white"
+                                Layout.margins: 10
+                                bg.color: root.white_player_active ? root.black_color : root.white_color
+                            }
+                            Framed_Label {
+                                text: root.engine_forecast3
+                                color: bg.color.hslLightness > 0.5 ? "black" : "white"
+                                Layout.margins: 10
+                                bg.color: root.white_player_active ? root.white_color : root.black_color
+                            }
                         }
                     }
                 }
