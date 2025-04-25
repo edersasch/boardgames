@@ -116,6 +116,7 @@ RowLayout {
             direction: direction_right
             icon.source: "qrc:/setup.svg"
             confirm: root.confirm
+            onCheckedChanged: h_setup.checked = checked
         }
 
         ToolButton {

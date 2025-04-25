@@ -38,6 +38,19 @@ Item {
         }
     }
 
+    onCheckedChanged: {
+        if (checkable) {
+            if (checked) {
+                trigger_button.checkable = true;
+                trigger_button.checked = true;
+                confirmed();
+            } else {
+                trigger_button.checked = false;
+                trigger_button.checkable = false;
+            }
+        }
+    }
+
     Timer {
         id: auto_cancel
 
@@ -47,21 +60,28 @@ Item {
 
     ToolButton {
         id: trigger_button
-        background: Rectangle {id: bg}
+        background: Rectangle {
+            id: bg
+            opacity: trigger_button.down ? 1.0 : 0.5
+            color: trigger_button.down || trigger_button.checked || trigger_button.highlighted ? trigger_button.palette.mid : trigger_button.palette.button
+
+            Behavior on color { ColorAnimation {} }
+        }
 
         onClicked: {
-            if (root.confirm && state !== "show" && (!root.checkable || !root.checked)) {
-                state = "show"
+            if (root.checkable && root.checked) {
+                root.checked = false;
             } else {
-                checkable = root.checkable
-                if (checkable) {
-                    const active = !root.checked
-                    root.checked = active
-                    checked = active
-                    checkable = active
+                if (!root.confirm || state === "show") {
+                    state = "";
+                    if (root.checkable) {
+                        root.checked = true
+                    } else {
+                        root.confirmed()
+                    }
+                } else {
+                    state = "show";
                 }
-                state = "";
-                root.confirmed()
             }
         }
 
@@ -96,7 +116,6 @@ Item {
         transitions: [
             Transition {
                 NumberAnimation { easing.type: Easing.OutBack; properties: "x, y, opacity, background.opacity, background.radius" }
-                ColorAnimation {}
             }
         ]
     }

@@ -69,35 +69,102 @@ RowLayout {
             size_factor: 0.8
         }
 
-        GridLayout {
-            id: board_grid
-            Layout.fillWidth: true
+        Item {
             Layout.fillHeight: true
-            columnSpacing: 1
-            rowSpacing: 1
-            columns: 2
+            Layout.fillWidth: true
 
-            Rectangle {
-                Layout.fillHeight: true
-                Layout.preferredWidth: parent.width / 24
+            GridLayout {
+                id: board_grid
+                anchors.fill: parent
+                columnSpacing: 1
+                rowSpacing: 1
+                columns: 2
 
-                ColumnLayout {
-                    anchors.fill: parent
-                    spacing: 0
+                Rectangle {
+                    Layout.fillHeight: true
+                    Layout.preferredWidth: parent.width / 24
 
-                    Repeater {
-                        model: ["7", "6", "5", "4", "3", "2", "1"]
+                    ColumnLayout {
+                        anchors.fill: parent
+                        spacing: 0
 
-                        Rectangle {
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            border.width: 1
-                            border.color: "black"
-                            radius: 4
+                        Repeater {
+                            model: ["7", "6", "5", "4", "3", "2", "1"]
+
+                            Rectangle {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                border.width: 1
+                                border.color: "black"
+                                radius: 4
+                                Item {
+                                    anchors.centerIn: parent
+                                    width: parent.width
+                                    height: board_grid.height / 24
+                                    Text {
+                                        anchors.fill: parent
+                                        horizontalAlignment: Qt.AlignHCenter
+                                        verticalAlignment: Qt.AlignVCenter
+                                        fontSizeMode: Text.Fit
+                                        minimumPixelSize: 1
+                                        font.pixelSize: 72
+                                        text: modelData
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Image {
+                    id: bg
+                    source: "qrc:/muehle_field_bright.svg"
+                    fillMode: Image.Stretch
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+
+                    GridLayout {
+                        anchors.fill: parent
+                        columns: 7
+
+                        Repeater {
+                            id: board_fields
+
+                            model: 49
+
                             Item {
-                                anchors.centerIn: parent
-                                width: parent.width
-                                height: board_grid.height / 24
+                                onZChanged: {
+                                    bg.z = z;
+                                    board_grid.z = z;
+                                    column_layout.z = z;
+                                }
+
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                            }
+                        }
+                    }
+                }
+
+                Item {}
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    implicitHeight: parent.height / 24
+
+                    RowLayout {
+                        anchors.fill: parent
+                        spacing: 0
+
+                        Repeater {
+                            model: ["A", "B", "C", "D", "E", "F", "G"]
+
+                            Rectangle {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                border.width: 1
+                                border.color: "black"
+                                radius: 4
                                 Text {
                                     anchors.fill: parent
                                     horizontalAlignment: Qt.AlignHCenter
@@ -107,72 +174,6 @@ RowLayout {
                                     font.pixelSize: 72
                                     text: modelData
                                 }
-                            }
-                        }
-                    }
-                }
-            }
-
-            Image {
-                id: bg
-                source: "qrc:/muehle_field_bright.svg"
-                fillMode: Image.Stretch
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-
-                GridLayout {
-                    anchors.fill: parent
-                    columns: 7
-
-                    Repeater {
-                        id: board_fields
-
-                        model: 49
-
-                        Item {
-                            onZChanged: {
-                                bg.z = z;
-                                board_grid.z = z;
-                                column_layout.z = z;
-                            }
-
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                        }
-                    }
-                }
-            }
-
-            Item {
-                Layout.preferredHeight: 1
-                Layout.preferredWidth: 1
-            }
-
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.preferredHeight: parent.height / 24
-
-                RowLayout {
-                    anchors.fill: parent
-                    spacing: 0
-
-                    Repeater {
-                        model: ["A", "B", "C", "D", "E", "F", "G"]
-
-                        Rectangle {
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            border.width: 1
-                            border.color: "black"
-                            radius: 4
-                            Text {
-                                anchors.fill: parent
-                                horizontalAlignment: Qt.AlignHCenter
-                                verticalAlignment: Qt.AlignVCenter
-                                fontSizeMode: Text.Fit
-                                minimumPixelSize: 1
-                                font.pixelSize: 72
-                                text: modelData
                             }
                         }
                     }
