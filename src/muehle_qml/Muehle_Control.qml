@@ -171,7 +171,7 @@ RowLayout {
                 border_color: "darkgreen"
                 working: root.white_player_active
                 checked: root.white_engine_active
-                onCheckedChanged: white_engine_active = checked
+                onCheckedChanged: root.white_engine_active = checked
             }
 
             Engine_Button {

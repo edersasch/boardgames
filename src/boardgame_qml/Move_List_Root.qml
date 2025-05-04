@@ -61,6 +61,7 @@ Flickable {
         Move_List_Control {
             id: control
             parent: entries.buttons
+            opacity: root.contentY === 0 ? 1 : 0
             z: 1
             onRequest_move_list_back_to_start: {
                 root.contentY = 0;
@@ -80,7 +81,7 @@ Flickable {
         width: root.width
         x: 0
         y: root.contentY
-        opacity: 0
+        opacity: root.contentY === 0 ? 0 : 1
         visible: opacity > 0
 
         Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.InOutQuad } }
@@ -119,20 +120,5 @@ Flickable {
                 control.request_move_list_export();
             }
         }
-        states: [
-            State {
-                when: root.contentY !== 0
-                PropertyChanges {
-                    list_overlay {
-                        opacity: 1
-                    }
-                }
-                PropertyChanges {
-                    control {
-                        opacity: 0
-                    }
-                }
-            }
-        ]
     }
 }

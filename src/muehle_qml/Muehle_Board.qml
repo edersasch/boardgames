@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import src.boardgame_qml
 
 import QtQuick
@@ -92,6 +93,8 @@ RowLayout {
                             model: ["7", "6", "5", "4", "3", "2", "1"]
 
                             Rectangle {
+                                id: fieldNumber
+                                required property string modelData
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 border.width: 1
@@ -108,7 +111,7 @@ RowLayout {
                                         fontSizeMode: Text.Fit
                                         minimumPixelSize: 1
                                         font.pixelSize: 72
-                                        text: modelData
+                                        text: fieldNumber.modelData
                                     }
                                 }
                             }
@@ -160,6 +163,8 @@ RowLayout {
                             model: ["A", "B", "C", "D", "E", "F", "G"]
 
                             Rectangle {
+                                id: fieldLetter
+                                required property string modelData
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 border.width: 1
@@ -172,7 +177,7 @@ RowLayout {
                                     fontSizeMode: Text.Fit
                                     minimumPixelSize: 1
                                     font.pixelSize: 72
-                                    text: modelData
+                                    text: fieldLetter.modelData
                                 }
                             }
                         }

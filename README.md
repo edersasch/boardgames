@@ -168,8 +168,6 @@ enable ccache: `-DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER
 [CPM source cache](https://github.com/cpm-cmake/CPM.cmake?tab=readme-ov-file#cpm_source_cache):
 `-DCPM_SOURCE_CACHE=~/opt/build/%{ActiveProject:Name}-CPM-Source-Cache`
 
-qmllint needs builddir `--resource src/boardgame_qml/.rcc/qmake_src_boardgame_qml.qrc`
-
 Do not synchronize CMakeLists.txt.user files to other machines,
 if using Visual Studio also skip the .vs folder.
 

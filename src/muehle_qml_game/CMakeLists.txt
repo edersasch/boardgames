@@ -4,20 +4,20 @@ include(prjstandardpre)
 qt_add_executable(${PROJECT_NAME} ${SRC_LIST} ${CMAKE_SOURCE_DIR}/data/pic.qrc)
 include(prjstandardpost)
 
+file(GLOB QML_LIST RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*.qml)
+qt_add_qml_module(${PROJECT_NAME}
+    URI src.muehle_qml_game
+    QML_FILES ${QML_LIST}
+)
+
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
     boardgame
     boardgame_qml
     muehle
     muehle_qml
-    Qt6::Quick
+    Qt::Quick
     ${CMAKE_THREAD_LIBS_INIT}
-)
-
-add_custom_target(qmllint
-    COMMAND ${CMAKE_SOURCE_DIR}/tools/qmllint_helper.sh ${CMAKE_BINARY_DIR}
-    COMMENT "Run qmllint on all QML files"
-    VERBATIM
 )
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
