@@ -16,7 +16,6 @@ int main(int argc, char *argv[])
     QSettings settings;
     auto size = settings.value("MainWindow/size", QSize(initial_window_width, initial_window_height)).toSize();
     QQuickView v;
-    v.engine()->addImportPath("qrc:/");
     muehle_qml::Muehle_Qml mq(v.engine(), v.contentItem());
     v.setWidth(size.width());
     v.setHeight(size.height());

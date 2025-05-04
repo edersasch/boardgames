@@ -7,7 +7,6 @@ include(prjstandardpost)
 file(GLOB QML_LIST RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*.qml)
 qt_add_qml_module(${PROJECT_NAME}
     URI src.muehle_qml
-    VERSION 0.1
     QML_FILES ${QML_LIST}
     NO_PLUGIN
 )

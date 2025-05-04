@@ -87,11 +87,11 @@ void engine_forecast(const Muehle_Qml* ui, const std::int32_t score, const std::
 
 Muehle_Qml::Muehle_Qml(QQmlEngine* engine, QQuickItem* parentItem)
     : muehle_state(boardgame::Boardgame_Ui(this), boardgame::Move_List_Ui(&move_lists), boardgame::Main_Loop(this))
-    , control_component(engine, QUrl(QStringLiteral("qrc:/src/muehle_qml/Muehle_Control.qml")))
+    , control_component(engine, QUrl(QStringLiteral("qrc:/qt/qml/src/muehle_qml/Muehle_Control.qml")))
     , control(qobject_cast<QQuickItem*>(control_component.create()))
     , board(QQmlProperty(control.get(), "board").read().value<QQuickItem*>())
-    , piece_component(engine, QUrl(QStringLiteral("qrc:/src/boardgame_qml/Piece.qml")))
-    , field_component(engine, QUrl(QStringLiteral("qrc:/src/boardgame_qml/Field.qml")))
+    , piece_component(engine, QUrl(QStringLiteral("qrc:/qt/qml/src/boardgame_qml/Piece.qml")))
+    , field_component(engine, QUrl(QStringLiteral("qrc:/qt/qml/src/boardgame_qml/Field.qml")))
     , move_lists(engine, {board_item("v_move_list"), board_item("h_move_list")}, "Boardgame Muehle", "bgmu")
 {
     static constexpr std::int32_t one_second_in_milliseconds = 1000;

@@ -27,7 +27,7 @@ Multi_Move_List_Qml_Test::Multi_Move_List_Qml_Test()
     : move_list_component(v.engine())
 {
     v.engine()->addImportPath("qrc:/");
-    move_list_component.loadUrl(QUrl("qrc:/tests/boardgame_qml/Move_List_Qml_Test.qml"));
+    move_list_component.loadUrl(QUrl("qrc:/qt/qml/tests/boardgame_qml/Move_List_Qml_Test.qml"));
     move_list_item.reset(qobject_cast<QQuickItem*>(move_list_component.create()));
     move_list_root_entry1 = QQmlProperty(move_list_item.get(), "move_list_1").read().value<QQuickItem*>();
     move_list_root_entry2 = QQmlProperty(move_list_item.get(), "move_list_2").read().value<QQuickItem*>();

@@ -78,7 +78,7 @@ if(PANDOC)
         get_filename_component(fn "${f}" NAME_WE)
         set(o "${CMAKE_CURRENT_BINARY_DIR}/${fn}.html")
         add_custom_command(OUTPUT "${o}"
-            COMMAND ${PANDOC} -o "${o}" -s --self-contained -c ${CMAKE_SOURCE_DIR}/data/pandoc.css "${f}" ${CMAKE_BINARY_DIR}/docs/manuals/version_footer.md
+            COMMAND ${PANDOC} -o "${o}" -s --embed-resources --standalone --metadata title=\"${fn}\" -c ${CMAKE_SOURCE_DIR}/data/pandoc.css "${f}" ${CMAKE_BINARY_DIR}/docs/manuals/version_footer.md
             DEPENDS "${f}"
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/docs/manuals
             COMMENT "Generating ${o}"

@@ -46,9 +46,9 @@ depends on Qt, see "Build Requirements" below
 * C++ 17 toolchain (e.g. [gcc](https://gcc.gnu.org/) >= 7.3.0)
 * [CMake](https://cmake.org) >= 3.21.0
 * [Qt](https://qt.io) >= 6.4.2 with Qml
-* [nlohmann/json](https://github.com/nlohmann/json/) >= 3.4.0, downloaded automatically if option `BOARDGAMES_USE_EXTERNAL_JSON` is `OFF` (license: [MIT](https://github.com/nlohmann/json/blob/v3.4.0/LICENSE.MIT))
-* [martinus/robin-hood-hashing](https://github.com/martinus/robin-hood-hashing) >= 3.11.5, downloaded automatically if option `BOARDGAMES_USE_EXTERNAL_ROBIN_HOOD_HASH` is `OFF` (license: [MIT](https://github.com/martinus/robin-hood-hashing/blob/3.8.0/LICENSE))
-* [boost-ext/sml](https://github.com/boost-ext/sml) >= 1.1.3, downloaded automatically if option `BOARDGAMES_USE_EXTERNAL_SML` is `OFF` (license: [Boost 1.0](http://www.boost.org/LICENSE_1_0.txt))
+* [nlohmann/json](https://github.com/nlohmann/json/) >= 3.4.0 (license: [MIT](https://github.com/nlohmann/json/blob/v3.4.0/LICENSE.MIT))
+* [martinus/robin-hood-hashing](https://github.com/martinus/robin-hood-hashing) >= 3.11.5 (license: [MIT](https://github.com/martinus/robin-hood-hashing/blob/3.8.0/LICENSE))
+* [boost-ext/sml](https://github.com/boost-ext/sml) >= 1.1.3 (license: [Boost 1.0](http://www.boost.org/LICENSE_1_0.txt))
 
 
 ## Optional Tools
@@ -199,7 +199,7 @@ example CMakeSettings.json
       "configurationType": "Debug",
       "inheritEnvironments": [ "msvc_x64_x64" ],
       "buildRoot": "C:\\Users\\eders\\opt\\build\\boardgames-vs-${name}",
-      "installRoot": "C:\\Users\\Alexander\\opt\\build\\boardgames-vs-${name}\\install",
+      "installRoot": "C:\\Users\\eders\\opt\\build\\boardgames-vs-${name}\\install",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
       "variables": [

@@ -1,4 +1,4 @@
-import "qrc:/src/boardgame_qml"
+import src.boardgame_qml
 
 import QtQuick
 import QtQuick.Layouts

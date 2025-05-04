@@ -23,15 +23,18 @@ add_custom_target(qmllint
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(FILES ${CMAKE_SOURCE_DIR}/data/muehle.desktop DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)
 install(FILES ${CMAKE_SOURCE_DIR}/data/muehle_field_bright.svg DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/apps)
-if(WIN32)
-    install(FILES ${CMAKE_SOURCE_DIR}/tools/muehle.vbs DESTINATION ${CMAKE_INSTALL_PREFIX})
-    set(RUNWINDEPLOYQT "execute_process(COMMAND ${WINDEPLOYQT_EXECUTABLE}
-                --qmldir ${CMAKE_SOURCE_DIR}/src/muehle_qml
-                --qmldir ${CMAKE_SOURCE_DIR}/src/boardgame_qml
-                --verbose 0
-                --no-compiler-runtime
-                --no-angle
-                --no-opengl-sw
-                ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}/${PROJECT_NAME}.exe)")
-    install(CODE ${RUNWINDEPLOYQT})
+
+if (WIN32)
+    set(QT_DEPLOY_TOOL_OPTIONS
+        --no-system-d3d-compiler
+        --no-opengl-sw
+        --qmldir ${CMAKE_BINARY_DIR}/src/muehle_qml
+        --qmldir ${CMAKE_BINARY_DIR}/src/boardgame_qml
+    )
 endif()
+
+qt_generate_deploy_qml_app_script(TARGET ${PROJECT_NAME}
+    OUTPUT_SCRIPT deploy_script
+    NO_TRANSLATIONS
+)
+install(SCRIPT ${deploy_script})
