@@ -3,61 +3,61 @@
 
 # Boardgames
 
-* C++ 17 framework with piece / field association, move list, engine and UI
-* Mühle (German name for nine Men's Morris or Mill) [Manual](docs/manuals/muehle_en.md) [Anleitung](docs/manuals/muehle_de.md)
-* Available under [MIT license](LICENSE)
+- C++ 17 framework with piece / field association, move list, engine and UI
+- Mühle (German name for nine Men's Morris or Mill) [Manual](docs/manuals/muehle_en.md) [Anleitung](docs/manuals/muehle_de.md)
+- Available under [MIT license](LICENSE)
 
 
 ## Framework UI Independent
 
-* Interface `boardgame_ui` for commands from the game to its user interface
-* Interface `move_list_ui` for commands from the provided `move_list` implementation to its user interface
-* Interface `main_loop` to delegate tasks to the utilized main loop implementation
-* Engine implementation `alpha_beta` (depends on martinus/robin-hood-hashing, see "Build Requirements" below)
-* Move list implementation `move_list`, supporting branches and json import / export (depends on nlohmann/json, see "Build Requirements" below)
-* Piece and field functions `pieces_n_fields` that help manage associations; defines strong types to prevent mixing up field and piece ids
+- Interface `boardgame_ui` for commands from the game to its user interface
+- Interface `move_list_ui` for commands from the provided `move_list` implementation to its user interface
+- Interface `main_loop` to delegate tasks to the utilized main loop implementation
+- Engine implementation `alpha_beta` (depends on martinus/robin-hood-hashing, see "Build Requirements" below)
+- Move list implementation `move_list`, supporting branches and json import / export (depends on nlohmann/json, see "Build Requirements" below)
+- Piece and field functions `pieces_n_fields` that help manage associations; defines strong types to prevent mixing up field and piece ids
 
 
 ## Framework UI
 
 depends on Qt, see "Build Requirements" below
 
-* `Confirm_Button` widget
-* `Field` and `Piece`, `Piece_Column_Box`, `Piece_Row_Box`
-* `multi_move_list`, `move_list` with `Move_Button`, `Move_List_Control`, `Move_List_Entry`, `Move_List_Root`
+- `Confirm_Button` widget
+- `Field` and `Piece`, `Piece_Column_Box`, `Piece_Row_Box`
+- `multi_move_list`, `move_list` with `Move_Button`, `Move_List_Control`, `Move_List_Entry`, `Move_List_Root`
 
 
 ## Mühle UI Independent
 
-* `muehle` with constants, free functions and engine methods
-* `muehle_state` class (depends on boost-ext/sml, see "Build Requirements" below)
+- `muehle` with constants, free functions and engine methods
+- `muehle_state` class (depends on boost-ext/sml, see "Build Requirements" below)
 
 
 ## Mühle UI
 
 depends on Qt, see "Build Requirements" below
 
-* `Muehle_Board`
-* `muehle` entry point and setup
+- `Muehle_Board`
+- `muehle` entry point and setup
 
 
 ## Build Requirements
 
-* C++ 17 toolchain (e.g. [gcc](https://gcc.gnu.org/) >= 7.3.0)
-* [CMake](https://cmake.org) >= 3.21.0
-* [Qt](https://qt.io) >= 6.4.2 with Qml
-* [nlohmann/json](https://github.com/nlohmann/json/) >= 3.4.0 (license: [MIT](https://github.com/nlohmann/json/blob/v3.4.0/LICENSE.MIT))
-* [martinus/robin-hood-hashing](https://github.com/martinus/robin-hood-hashing) >= 3.11.5 (license: [MIT](https://github.com/martinus/robin-hood-hashing/blob/3.8.0/LICENSE))
-* [boost-ext/sml](https://github.com/boost-ext/sml) >= 1.1.3 (license: [Boost 1.0](http://www.boost.org/LICENSE_1_0.txt))
+- C++ 17 toolchain (e.g. [gcc](https://gcc.gnu.org/) >= 7.3.0)
+- [CMake](https://cmake.org) >= 3.21.0
+- [Qt](https://qt.io) >= 6.4.2 with Qml
+- [nlohmann/json](https://github.com/nlohmann/json/) >= 3.4.0 (license: [MIT](https://github.com/nlohmann/json/blob/v3.4.0/LICENSE.MIT))
+- [martinus/robin-hood-hashing](https://github.com/martinus/robin-hood-hashing) >= 3.11.5 (license: [MIT](https://github.com/martinus/robin-hood-hashing/blob/3.8.0/LICENSE))
+- [boost-ext/sml](https://github.com/boost-ext/sml) >= 1.1.3 (license: [Boost 1.0](http://www.boost.org/LICENSE_1_0.txt))
 
 
 ## Optional Tools
 
-* [GTest](https://github.com/google/googletest) >= 1.16.0, downloaded automatically if option `BOARDGAMES_BUILD_TESTS` is `ON`
-* [Umlet](https://www.umlet.com) UML Editor (`*.uxf` files in `/docs`)
-* [Doxygen](http://www.doxygen.nl) documentation tool, enables `apidoc` build target
-* [Pandoc](https://pandoc.org) enables `manuals` build target
-* GCov (part of [gcc](https://gcc.gnu.org/)) / [LCov](http://ltp.sourceforge.net/coverage/lcov.php) for coverage report if option `BOARDGAMES_COVERAGE_REPORT` is `ON`
+- [GTest](https://github.com/google/googletest) >= 1.16.0, downloaded automatically if option `BOARDGAMES_BUILD_TESTS` is `ON`
+- [Umlet](https://www.umlet.com) UML Editor (`*.uxf` files in `/docs`)
+- [Doxygen](http://www.doxygen.nl) documentation tool, enables `apidoc` build target
+- [Pandoc](https://pandoc.org) enables `manuals` build target
+- GCov (part of [gcc](https://gcc.gnu.org/)) / [LCov](http://ltp.sourceforge.net/coverage/lcov.php) for coverage report if option `BOARDGAMES_COVERAGE_REPORT` is `ON`
 
 
 ## Directory Structure
@@ -115,29 +115,29 @@ Icons from [tiddlywiki](https://tiddlywiki.com) 5.1.17
 ([BSD 3-Clause License](https://tiddlywiki.com/#License), [local copy](docs/LICENSE_tiddlywiki)):
 modified to include `version="1.1" xmlns="http://www.w3.org/2000/svg"` in svg tag
 
-* back.svg ([$:/core/images/left-arrow](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fleft-arrow))
-* cancel.svg ([$:/core/images/cancel-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fcancel-button))
-* delete.svg ([$:/core/images/delete-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fdelete-button))
-* depth.svg ([$:/core/images/line-width](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fline-width))
-* export.svg ([$:/core/images/unfold-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Funfold-button))
-* forward.svg ([$:/core/images/right-arrow](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fright-arrow))
-* info.svg ([$:/core/images/info-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Finfo-button))
-* help.svg ([$:/core/images/help](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fhelp))
-* hide.svg ([$:/core/images/preview-closed](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fpreview-closed))
-* home.svg ([$:/core/images/home-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fhome-button))
-* import.svg ([$:/core/images/fold-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Ffold-button))
-* list.svg ([$:/core/images/list-bullet](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Flist-bullet))
-* refresh.svg ([$:/core/images/refresh-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Frefresh-button))
-* setup.svg ([$:/core/images/copy-clipboard](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fcopy-clipboard))
-* settings.svg ([$:/core/images/options-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Foptions-button))
-* show.svg ([$:/core/images/preview-open](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fpreview-open))
-* time.svg ([$:/core/images/timestamp-on](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Ftimestamp-on))
-* warning.svg ([$:/core/images/warning](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fwarning))
+- back.svg ([$:/core/images/left-arrow](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fleft-arrow))
+- cancel.svg ([$:/core/images/cancel-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fcancel-button))
+- delete.svg ([$:/core/images/delete-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fdelete-button))
+- depth.svg ([$:/core/images/line-width](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fline-width))
+- export.svg ([$:/core/images/unfold-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Funfold-button))
+- forward.svg ([$:/core/images/right-arrow](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fright-arrow))
+- info.svg ([$:/core/images/info-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Finfo-button))
+- help.svg ([$:/core/images/help](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fhelp))
+- hide.svg ([$:/core/images/preview-closed](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fpreview-closed))
+- home.svg ([$:/core/images/home-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fhome-button))
+- import.svg ([$:/core/images/fold-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Ffold-button))
+- list.svg ([$:/core/images/list-bullet](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Flist-bullet))
+- refresh.svg ([$:/core/images/refresh-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Frefresh-button))
+- setup.svg ([$:/core/images/copy-clipboard](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fcopy-clipboard))
+- settings.svg ([$:/core/images/options-button](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Foptions-button))
+- show.svg ([$:/core/images/preview-open](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fpreview-open))
+- time.svg ([$:/core/images/timestamp-on](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Ftimestamp-on))
+- warning.svg ([$:/core/images/warning](https://tiddlywiki.com/#%24%3A%2Fcore%2Fimages%2Fwarning))
 
 Icon from [openclipart](https://openclipart.com)
 ([Creative Commons Zero 1.0 License](https://openclipart.org/share)):
 
-* engine.svg ([Wireframe-Head.svg](https://openclipart.org/detail/275796/wireframe-head)): changed stroke-width to 19.0665, set width and height to 22pt
+- engine.svg ([Wireframe-Head.svg](https://openclipart.org/detail/275796/wireframe-head)): changed stroke-width to 19.0665, set width and height to 22pt
 
 [pandoc.css](https://gist.github.com/killercup/5917178)
 ([Creative Commons Zero 1.0](https://gist.github.com/killercup/5917178#gistcomment-1924106))
@@ -177,13 +177,12 @@ if using Visual Studio also skip the .vs folder.
 My personal preferences,
 tested with v17.13.6
 
-
 Cmake must have the Qt dlls in its path, because google test cmake functions
 run the test executable to scan for tests.
 
 example CMakeSettings.json
 
-```
+```json
 {
   "environments": [
     {
@@ -222,7 +221,7 @@ must set the path to the Qt dlls.
 
 example launch.vs.json
 
-```
+```json
 {
   "version": "0.2.1",
   "defaults": {},
@@ -232,4 +231,59 @@ example launch.vs.json
     }
   ]
 }
+```
+
+## Development Setup with Visual Studio Code
+
+My personal preferences,
+tested with v1.103.1
+
+Start the "x64 Native Tools Command Prompt" and start `code` from the command line.
+Required Qt commands:
+
+- `Qt: Reqister Qt Installation`
+- `Qt: Scan for Qt Kits`
+
+On debugging Qt will ask you once per session to select a kit.
+On windows use `qt-<version>-msvc...`
+
+The Qt installation must go to the user settings.
+
+example user settings.json
+
+```json
+{
+    "qt-core.qtInstallationRoot": "c:\\Users\\eders\\opt\\install\\qt"
+}
+```
+
+All other installation specific settings go to the workspace config.
+
+example boardgames.code-workspace
+
+```json
+{
+  "folders": [
+    {
+      "path": "C:/Users/eders/ar/Dokumente/boardgames"
+    }
+  ],
+  "settings": {
+    "cmake.environment": {
+      "PATH": "${env:PATH};~/opt/install/qt/6.9.0/msvc2022_64/bin",
+      "CMAKE_TOOLCHAIN_FILE": "~/opt/install/qt/6.9.0/msvc2022_64/lib/cmake/Qt6/qt.toolchain.cmake"
+    }
+  }
+}
+```
+
+For editing the documentation (readme, changelog) the extension "markdownlint" is recommended.
+Settings:
+
+```json
+    "markdownlint.config": {
+        "MD012": { "maximum": 2 },
+        "MD024": { "siblings_only": true},
+        "MD041": { "allow_preamble": true}
+    }
 ```

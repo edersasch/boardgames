@@ -17,9 +17,12 @@ include(GoogleTest)
 macro(add_gtest TESTNAME)
     target_link_libraries(${TESTNAME} PUBLIC gtest gmock gtest_main)
     
-    gtest_discover_tests(${TESTNAME}
-        TEST_PREFIX "${TESTNAME}."
-        PROPERTIES FOLDER "Tests")
+    #gtest_discover_tests(${TESTNAME}
+    #    TEST_PREFIX "${TESTNAME}."
+    #    PROPERTIES FOLDER "Tests")
+    #
+    # vscode test explorer integration works only with gtest_add_tests()
+    gtest_add_tests(TARGET ${TESTNAME})
 endmacro()
 
 mark_as_advanced(

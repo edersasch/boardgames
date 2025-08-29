@@ -1,0 +1,5 @@
+{
+    "cmake.ctest.testSuiteDelimiter": "\\.",
+    "cmake.ctest.debugLaunchTarget": "ctest vsdbg",
+    "cmake.ctest.allowParallelJobs": true
+}

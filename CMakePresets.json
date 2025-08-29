@@ -1,0 +1,22 @@
+{
+    "version": 8,
+    "configurePresets": [
+        {
+            "name": "Qt-6.9.0_VS",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
+                "CPM_SOURCE_CACHE": "${sourceDir}/out/build/cpm-source-cache"
+            }
+        },
+        {
+            "name": "Qt-6.9.0_VS_Debug",
+            "inherits": "Qt-6.9.0_VS",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        }
+    ]
+}
