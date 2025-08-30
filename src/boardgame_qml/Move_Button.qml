@@ -12,8 +12,8 @@ ToolButton {
     signal request_set_move_id(int m_id)
 
     function scroll_to() {
-        if (highlight && visible && parent && parent.parent) {
-            parent.parent.scroll_to(y);
+        if (highlight && visible && parent && parent.parent && (parent.parent instanceof Move_List_Entry)) {
+            (parent.parent as Move_List_Entry).scroll_to(y);
         }
     }
 

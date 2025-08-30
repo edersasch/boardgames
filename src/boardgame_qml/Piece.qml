@@ -198,8 +198,9 @@ Rectangle {
             }
         ]
         onReleased: {
-            if (piece.Drag.target) {
-                piece.Drag.target.occupy(piece.Drag.target.field_id);
+            const is_field = piece.Drag.target instanceof Field
+            if (is_field) {
+                (piece.Drag.target as Field).occupy((piece.Drag.target as Field).field_id);
             } else {
                 if (drag.active) {
                     piece.xypos();

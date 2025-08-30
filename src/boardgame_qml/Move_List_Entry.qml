@@ -16,14 +16,14 @@ Column {
     }
 
     function scroll_to(y_offset) {
-        if (parent) {
-            parent.scroll_to(y_offset + y);
+        if (parent && (parent instanceof Move_List_Root)) {
+            (parent as Move_List_Root).scroll_to(y_offset + y);
         }
     }
 
     z: -1  // below Move_List_Control
 
-    width: parent ? (parent.width - (parent.leftPadding ? parent.leftPadding : 0)) : 0
+    width: parent ? parent.width : 0
     spacing: 3
     leftPadding: 5
 

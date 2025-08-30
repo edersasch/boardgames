@@ -1,8 +1,10 @@
 #include "multi_move_list_qml.h"
 
+#include <QDir>
 #include <QQmlEngine>
 #include <QQuickItem>
 #include <QQmlProperty>
+#include <QUrl>
 
 namespace boardgame_qml
 {
@@ -24,6 +26,7 @@ void current_move(Multi_Move_List_Qml* mui, const int move_id)
 void add_move(Multi_Move_List_Qml* mui, const int move_id, const std::string& description, const std::vector<int>& hint)
 {
     std::vector<std::vector<QQuickItem*>> all_cols;
+    all_cols.reserve(mui->move_lists.size());
     for (auto& ml : mui->move_lists) {
         all_cols.push_back(ml->add_move(move_id, description));
     }
@@ -65,6 +68,7 @@ void need_confirm(Multi_Move_List_Qml* mui, const bool is_needed)
 
 Multi_Move_List_Qml::Multi_Move_List_Qml(QQmlEngine* engine, std::vector<QQuickItem*> move_list_root_entries, const QString& description, const QString& suffix)
 {
+    move_lists.reserve(move_list_root_entries.size());
     for (auto entry : move_list_root_entries) {
         move_lists.push_back(std::make_unique<Move_List_Qml>(engine, entry));
         connect(move_lists.back().get(), &Move_List_Qml::request_set_current_move_and_branch_start_id, this, &Multi_Move_List_Qml::request_set_current_move_and_branch_start_id);
@@ -113,9 +117,13 @@ void Multi_Move_List_Qml::change_move_color(const QString& old_color, const QStr
 
 void Multi_Move_List_Qml::chosen_move_list_path(const QVariant& file_url)
 {
+    const auto fileurl = file_url.toUrl();
+    const auto localfile = fileurl.toLocalFile();
+    const auto filePath = QDir::toNativeSeparators(localfile);
+    const auto filestr = filePath.toStdString();
     QQmlProperty(file_dialog_root, "choose_move_list_file_existing").read().toBool() ?
-                emit request_move_list_import(file_url.toUrl().path().toStdString()) :
-                emit request_move_list_export(file_url.toUrl().path().toStdString());
+        emit request_move_list_import(filestr) :
+        emit request_move_list_export(filestr);
 }
 
 }

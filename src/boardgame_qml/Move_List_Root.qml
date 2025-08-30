@@ -30,7 +30,7 @@ Flickable {
     boundsBehavior: Flickable.OvershootBounds
     ScrollBar.vertical: ScrollBar {}
 
-    Behavior on contentY { SmoothedAnimation { duration: 500 } }
+    Behavior on contentY { NumberAnimation { duration: 200; easing.type: Easing.InOutQuad } }
 
     Move_List_Entry {
         id: entries

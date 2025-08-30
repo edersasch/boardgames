@@ -206,7 +206,7 @@ RowLayout {
         Move_List_Root {
             id: v_move_list_root
 
-            implicitHeight: (!root.hor_orientation && root.move_list_visible) ? Math.max(width / root.white_v_drawer_fields.model, 200) : 0
+            implicitHeight: (!root.hor_orientation && root.move_list_visible) ? 200 : 0
             Layout.fillWidth: true
             contentWidth: width
 
@@ -234,7 +234,7 @@ RowLayout {
     Move_List_Root {
         id: h_move_list_root
 
-        implicitWidth: (root.hor_orientation && root.move_list_visible) ? Math.max(height / root.white_h_drawer_fields.model, entries.maxChildWidth) : 0
+        implicitWidth: (root.hor_orientation && root.move_list_visible) ? entries.maxChildWidth : 0
         contentWidth: implicitWidth
         Layout.fillHeight: true
 

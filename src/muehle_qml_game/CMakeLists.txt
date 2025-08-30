@@ -25,16 +25,16 @@ install(FILES ${CMAKE_SOURCE_DIR}/data/muehle.desktop DESTINATION ${CMAKE_INSTAL
 install(FILES ${CMAKE_SOURCE_DIR}/data/muehle_field_bright.svg DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/apps)
 
 if (WIN32)
+    set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE true)
     set(QT_DEPLOY_TOOL_OPTIONS
         --no-system-d3d-compiler
         --no-opengl-sw
-        --qmldir ${CMAKE_BINARY_DIR}/src/muehle_qml
-        --qmldir ${CMAKE_BINARY_DIR}/src/boardgame_qml
     )
 endif()
 
 qt_generate_deploy_qml_app_script(TARGET ${PROJECT_NAME}
     OUTPUT_SCRIPT deploy_script
+    DEPLOY_TOOL_OPTIONS ${QT_DEPLOY_TOOL_OPTIONS}
     NO_TRANSLATIONS
 )
 install(SCRIPT ${deploy_script})
