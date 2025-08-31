@@ -17,6 +17,23 @@
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
             }
+        },
+        {
+            "name": "Qt-6.9.0_GNU",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
+                "CPM_SOURCE_CACHE": "${sourceDir}/out/build/cpm-source-cache"
+            }
+        },
+        {
+            "name": "Qt-6.9.0_GNU_Debug",
+            "inherits": "Qt-6.9.0_GNU",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
         }
     ]
 }

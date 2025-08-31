@@ -2,7 +2,7 @@
 Name=Muehle
 Comment=A classical boardgame, also known as nine men's morris
 Comment[de]=Ein klassisches Brettspiel
-Exec=muehle_qml
+Exec=muehle_qml_game
 Icon=muehle_field_bright
 StartupWMClass=Muehle
 Type=Application

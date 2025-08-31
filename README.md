@@ -95,6 +95,11 @@ The directories whose names match a directory name from `src/` contain unit
 tests.
 
 
+### `tools/`
+
+Helper scripts and [stateoftheart](https://github.com/state-of-the-art/qt6-docker) 6.7 inspired docker files
+
+
 ## Included Resources
 
 [`CPM.cmake`](https://github.com/cpm-cmake/CPM.cmake/releases/tag/v0.40.8)
@@ -287,3 +292,18 @@ Settings:
         "MD041": { "allow_preamble": true}
     }
 ```
+
+On Linux [[accessing a keyring can cause problems|https://github.com/microsoft/vscode/issues/187338]], even if
+`gnome-keyring-daemon` is running after login.
+[[Add the line|https://github.com/microsoft/vscode/issues/187338#issuecomment-2893072301]]
+`"password-store": "gnome-libsecret"` to `.vscode/argv.json` to fix.
+I cannot confirm that [[an existing default keyring|https://github.com/microsoft/vscode/issues/187338#issuecomment-2583879229]]
+is enough. The `password-store` line is still necessary.
+
+`launch.json` entries with `"type": "cppvsdbg"` cause an error on Linux, even if unused.
+
+
+## Linux
+
+Ubuntu's [firefox snap can't access /tmp](https://bugs.launchpad.net/snapd/+bug/1972762),
+so opening the manual fails.

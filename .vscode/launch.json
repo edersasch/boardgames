@@ -50,6 +50,24 @@
                     }
                 ]
             }
+        },
+        {
+            "name": "launch gdb",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${command:cmake.launchTargetPath}",
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "visualizerFile": "${command:qt-cpp.natvis}"
+        },
+        {
+            "name": "ctest gdb",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${cmake.testProgram}",
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "visualizerFile": "${command:qt-cpp.natvis}"
         }
     ]
 }

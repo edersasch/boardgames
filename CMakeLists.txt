@@ -78,7 +78,9 @@ if(PANDOC)
         get_filename_component(fn "${f}" NAME_WE)
         set(o "${CMAKE_CURRENT_BINARY_DIR}/${fn}.html")
         add_custom_command(OUTPUT "${o}"
-            COMMAND ${PANDOC} -o "${o}" -s --embed-resources --standalone --metadata title=\"${fn}\" -c ${CMAKE_SOURCE_DIR}/data/pandoc.css "${f}" ${CMAKE_BINARY_DIR}/docs/manuals/version_footer.md
+            # Has to work with Ubuntu 22.04 pandoc 2.9.2, no --embed-resources
+            COMMAND ${PANDOC} --from markdown+gfm_auto_identifiers -o "${o}" -s --self-contained --standalone --metadata pagetitle=${fn} -c ${CMAKE_SOURCE_DIR}/data/pandoc.css "${f}" ${CMAKE_BINARY_DIR}/docs/manuals/version_footer.md
+            #COMMAND ${PANDOC} --from markdown+gfm_auto_identifiers -o "${o}" -s --embed-resources --standalone --metadata pagetitle=${fn} -c ${CMAKE_SOURCE_DIR}/data/pandoc.css "${f}" ${CMAKE_BINARY_DIR}/docs/manuals/version_footer.md
             DEPENDS "${f}"
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/docs/manuals
             COMMENT "Generating ${o}"
