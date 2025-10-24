@@ -151,15 +151,11 @@ Icon from [openclipart](https://openclipart.com)
 ## Development Setup with QtCreator
 
 My personal preferences,
-tested with [v16.0.1](https://github.com/qt-creator/qt-creator/releases/tag/v16.0.1)
+tested with [v17.0.2](https://github.com/qt-creator/qt-creator/releases/tag/v17.0.2)
 
 Tip: Toggle the menu bar with [Ctrl+Alt+M](https://doc.qt.io/qtcreator/creator-how-to-show-and-hide-main-menu.html)
 
-Build Path `~/opt/build/%{ActiveProject:Name}-%{Asciify:%{Kit:FileSystemName}-%{BuildConfig:Name}}`
-
-`~` is the [home path](https://doc.qt.io/qt-6/qdir.html#homePath).
-
-`opt` is used only locally, not backed up / synced
+Build Path `%{ActiveProject:ProjectDirectory}/build/qtc-%{Asciify:%{Kit:FileSystemName}-%{BuildConfig:Name}}`
 
 Disable user defined C++ coding style, because the
 root directory has a `.clang-format` file.
@@ -171,7 +167,7 @@ root directory has a `.clang-tidy` file.
 enable ccache: `-DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache`
 
 [CPM source cache](https://github.com/cpm-cmake/CPM.cmake?tab=readme-ov-file#cpm_source_cache):
-`-DCPM_SOURCE_CACHE=~/opt/build/%{ActiveProject:Name}-CPM-Source-Cache`
+`-DCPM_SOURCE_CACHE=%{ActiveProject:ProjectDirectory}/build/cpm-source-cache`
 
 Do not synchronize CMakeLists.txt.user files to other machines,
 if using Visual Studio also skip the .vs folder.
@@ -293,11 +289,11 @@ Settings:
     }
 ```
 
-On Linux [[accessing a keyring can cause problems|https://github.com/microsoft/vscode/issues/187338]], even if
+On Linux [accessing a keyring can cause problems](https://github.com/microsoft/vscode/issues/187338), even if
 `gnome-keyring-daemon` is running after login.
-[[Add the line|https://github.com/microsoft/vscode/issues/187338#issuecomment-2893072301]]
+[Add the line](https://github.com/microsoft/vscode/issues/187338#issuecomment-2893072301)
 `"password-store": "gnome-libsecret"` to `.vscode/argv.json` to fix.
-I cannot confirm that [[an existing default keyring|https://github.com/microsoft/vscode/issues/187338#issuecomment-2583879229]]
+I cannot confirm that [an existing default keyring](https://github.com/microsoft/vscode/issues/187338#issuecomment-2583879229)
 is enough. The `password-store` line is still necessary.
 
 `launch.json` entries with `"type": "cppvsdbg"` cause an error on Linux, even if unused.
@@ -305,5 +301,5 @@ is enough. The `password-store` line is still necessary.
 
 ## Linux
 
-Ubuntu's [firefox snap can't access /tmp](https://bugs.launchpad.net/snapd/+bug/1972762),
+On Ubuntu >= 22.04 [firefox snap can't access /tmp](https://bugs.launchpad.net/snapd/+bug/1972762),
 so opening the manual fails.

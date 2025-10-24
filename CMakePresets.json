@@ -2,35 +2,35 @@
     "version": 8,
     "configurePresets": [
         {
-            "name": "Qt-6.9.0_VS",
+            "name": "MSVC",
             "hidden": true,
             "generator": "Ninja",
-            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "binaryDir": "${sourceDir}/build/${presetName}",
             "cacheVariables": {
-                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
-                "CPM_SOURCE_CACHE": "${sourceDir}/out/build/cpm-source-cache"
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/build/${presetName}/install",
+                "CPM_SOURCE_CACHE": "${sourceDir}/build/cpm-source-cache"
             }
         },
         {
-            "name": "Qt-6.9.0_VS_Debug",
-            "inherits": "Qt-6.9.0_VS",
+            "name": "MSVC-Debug",
+            "inherits": "MSVC",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
             }
         },
         {
-            "name": "Qt-6.9.0_GNU",
+            "name": "GCC",
             "hidden": true,
             "generator": "Ninja",
-            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "binaryDir": "${sourceDir}/build/${presetName}",
             "cacheVariables": {
-                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
-                "CPM_SOURCE_CACHE": "${sourceDir}/out/build/cpm-source-cache"
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/build/${presetName}/install",
+                "CPM_SOURCE_CACHE": "${sourceDir}/build/cpm-source-cache"
             }
         },
         {
-            "name": "Qt-6.9.0_GNU_Debug",
-            "inherits": "Qt-6.9.0_GNU",
+            "name": "GCC-Debug",
+            "inherits": "GCC",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
             }
