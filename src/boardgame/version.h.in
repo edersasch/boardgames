@@ -1,7 +1,8 @@
 #ifndef SRC_BOARDGAME_VERSION
 #define SRC_BOARDGAME_VERSION
 
-namespace boardgame {
+namespace boardgame
+{
 
 constexpr int major_version {@PROJECT_VERSION_MAJOR@};
 constexpr int minor_version {@PROJECT_VERSION_MINOR@};

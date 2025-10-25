@@ -1,8 +1,8 @@
-#ifndef TESTS_BOARDGAME_MOVE_LIST_TEST
-#define TESTS_BOARDGAME_MOVE_LIST_TEST
+#ifndef TESTS_BOARDGAME_MOVE_LIST_TEST_HPP
+#define TESTS_BOARDGAME_MOVE_LIST_TEST_HPP
 
-#include "boardgame/move_list.h"
-#include "boardgame/move_list_ui.h"
+#include "boardgame/move_list.hpp"
+#include "boardgame/move_list_ui.hpp"
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
@@ -41,4 +41,4 @@ void delete_move(::testing::StrictMock<Move_List_Ui_Mock>* mui, const int move_i
 void cut_off(::testing::StrictMock<Move_List_Ui_Mock>* mui, const int move_id) { mui->cut_off(move_id); }
 void need_confirm(::testing::StrictMock<Move_List_Ui_Mock>* mui, const bool is_needed) { mui->need_confirm(is_needed); }
 
-#endif // TESTS_BOARDGAME_MOVE_LIST_TEST
+#endif // TESTS_BOARDGAME_MOVE_LIST_TEST_HPP

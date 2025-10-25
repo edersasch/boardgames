@@ -1,5 +1,5 @@
-#include "muehle_fsm.test.h"
-#include "muehle/muehle_fsm.h"
+#include "muehle_fsm.test.hpp"
+#include "muehle/muehle_fsm.hpp"
 
 // following code is taken from https://github.com/boost-ext/sml/blob/4da1ad8c91d5e50642e0271b657baeac1d708bd6/example/plant_uml.cpp
 

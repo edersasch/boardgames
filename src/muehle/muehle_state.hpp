@@ -1,15 +1,15 @@
-#ifndef SRC_MUEHLE_MUEHLE_STATE
-#define SRC_MUEHLE_MUEHLE_STATE
+#ifndef SRC_MUEHLE_MUEHLE_STATE_HPP
+#define SRC_MUEHLE_MUEHLE_STATE_HPP
 
 #include "muehle_lib.h"
-#include "muehle.h"
-#include "muehle_fsm_action_handler.h"
-#include "boardgame/alpha_beta.h"
-#include "boardgame/boardgame_ui.h"
-#include "boardgame/move_list_ui.h"
-#include "boardgame/pieces_n_fields.h"
-#include "boardgame/move_list.h"
-#include "boardgame/main_loop.h"
+#include "muehle.hpp"
+#include "muehle_fsm_action_handler.hpp"
+#include "boardgame/alpha_beta.hpp"
+#include "boardgame/boardgame_ui.hpp"
+#include "boardgame/move_list_ui.hpp"
+#include "boardgame/pieces_n_fields.hpp"
+#include "boardgame/move_list.hpp"
+#include "boardgame/main_loop.hpp"
 
 #include <array>
 #include <vector>
@@ -158,4 +158,4 @@ private:
 
 }
 
-#endif // SRC_MUEHLE_MUEHLE_STATE
+#endif // SRC_MUEHLE_MUEHLE_STATE_HPP

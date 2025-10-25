@@ -1,8 +1,8 @@
-#ifndef TESTS_MUEHLE_MUEHLE_STATE_TEST
-#define TESTS_MUEHLE_MUEHLE_STATE_TEST
+#ifndef TESTS_MUEHLE_MUEHLE_STATE_TEST_HPP
+#define TESTS_MUEHLE_MUEHLE_STATE_TEST_HPP
 
-#include "boardgame/pieces_n_fields.h"
-#include "muehle/muehle_state.h"
+#include "boardgame/pieces_n_fields.hpp"
+#include "muehle/muehle_state.hpp"
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
@@ -100,4 +100,4 @@ void engine_forecast(::testing::StrictMock<Muehle_Ui_Mock>* mui, const int score
 void engine_future(::testing::StrictMock<Main_Loop_Mock>* ml, std::future<void>&& efu) { ml->engine_future(std::move(efu)); }
 void set_main_loop_engine_time(::testing::StrictMock<Main_Loop_Mock>* ml, std::chrono::seconds time_in_s) { ml->set_main_loop_engine_time(time_in_s); }
 
-# endif // TESTS_MUEHLE_MUEHLE_STATE_TEST
+# endif // TESTS_MUEHLE_MUEHLE_STATE_TEST_HPP

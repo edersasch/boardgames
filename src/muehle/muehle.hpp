@@ -1,8 +1,8 @@
-#ifndef SRC_MUEHLE_MUEHLE_TYPES
-#define SRC_MUEHLE_MUEHLE_TYPES
+#ifndef SRC_MUEHLE_MUEHLE_HPP
+#define SRC_MUEHLE_MUEHLE_HPP
 
 #include "muehle_lib.h"
-#include "boardgame/pieces_n_fields.h"
+#include "boardgame/pieces_n_fields.hpp"
 #include "robin_hood.h"
 
 #include <bitset>
@@ -75,4 +75,4 @@ struct MUEHLE_LIB_EXPORT Engine_Helper {
 
 }
 
-#endif // SRC_MUEHLE_MUEHLE_TYPES
+#endif // SRC_MUEHLE_MUEHLE_HPP

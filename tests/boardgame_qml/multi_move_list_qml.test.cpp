@@ -1,4 +1,4 @@
-#include "multi_move_list_qml.test.h"
+#include "multi_move_list_qml.test.hpp"
 
 #include <QGuiApplication>
 #include <QQmlEngine>

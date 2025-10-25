@@ -1,5 +1,5 @@
-#ifndef SRC_BOARDGAME_MOVE_LIST_UI
-#define SRC_BOARDGAME_MOVE_LIST_UI
+#ifndef SRC_BOARDGAME_MOVE_LIST_UI_HPP
+#define SRC_BOARDGAME_MOVE_LIST_UI_HPP
 
 #include <memory>
 #include <vector>
@@ -48,4 +48,4 @@ private:
 
 }
 
-#endif // SRC_BOARDGAME_MOVE_LIST_UI
+#endif // SRC_BOARDGAME_MOVE_LIST_UI_HPP

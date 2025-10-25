@@ -1,8 +1,8 @@
-#ifndef SRC_MUEHLE_MUEHLE_FSM
-#define SRC_MUEHLE_MUEHLE_FSM
+#ifndef SRC_MUEHLE_MUEHLE_FSM_HPP
+#define SRC_MUEHLE_MUEHLE_FSM_HPP
 
 #include "muehle_lib.h"
-#include "muehle_fsm_action_handler.h"
+#include "muehle_fsm_action_handler.hpp"
 #include <boost/sml.hpp>
 
 namespace sml = boost::sml;
@@ -229,4 +229,4 @@ private:
 
 }
 
-#endif // SRC_MUEHLE_MUEHLE_FSM
+#endif // SRC_MUEHLE_MUEHLE_FSM_HPP

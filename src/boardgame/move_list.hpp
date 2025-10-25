@@ -1,5 +1,5 @@
-#ifndef SRC_BOARDGAME_MOVE_LIST
-#define SRC_BOARDGAME_MOVE_LIST
+#ifndef SRC_BOARDGAME_MOVE_LIST_HPP
+#define SRC_BOARDGAME_MOVE_LIST_HPP
 
 #include <nlohmann/json.hpp>
 
@@ -383,4 +383,4 @@ void Move_List<T, U>::ui_replay(const std::int32_t move_id)
 
 }
 
-#endif // SRC_BOARDGAME_MOVE_LIST
+#endif // SRC_BOARDGAME_MOVE_LIST_HPP

@@ -1,4 +1,4 @@
-#include "muehle_qml/muehle_qml.h"
+#include "muehle_qml/muehle_qml.hpp"
 
 #include <QGuiApplication>
 #include <QQmlEngine>

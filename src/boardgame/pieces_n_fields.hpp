@@ -1,5 +1,5 @@
-#ifndef SRC_BOARDGAME_PIECES_N_FIELDS
-#define SRC_BOARDGAME_PIECES_N_FIELDS
+#ifndef SRC_BOARDGAME_PIECES_N_FIELDS_HPP
+#define SRC_BOARDGAME_PIECES_N_FIELDS_HPP
 
 #include "boardgame_lib.h"
 
@@ -193,4 +193,4 @@ using Field_Number_Diff = std::vector<std::array<Field_Number, 2>>;
 
 }
 
-#endif // SRC_BOARDGAME_PIECES_N_FIELDS
+#endif // SRC_BOARDGAME_PIECES_N_FIELDS_HPP

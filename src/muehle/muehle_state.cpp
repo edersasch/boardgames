@@ -1,5 +1,5 @@
-#include "muehle_state.h"
-#include "muehle_fsm.h"
+#include "muehle_state.hpp"
+#include "muehle_fsm.hpp"
 
 namespace muehle
 {

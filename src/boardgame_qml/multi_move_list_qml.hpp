@@ -1,7 +1,7 @@
-#ifndef SRC_BOARDGAME_QML_MULTI_MOVE_LIST_QML
-#define SRC_BOARDGAME_QML_MULTI_MOVE_LIST_QML
+#ifndef SRC_BOARDGAME_QML_MULTI_MOVE_LIST_QML_HPP
+#define SRC_BOARDGAME_QML_MULTI_MOVE_LIST_QML_HPP
 
-#include "move_list_qml.h"
+#include "move_list_qml.hpp"
 
 #include <QObject>
 
@@ -51,4 +51,4 @@ private:
 
 }
 
-#endif // SRC_BOARDGAME_QML_MULTI_MOVE_LIST_QML
+#endif // SRC_BOARDGAME_QML_MULTI_MOVE_LIST_QML_HPP

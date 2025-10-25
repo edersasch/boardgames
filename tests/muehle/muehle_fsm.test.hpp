@@ -1,8 +1,8 @@
-#ifndef TESTS_MUEHLE_MUEHLE_FSM_TEST
-#define TESTS_MUEHLE_MUEHLE_FSM_TEST
+#ifndef TESTS_MUEHLE_MUEHLE_FSM_TEST_HPP
+#define TESTS_MUEHLE_MUEHLE_FSM_TEST_HPP
 
-#include "muehle/muehle_fsm_action_handler.h"
-#include "boardgame/pieces_n_fields.h"
+#include "muehle/muehle_fsm_action_handler.hpp"
+#include "boardgame/pieces_n_fields.hpp"
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
@@ -37,4 +37,4 @@ protected:
     ::testing::StrictMock<Muehle_FSM_Action_Handler_Mock> mAction_Handler_Mock {};
 };
 
-# endif // TESTS_MUEHLE_MUEHLE_FSM_TEST
+# endif // TESTS_MUEHLE_MUEHLE_FSM_TEST_HPP

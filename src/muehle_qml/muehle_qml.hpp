@@ -1,10 +1,10 @@
-#ifndef SRC_MUEHLE_QML_MUEHLE_QML
-#define SRC_MUEHLE_QML_MUEHLE_QML
+#ifndef SRC_MUEHLE_QML_MUEHLE_QML_HPP
+#define SRC_MUEHLE_QML_MUEHLE_QML_HPP
 
-#include "boardgame/boardgame_ui.h"
-#include "muehle/muehle_state.h"
-#include "boardgame_qml/multi_move_list_qml.h"
-#include "boardgame/main_loop.h"
+#include "boardgame/boardgame_ui.hpp"
+#include "muehle/muehle_state.hpp"
+#include "boardgame_qml/multi_move_list_qml.hpp"
+#include "boardgame/main_loop.hpp"
 
 #include <QObject>
 #include <QQmlComponent>
@@ -102,4 +102,4 @@ private:
 
 }
 
-#endif // SRC_MUEHLE_QML_MUEHLE_QML
+#endif // SRC_MUEHLE_QML_MUEHLE_QML_HPP

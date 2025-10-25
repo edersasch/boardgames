@@ -1,4 +1,4 @@
-#include "move_list_qml.h"
+#include "move_list_qml.hpp"
 
 #include <QQmlEngine>
 #include <QQmlProperty>

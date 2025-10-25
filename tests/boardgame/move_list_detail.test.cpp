@@ -1,4 +1,4 @@
-#include "move_list_detail.test.h"
+#include "move_list_detail.test.hpp"
 
 void Move_List_Detail_Test::commit_sequence(int predecessor, int start, int end, int expected_committed_move_id)
 {

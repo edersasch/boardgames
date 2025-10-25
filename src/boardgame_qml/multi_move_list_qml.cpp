@@ -1,4 +1,4 @@
-#include "multi_move_list_qml.h"
+#include "multi_move_list_qml.hpp"
 
 #include <QDir>
 #include <QQmlEngine>

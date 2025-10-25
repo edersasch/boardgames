@@ -1,4 +1,4 @@
-#include "muehle/muehle.h"
+#include "muehle/muehle.hpp"
 
 #include "gtest/gtest.h"
 

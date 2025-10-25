@@ -1,5 +1,5 @@
-#include "boardgame/alpha_beta.h"
-#include "muehle/muehle.h"
+#include "boardgame/alpha_beta.hpp"
+#include "muehle/muehle.hpp"
 
 #include "gtest/gtest.h"
 

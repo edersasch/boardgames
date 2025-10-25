@@ -1,7 +1,7 @@
-#ifndef SRC_BOARDGAME_BOARDGAME_UI
-#define SRC_BOARDGAME_BOARDGAME_UI
+#ifndef SRC_BOARDGAME_BOARDGAME_UI_HPP
+#define SRC_BOARDGAME_BOARDGAME_UI_HPP
 
-#include "boardgame/pieces_n_fields.h"
+#include "boardgame/pieces_n_fields.hpp"
 
 #include <memory>
 #include <string>
@@ -255,7 +255,7 @@ private:
 
 }
 
-#endif // SRC_BOARDGAME_BOARDGAME_UI
+#endif // SRC_BOARDGAME_BOARDGAME_UI_HPP
 
 /** \mainpage Boardgames
  *

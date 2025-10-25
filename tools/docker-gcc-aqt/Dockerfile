@@ -11,7 +11,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PATH=${QT_PATH}/Tools/CMake/bin:${QT_PATH}/Tools/Ninja:${QT_PATH}/${QT_VERSION}/gcc_64/bin:$PATH
 
 RUN apt update && apt upgrade -y && \
-    apt install -y --no-install-recommends sudo locales git openssh-client curl ca-certificates 7zip build-essential python3 patchelf file pandoc libgl1-mesa-dev && \
+    apt install -y --no-install-recommends sudo locales git openssh-client curl ca-certificates 7zip build-essential gdb python3 patchelf file pandoc libgl1-mesa-dev && \
     echo 'ubuntu ALL=NOPASSWD: ALL' > /etc/sudoers.d/ubuntu && \
     locale-gen en_US.UTF-8 && dpkg-reconfigure locales && \
     groupadd -r ubuntu && useradd --create-home --gid ubuntu ubuntu && \

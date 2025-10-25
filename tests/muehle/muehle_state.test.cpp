@@ -1,4 +1,4 @@
-#include "muehle_state.test.h"
+#include "muehle_state.test.hpp"
 
 Muehle_State_Test::Muehle_State_Test()
 {

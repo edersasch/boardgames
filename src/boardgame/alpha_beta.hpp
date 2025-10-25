@@ -1,5 +1,5 @@
-#ifndef SRC_BOARDGAME_ALPHA_BETA
-#define SRC_BOARDGAME_ALPHA_BETA
+#ifndef SRC_BOARDGAME_ALPHA_BETA_HPP
+#define SRC_BOARDGAME_ALPHA_BETA_HPP
 
 // https://martin.ankerl.com/2019/04/01/hashmap-benchmarks-05-conclusion/
 #include "robin_hood.h"
@@ -238,4 +238,4 @@ void Alpha_Beta<Key, Game, Move_Data, Hash>::copy_to_next_tt(robin_hood::unorder
 
 }
 
-#endif // SRC_BOARDGAME_ALPHA_BETA
+#endif // SRC_BOARDGAME_ALPHA_BETA_HPP

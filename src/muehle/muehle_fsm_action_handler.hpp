@@ -1,7 +1,7 @@
-#ifndef SRC_MUEHLE_MUEHLE_FSM_ACTION_HANDLER
-#define SRC_MUEHLE_MUEHLE_FSM_ACTION_HANDLER
+#ifndef SRC_MUEHLE_MUEHLE_FSM_ACTION_HANDLER_HPP
+#define SRC_MUEHLE_MUEHLE_FSM_ACTION_HANDLER_HPP
 
-#include "boardgame/pieces_n_fields.h"
+#include "boardgame/pieces_n_fields.hpp"
 
 namespace muehle
 {
@@ -28,4 +28,4 @@ public:
 
 }
 
-#endif // SRC_MUEHLE_MUEHLE_FSM_ACTION_HANDLER
+#endif // SRC_MUEHLE_MUEHLE_FSM_ACTION_HANDLER_HPP

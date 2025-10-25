@@ -1,7 +1,7 @@
-#ifndef TESTS_BOARDGAME_QML_MOVE_LIST_QML_TEST
-#define TESTS_BOARDGAME_QML_MOVE_LIST_QML_TEST
+#ifndef TESTS_BOARDGAME_QML_MOVE_LIST_QML_TEST_HPP
+#define TESTS_BOARDGAME_QML_MOVE_LIST_QML_TEST_HPP
 
-#include "boardgame_qml/move_list_qml.h"
+#include "boardgame_qml/move_list_qml.hpp"
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
@@ -48,4 +48,4 @@ protected:
     ::testing::StrictMock<Move_List_Qml_Test_Slots> move_list_slots {};
 };
 
-#endif // TESTS_BOARDGAME_QML_MOVE_LIST_QML_TEST
+#endif // TESTS_BOARDGAME_QML_MOVE_LIST_QML_TEST_HPP

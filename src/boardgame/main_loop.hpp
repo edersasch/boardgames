@@ -1,5 +1,5 @@
-#ifndef SRC_BOARDGAME_MAIN_LOOP
-#define SRC_BOARDGAME_MAIN_LOOP
+#ifndef SRC_BOARDGAME_MAIN_LOOP_HPP
+#define SRC_BOARDGAME_MAIN_LOOP_HPP
 
 #include <future>
 #include <utility>
@@ -35,4 +35,4 @@ private:
 
 }
 
-#endif // SRC_BOARDGAME_MAIN_LOOP
+#endif // SRC_BOARDGAME_MAIN_LOOP_HPP

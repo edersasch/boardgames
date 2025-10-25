@@ -1,7 +1,7 @@
-#ifndef TESTS_BOARDGAME_MOVE_LIST_DETAIL_TEST
-#define TESTS_BOARDGAME_MOVE_LIST_DETAIL_TEST
+#ifndef TESTS_BOARDGAME_MOVE_LIST_DETAIL_TEST_HPP
+#define TESTS_BOARDGAME_MOVE_LIST_DETAIL_TEST_HPP
 
-#include "boardgame/move_list.h"
+#include "boardgame/move_list.hpp"
 
 #include "gtest/gtest.h"
 
@@ -15,4 +15,4 @@ protected:
     boardgame::detail::Move_List<int> move_list {};
 };
 
-#endif // TESTS_BOARDGAME_MOVE_LIST_DETAIL_TEST
+#endif // TESTS_BOARDGAME_MOVE_LIST_DETAIL_TEST_HPP

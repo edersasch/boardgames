@@ -1,4 +1,4 @@
-#include "pieces_n_fields.h"
+#include "pieces_n_fields.hpp"
 
 namespace boardgame
 {
