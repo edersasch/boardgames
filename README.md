@@ -102,7 +102,7 @@ Helper scripts and [stateoftheart](https://github.com/state-of-the-art/qt6-docke
 
 ## Included Resources
 
-[`CPM.cmake`](https://github.com/cpm-cmake/CPM.cmake/releases/tag/v0.40.8)
+[`CPM.cmake`](https://github.com/cpm-cmake/CPM.cmake/releases/tag/v0.42.0)
 (MIT License in the file)
 
 [`AddGoogleTest.cmake`](https://github.com/CLIUtils/cmake/blob/4e52e4d0bc2e9fd27171926d0b5d9f396dd8637c/AddGoogleTest.cmake)

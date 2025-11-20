@@ -21,7 +21,7 @@ class Move_List_Qml
     Q_OBJECT
 public:
     Move_List_Qml(QQmlEngine* engine, QQuickItem* move_list_root_entry);
-    void set_move_color(const int move_id, const std::string& c);
+    void set_move_color(const int move_id, const std::string& color);
     void change_move_color(const QString& old_color, const QString& new_color);
 
     void initial_constellation(const int constellation_id);

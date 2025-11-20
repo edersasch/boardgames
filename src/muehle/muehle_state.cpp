@@ -4,11 +4,11 @@
 namespace muehle
 {
 
-Muehle_State::Muehle_State(boardgame::Boardgame_Ui bui, boardgame::Move_List_Ui mlu, boardgame::Main_Loop ml)
+Muehle_State::Muehle_State(boardgame::Boardgame_Ui bui, boardgame::Move_List_Ui mlu, boardgame::Main_Loop mainLoop)
     : Muehle_FSM_Action_Handler()
     , boardgame_ui(std::move(bui))
     , move_list_ui(std::move(mlu))
-    , main_loop(std::move(ml))
+    , main_loop(std::move(mainLoop))
     , last_time_accounting(std::chrono::steady_clock::now())
     , fsm(new Fsm(this))
 {
@@ -89,8 +89,8 @@ void Muehle_State::request_set_move_and_branch(const std::int32_t move_id, const
 
 void Muehle_State::request_cut_off(const std::int32_t move_id)
 {
-    std::int32_t currm = move_list->get_current_move_id();
-    std::int32_t currb = move_list->get_current_branch_start_id();
+    const std::int32_t currm = move_list->get_current_move_id();
+    const std::int32_t currb = move_list->get_current_branch_start_id();
     if (move_list->cut_off(move_id) &&
             (currm != move_list->get_current_move_id() ||
              currb != move_list->get_current_branch_start_id())) {
@@ -131,7 +131,7 @@ std::string Muehle_State::get_move_list_string() const
 
 void Muehle_State::set_engine_depth(std::int32_t depth)
 {
-    if (depth) {
+    if (depth != 0) {
         set_engine_time(std::chrono::seconds(0)); // do not limit by time if depth gets set
     }
     engine.set_target_depth(depth);
@@ -160,7 +160,7 @@ void Muehle_State::tick_1s()
 {
     auto new_last = std::chrono::steady_clock::now();
     if (!game_over) {
-        std::chrono::milliseconds time_diff = std::chrono::duration_cast<std::chrono::milliseconds>(new_last - last_time_accounting);
+        const std::chrono::milliseconds time_diff = std::chrono::duration_cast<std::chrono::milliseconds>(new_last - last_time_accounting);
         current_player->active_time += time_diff;
         player_time(boardgame_ui, current_player->id, current_player->active_time);
     }
@@ -295,7 +295,7 @@ boardgame::Field_Number_Diff Muehle_State::diff_key(Muehle_Key key) const
 }
 
 /// returns fist drawer / prison field, not first occupied / empty
-boardgame::Field_Number_Diff Muehle_State::diff_keys(Muehle_Key oldk, Muehle_Key newk) const
+boardgame::Field_Number_Diff Muehle_State::diff_keys(Muehle_Key oldk, Muehle_Key newk)
 {
     boardgame::Field_Number_Diff diffed;
     auto single_diff = [&oldk, &newk, &diffed]() {

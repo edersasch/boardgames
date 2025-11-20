@@ -69,8 +69,8 @@ struct Muehle_Move_Data
 struct MUEHLE_LIB_EXPORT Engine_Helper {
     static std::vector<Muehle_Key> successor_constellations(const Muehle_Key& key);
     static std::int32_t evaluate(const Muehle_Key& key, std::int32_t engine_winning_score);
-    static std::int32_t make_move(Muehle_Move_Data& md, const Muehle_Key& key, const Muehle_Key& successor, std::int32_t engine_winning_score, std::int32_t engine_invalid_score);
-    static void unmake_move(Muehle_Move_Data& md, const Muehle_Key& key, const Muehle_Key& successor);
+    static std::int32_t make_move(Muehle_Move_Data& moveData, const Muehle_Key& key, const Muehle_Key& successor, std::int32_t engine_winning_score, std::int32_t engine_invalid_score);
+    static void unmake_move(Muehle_Move_Data& moveData, const Muehle_Key& key, const Muehle_Key& successor);
 };
 
 }

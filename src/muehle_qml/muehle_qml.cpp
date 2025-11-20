@@ -106,7 +106,7 @@ Muehle_Qml::Muehle_Qml(QQmlEngine* engine, QQuickItem* parentItem)
         }
     };
     auto fillFields = [this](const std::string& repeaterName, std::int32_t offset, std::vector<int> skip = {}, const std::string& altrepeaterName = {}) {
-        auto repeater = board_item(repeaterName);
+        auto* repeater = board_item(repeaterName);
         QQuickItem* altrepeater = nullptr;
         if (!altrepeaterName.empty()) {
             altrepeater = board_item(altrepeaterName);
@@ -338,18 +338,18 @@ void Muehle_Qml::wait_for_engine_move(std::future<void>&& efu)
         std::cerr << "no engine thread!\n";
         return;
     }
-    std::thread([this](std::future<void>&& ef) {
-        auto status = ef.wait_for(engine_time > std::chrono::seconds(0) ? engine_time : engine_time_default);
+    std::thread([this](std::future<void>&& engineFutue) {
+        auto status = engineFutue.wait_for(engine_time > std::chrono::seconds(0) ? engine_time : engine_time_default);
         if (status == std::future_status::ready) {
             emit engine_move();
         } else if (status == std::future_status::timeout) {
             emit stop_engine();
-            status = ef.wait_for(std::chrono::milliseconds(half_a_second_in_milliseconds));
+            status = engineFutue.wait_for(std::chrono::milliseconds(half_a_second_in_milliseconds));
             if (status == std::future_status::ready) {
                 emit engine_move();
             } else {
                 std::cerr << (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch())).count() << "ms can't stop engine\n";
-                ef.wait();
+                engineFutue.wait();
                 std::cerr << (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch())).count() << "ms engine stopped\n";
                 emit engine_move();
             }
@@ -376,7 +376,7 @@ void Muehle_Qml::color_change(const std::string& color_property_name, const QStr
     move_lists.change_move_color(old_color, new_color);
 }
 
-std::string Muehle_Qml::release_info() const
+std::string Muehle_Qml::release_info()
 {
     std::string ri = std::to_string(boardgame::major_version) + "." + std::to_string(boardgame::minor_version) + "." + std::to_string(boardgame::patch_version);
     ri += " / " + std::to_string(boardgame::release_year) + "-" + std::to_string(boardgame::release_month) + "-" + std::to_string(boardgame::release_day);

@@ -11,15 +11,15 @@ namespace boardgame_qml
 
 void initial_constellation(Multi_Move_List_Qml* mui, const int constellation_id)
 {
-    for (auto& ml : mui->move_lists) {
-        ml->initial_constellation(constellation_id);
+    for (auto& moveList : mui->move_lists) {
+        moveList->initial_constellation(constellation_id);
     }
 }
 
 void current_move(Multi_Move_List_Qml* mui, const int move_id)
 {
-    for (auto& ml : mui->move_lists) {
-        ml->current_move(move_id);
+    for (auto& moveList : mui->move_lists) {
+        moveList->current_move(move_id);
     }
 }
 
@@ -27,8 +27,8 @@ void add_move(Multi_Move_List_Qml* mui, const int move_id, const std::string& de
 {
     std::vector<std::vector<QQuickItem*>> all_cols;
     all_cols.reserve(mui->move_lists.size());
-    for (auto& ml : mui->move_lists) {
-        all_cols.push_back(ml->add_move(move_id, description));
+    for (auto& moveList : mui->move_lists) {
+        all_cols.push_back(moveList->add_move(move_id, description));
     }
     if (!all_cols.empty()) {
         for (std::size_t i = 0; i < all_cols[0].size(); i += 1) {
@@ -47,29 +47,29 @@ void add_move(Multi_Move_List_Qml* mui, const int move_id, const std::string& de
 
 void delete_move(Multi_Move_List_Qml* mui, const int move_id)
 {
-    for (auto& ml : mui->move_lists) {
-        ml->delete_move(move_id);
+    for (auto& moveList : mui->move_lists) {
+        moveList->delete_move(move_id);
     }
 }
 
 void cut_off(Multi_Move_List_Qml* mui, const int move_id)
 {
-    for (auto& ml : mui->move_lists) {
-        ml->cut_off(move_id);
+    for (auto& moveList : mui->move_lists) {
+        moveList->cut_off(move_id);
     }
 }
 
 void need_confirm(Multi_Move_List_Qml* mui, const bool is_needed)
 {
-    for (auto& ml : mui->move_lists) {
-        ml->need_confirm(is_needed);
+    for (auto& moveList : mui->move_lists) {
+        moveList->need_confirm(is_needed);
     }
 }
 
 Multi_Move_List_Qml::Multi_Move_List_Qml(QQmlEngine* engine, std::vector<QQuickItem*> move_list_root_entries, const QString& description, const QString& suffix)
 {
     move_lists.reserve(move_list_root_entries.size());
-    for (auto entry : move_list_root_entries) {
+    for (auto* entry : move_list_root_entries) {
         move_lists.push_back(std::make_unique<Move_List_Qml>(engine, entry));
         connect(move_lists.back().get(), &Move_List_Qml::request_set_current_move_and_branch_start_id, this, &Multi_Move_List_Qml::request_set_current_move_and_branch_start_id);
         connect(move_lists.back().get(), &Move_List_Qml::request_move_list_forward, this, &Multi_Move_List_Qml::request_move_list_forward);
@@ -99,17 +99,17 @@ Multi_Move_List_Qml::Multi_Move_List_Qml(QQmlEngine* engine, std::vector<QQuickI
     }
 }
 
-void Multi_Move_List_Qml::set_move_color(const int move_id, const std::string& c)
+void Multi_Move_List_Qml::set_move_color(const int move_id, const std::string& color)
 {
-    for (auto& ml : move_lists) {
-        ml->set_move_color(move_id, c);
+    for (auto& moveList : move_lists) {
+        moveList->set_move_color(move_id, color);
     }
 }
 
 void Multi_Move_List_Qml::change_move_color(const QString& old_color, const QString& new_color)
 {
-    for (auto& ml : move_lists) {
-        ml->change_move_color(old_color, new_color);
+    for (auto& moveList : move_lists) {
+        moveList->change_move_color(old_color, new_color);
     }
 }
 

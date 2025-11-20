@@ -1,5 +1,4 @@
-# Downloads GTest and provides a helper macro to add tests. Add make check, as well, which
-# gives output on failed tests without having to set an environment variable.
+# Downloads GTest and provides a helper macro to add tests.
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
@@ -16,7 +15,7 @@ include(GoogleTest)
 # Target must already exist
 macro(add_gtest TESTNAME)
     target_link_libraries(${TESTNAME} PUBLIC gtest gmock gtest_main)
-    
+
     #gtest_discover_tests(${TESTNAME}
     #    TEST_PREFIX "${TESTNAME}."
     #    PROPERTIES FOLDER "Tests")

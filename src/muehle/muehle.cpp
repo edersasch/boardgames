@@ -109,8 +109,8 @@ bool is_field_free(const muehle::Muehle_Key& key, const std::size_t field)
 /// @param field < number_of_board_fields
 std::int32_t number_of_free_adjacent_fields(const muehle::Muehle_Key& key, const std::size_t field)
 {
-    auto check_free = [&key](const std::int32_t f) {
-        return is_field_free(key, f);
+    auto check_free = [&key](const std::int32_t field) {
+        return is_field_free(key, field);
     };
     return std::count_if(adjacent_fields.at(field).begin(), adjacent_fields.at(field).end(), check_free);
 }
@@ -169,7 +169,7 @@ std::int32_t game_phase(const Muehle_Key& key)
     if (captured == six_prisoners) {
         return 3;
     }
-    std::int64_t active = (key & (Muehle_Key(all_active) << board_offset(key))).count();
+    const std::int64_t active = (key & (Muehle_Key(all_active) << board_offset(key))).count();
     return captured + active == number_of_pieces_per_player.v ? 2 : 1;
 }
 
@@ -177,9 +177,9 @@ std::int32_t game_phase(const Muehle_Key& key)
 const std::vector<std::int32_t>& free_fields(const Muehle_Key& key)
 {
     free_fields_store.clear();
-    for (std::int32_t f = 0U; f < number_of_board_fields.v; f += 1) {
-        if (is_field_free(key, f)) {
-            free_fields_store.push_back(f);
+    for (std::int32_t field = 0U; field < number_of_board_fields.v; field += 1) {
+        if (is_field_free(key, field)) {
+            free_fields_store.push_back(field);
         }
     }
     return free_fields_store;
@@ -189,7 +189,7 @@ const std::vector<std::int32_t>& free_fields(const Muehle_Key& key)
 const std::vector<std::int32_t>& fields_of_selectable_pieces(const Muehle_Key& key)
 {
     fields_of_selectable_pieces_store.clear();
-    std::int32_t phase = game_phase(key);
+    const std::int32_t phase = game_phase(key);
     if (phase == 1) {
         fields_of_selectable_pieces_store.push_back(drawer_field);
     } else {
@@ -271,8 +271,8 @@ std::pair<std::vector<std::int32_t>, Muehle_Key> occupy(Muehle_Key key, const st
 /// @param field < number_of_board_fields
 bool can_slide(const Muehle_Key& key, const std::size_t field)
 {
-    auto check_free = [&key](const std::int32_t f) {
-        return is_field_free(key, f);
+    auto check_free = [&key](const std::int32_t field) {
+        return is_field_free(key, field);
     };
     return std::find_if(adjacent_fields.at(field).begin(), adjacent_fields.at(field).end(), check_free) != adjacent_fields.at(field).end();
 }
@@ -296,15 +296,15 @@ std::string diff_text(const boardgame::Field_Number_Diff& fndiff)
         std::string from;
         std::string to;
         std::string removed;
-        for (const auto& d : fndiff) {
-            if (d.at(1).v >= muehle::first_board_field.v && d.at(1).v < muehle::first_board_field.v + muehle::number_of_board_fields.v) {
-                to = coordinate_names.at(d.at(1).v);
-                if (d.at(0).v >= muehle::first_board_field.v && d.at(0).v < muehle::first_board_field.v + muehle::number_of_board_fields.v) {
-                    from = std::string(coordinate_names.at(d.at(0).v)) + "-";
+        for (const auto& diff : fndiff) {
+            if (diff.at(1).v >= muehle::first_board_field.v && diff.at(1).v < muehle::first_board_field.v + muehle::number_of_board_fields.v) {
+                to = coordinate_names.at(diff.at(1).v);
+                if (diff.at(0).v >= muehle::first_board_field.v && diff.at(0).v < muehle::first_board_field.v + muehle::number_of_board_fields.v) {
+                    from = std::string(coordinate_names.at(diff.at(0).v)) + "-";
                 }
             } else {
-                if (d.at(1).v >= muehle::first_white_prison_field.v) {
-                    removed = " x" + std::string(coordinate_names.at(d.at(0).v));
+                if (diff.at(1).v >= muehle::first_white_prison_field.v) {
+                    removed = " x" + std::string(coordinate_names.at(diff.at(0).v));
                 }
             }
         }
@@ -351,9 +351,9 @@ std::int32_t Engine_Helper::evaluate(const Muehle_Key& key, std::int32_t engine_
     auto evaluate_free_fields = [](const Muehle_Key& ffkey){
         std::int32_t free_fields_score = 0;
         auto offset = board_offset(ffkey);
-        for (auto f = 0; f < number_of_board_fields.v; f += 1) {
-            if (ffkey.test(f + offset)) {
-                free_fields_score += number_of_free_adjacent_fields(ffkey, f);
+        for (auto field = 0; field < number_of_board_fields.v; field += 1) {
+            if (ffkey.test(field + offset)) {
+                free_fields_score += number_of_free_adjacent_fields(ffkey, field);
             }
         }
         return free_fields_score;
@@ -367,35 +367,35 @@ std::int32_t Engine_Helper::evaluate(const Muehle_Key& key, std::int32_t engine_
     return static_cast<std::int32_t>((evaluate_free_fields(key) - evaluate_free_fields(switch_player(key))) * free_field_factor);
 }
 
-std::int32_t Engine_Helper::make_move(Muehle_Move_Data& md, const Muehle_Key& key, const Muehle_Key& successor, std::int32_t engine_winning_score, std::int32_t engine_invalid_score)
+std::int32_t Engine_Helper::make_move(Muehle_Move_Data& moveData, const Muehle_Key& key, const Muehle_Key& successor, std::int32_t engine_winning_score, std::int32_t engine_invalid_score)
 {
     (void)engine_winning_score; // not needed, checks lead to draw
     if (is_boring_move(key, successor)) {
-        md.consecutive_boring_moves.push_back(md.consecutive_boring_moves.back() + 1);
-        auto& v = md.key_occurrence[successor];
-        v.push_back(1); // value does not matter during engine run
-        if (v.size() == 3) {
+        moveData.consecutive_boring_moves.push_back(moveData.consecutive_boring_moves.back() + 1);
+        auto& value = moveData.key_occurrence[successor];
+        value.push_back(1); // value does not matter during engine run
+        if (value.size() == 3) {
             return 0;
         }
     } else {
-        md.consecutive_boring_moves.push_back(0);
+        moveData.consecutive_boring_moves.push_back(0);
     }
-    return md.consecutive_boring_moves.back() < 50 ? engine_invalid_score : 0;
+    return moveData.consecutive_boring_moves.back() < 50 ? engine_invalid_score : 0;
 }
 
-void Engine_Helper::unmake_move(Muehle_Move_Data& md, const Muehle_Key& key, const Muehle_Key& successor)
+void Engine_Helper::unmake_move(Muehle_Move_Data& moveData, const Muehle_Key& key, const Muehle_Key& successor)
 {
     (void)key; // not needed
-    bool boring = md.consecutive_boring_moves.back() != 0;
+    const bool boring = moveData.consecutive_boring_moves.back() != 0;
     if (boring) {
-        auto it = md.key_occurrence.find(successor);
-        if (it->second.size() == 1) {
-            md.key_occurrence.erase(it);
+        auto itr = moveData.key_occurrence.find(successor);
+        if (itr->second.size() == 1) {
+            moveData.key_occurrence.erase(itr);
         } else {
-            it->second.pop_back();
+            itr->second.pop_back();
         }
     }
-    md.consecutive_boring_moves.pop_back();
+    moveData.consecutive_boring_moves.pop_back();
 }
 
 }

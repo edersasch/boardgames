@@ -144,8 +144,8 @@ using Field_Range = detail::Element_Range<const Field_Tag>;
 template <typename T>
 using Fieldgroup = detail::Elementgroup<T, const Field_Tag>;
 
-BOARDGAME_LIB_EXPORT void from_json(const nlohmann::json& j, boardgame::Field_Number& d);
-BOARDGAME_LIB_EXPORT void to_json(nlohmann::json& j, const Field_Number& d);
+BOARDGAME_LIB_EXPORT void from_json(const nlohmann::json& json, boardgame::Field_Number& fieldNumber);
+BOARDGAME_LIB_EXPORT void to_json(nlohmann::json& json, const Field_Number& fieldNumber);
 
 template <typename T>
 constexpr auto make_fieldgroup(const T& fields, const Field_Number start, const Field_Range range)

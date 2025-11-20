@@ -21,7 +21,7 @@ class Multi_Move_List_Qml
     Q_OBJECT
 public:
     Multi_Move_List_Qml(QQmlEngine* engine, std::vector<QQuickItem*> move_list_root_entries, const QString& description, const QString& suffix);
-    void set_move_color(const int move_id, const std::string& c);
+    void set_move_color(const int move_id, const std::string& color);
     void change_move_color(const QString& old_color, const QString& new_color);
 
     // from move_list_ui

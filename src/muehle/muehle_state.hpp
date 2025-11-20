@@ -53,7 +53,7 @@ class MUEHLE_LIB_EXPORT Muehle_State
         : public Muehle_FSM_Action_Handler
 {
 public:
-    Muehle_State(boardgame::Boardgame_Ui bui, boardgame::Move_List_Ui mlu, boardgame::Main_Loop ml);
+    Muehle_State(boardgame::Boardgame_Ui bui, boardgame::Move_List_Ui mlu, boardgame::Main_Loop mainLoop);
     virtual ~Muehle_State();
     void new_game();
     void request_setup_mode_active(bool is_active);
@@ -111,7 +111,7 @@ private:
     void check_hide_drawer() const;
     void check_show_prison() const;
     boardgame::Field_Number_Diff diff_key(Muehle_Key key) const;
-    boardgame::Field_Number_Diff diff_keys(Muehle_Key oldk, Muehle_Key newk) const;
+    static boardgame::Field_Number_Diff diff_keys(Muehle_Key oldk, Muehle_Key newk);
     void set_player_on_hint(const std::vector<int>& hint);
     void modified_if_not_start_constellation();
     void new_move_list();

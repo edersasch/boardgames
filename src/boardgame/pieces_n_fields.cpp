@@ -3,14 +3,14 @@
 namespace boardgame
 {
 
-void from_json(const nlohmann::json& j, boardgame::Field_Number& d)
+void from_json(const nlohmann::json& json, boardgame::Field_Number& fieldNumber)
 {
-    d.v = j;
+    fieldNumber.v = json;
 }
 
-void to_json(nlohmann::json& j, const boardgame::Field_Number& d)
+void to_json(nlohmann::json& json, const boardgame::Field_Number& fieldNumber)
 {
-    j = d.v;
+    json = fieldNumber.v;
 }
 
 }

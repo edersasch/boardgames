@@ -81,7 +81,7 @@ private:
     void end_program();
     void wait_for_engine_move(std::future<void>&& efu);
     void color_change(const std::string& color_property_name, const QString& player_active_property_name, const QString& new_color,  boardgame::Piece_Number first_piece, boardgame::Field_Number first_prison_field);
-    std::string release_info() const;
+    static std::string release_info();
     muehle::Muehle_State muehle_state;
     QQmlComponent control_component;
     std::unique_ptr<QQuickItem> control;
